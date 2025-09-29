@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Quentin Sterling — Resume (Accordion)</title>
+<style>
+  :root{
+    --gold:#d4af37;      /* site accent line */
+    --ink:#111;          /* primary text (near-black) */
+    --muted:#6b7280;     /* secondary text */
+    --line:#e5e7eb;      /* light borders */
+    --hover:#0f172a;     /* hover text tint */
+    --tab-bg:#fafafa;    /* tab pill background */
+  }
+  /* Reset-ish */
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:#fff;color:var(--ink);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+
+  /* Wrapper – keeps content narrow like your page body under the banner */
+  .wrap{max-width:1024px;margin:24px auto;padding:0 18px}
+
+  /* Title strip to echo the site banner vibe (thin gold rule) */
+  .page-title{font-weight:800;letter-spacing:.02em;margin:0 0 8px}
+  .gold-rule{width:120px;height:4px;background:var(--gold);border-radius:4px;margin:8px 0 18px}
+
+  /* Tabs row – “next tab” feel */
+  .tabs{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 14px}
+  .tab{
+    appearance:none;border:1px solid var(--line);background:var(--tab-bg);color:var(--ink);
+    padding:8px 12px;border-radius:999px;cursor:pointer;font-weight:600;
+    transition:background .15s ease, border-color .15s ease, color .15s ease;
+  }
+  .tab:hover{border-color:#cbd5e1;color:var(--hover)}
+  .tab[aria-selected="true"]{background:#fff;border-color:var(--gold);box-shadow:0 0 0 2px rgba(212,175,55,.18)}
+
+  /* Accordion sections */
+  .section{border-top:1px solid var(--line)}
+  .h{
+    display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+    padding:14px 0;border:none;background:transparent;font-weight:800;font-size:18px;cursor:pointer;
+  }
+  .h .caret{width:14px;height:14px;display:inline-grid;place-items:center;color:#64748b}
+  .h:hover .caret{color:#0f172a}
+  .panel{display:none;padding:0 0 18px 0}
+  .panel.show{display:block;animation:fade .18s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(-2px)} to{opacity:1;transform:none}}
+
+  /* Content styling */
+  h3{font-size:16px;margin:18px 0 8px}
+  .section-title{border-bottom:2px solid #333;padding-bottom:5px;margin-top:10px}
+  .experience-item{margin:14px 0}
+  .job-title{font-weight:700}
+  ul{margin:6px 0 12px 18px}
+  li{margin:6px 0}
+  .meta{color:var(--muted);font-style:italic}
+  table{width:100%;border-collapse:collapse;margin-top:8px}
+  th,td{border:1px solid var(--line);padding:8px;text-align:left}
+  a{color:inherit}
+  .contactline{margin:4px 0 0;color:var(--muted)}
+  /* Anchor offset for deep links beneath your site banner */
+  :target{scroll-margin-top:90px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1 class="page-title">QUENTIN STERLING</h1>
+    <div class="gold-rule" aria-hidden="true"></div>
+
+    <!-- “Next tabs” – click any to open the corresponding accordion below -->
+    <nav class="tabs" aria-label="Resume sections">
+      <button class="tab" data-target="summary" aria-controls="summary" aria-selected="true">Professional Summary</button>
+      <button class="tab" data-target="experience" aria-controls="experience" aria-selected="false">Experience</button>
+      <button class="tab" data-target="education" aria-controls="education" aria-selected="false">Education</button>
+      <button class="tab" data-target="skills" aria-controls="skills" aria-selected="false">Skills & Certifications</button>
+      <button class="tab" data-target="honors" aria-controls="honors" aria-selected="false">Honors & Achievements</button>
+      <button class="tab" data-target="contact" aria-controls="contact" aria-selected="false">Contact</button>
+    </nav>
+
+    <p class="contactline">Los Angeles, CA 90005 | Sterling_Q@outlook.com | 845-200-0197 | <a href="#" rel="nofollow">LinkedIn</a> | <a href="#" rel="nofollow">Portfolio</a></p>
+
+    <!-- Accordion sections (content pulled from your Basic template) -->
+    <section id="summary" class="section">
+      <button class="h" aria-expanded="true" aria-controls="p-summary"><span class="caret">▾</span> Professional Summary</button>
+      <div id="p-summary" class="panel show">
+        <h3 class="section-title">GLOBAL BUSINESS DEVELOPMENT & BRAND STRATEGY LEADER</h3>
+        <p><strong>Proven expert in launching, scaling, and managing global brands</strong>, specifically driving <strong>game titles to multi-million unit sales</strong> and executing cross-cultural market entry across Asia and the U.S. Core competencies include leveraging entrepreneurial drive, strategic leadership, and Agile methodologies to deliver outsized results.</p>
+        <ul>
+          <li><strong>Scaled game titles to 10M+ units sold</strong> (e.g., <em>My Time at Portia</em>).</li>
+          <li><strong>Kickstarter raised $534K+</strong> in 26 days.</li>
+          <li>Drove market entry leading to <strong>30M+ CNY global sales</strong>.</li>
+        </ul>
+    </div>
+    </section>
+
+    <section id="experience" class="section">
+      <button class="h" aria-expanded="false" aria-controls="p-experience"><span class="caret">▸</span> Experience</button>
+      <div id="p-experience" class="panel">
+        <div class="experience-item">
+          <p class="job-title">Elex Tech — Brand Manager / Lead Brand Creative <span class="meta">Beijing, China | 2020–2022</span></p>
+          <ul>
+            <li><strong>1M+ downloads in first 6 months</strong> for <em>The Walking Dead: Survivors</em> (Android/iOS).</li>
+            <li><strong>Grew social following to 1M+ globally</strong> via UA content strategy.</li>
+            <li><strong>~4B views</strong> through TikTok mini-app partnership.</li>
+            <li>Managed <strong>~$300K/week</strong> Meta & Google spend.</li>
+          </ul>
+        </div>
+
+        <div class="experience-item">
+          <p class="job-title">Pathea Games — Senior Brand Manager <span class="meta">Chongqing, China | 2019–2020</span></p>
+          <ul>
+            <li><strong>$534K+ Kickstarter</strong> in 26 days (goal hit in 24h).</li>
+            <li><strong>My Time at Portia:</strong> 650K → 2M+ Steam units; 10M+ across all platforms.</li>
+            <li>Single-day record: <strong>22K units</strong> on Steam.</li>
+            <li>Owned publishing/marketing/sales for 3–5 titles.</li>
+          </ul>
+        </div>
+
+        <div class="experience-item">
+          <p class="job-title">Jiang Xiao Bai — U.S. Market Manager / Global Account Manager <span class="meta">2017–2019</span></p>
+          <ul>
+            <li><strong>30M+ CNY total global sales</strong>; <strong>2M CNY</strong> first-year U.S. sales.</li>
+            <li>Expanded to <strong>8+ countries</strong>; built distributor training.</li>
+            <li>Managed contracts, branding, and localized activations.</li>
+          </ul>
+        </div>
+
+        <div class="experience-item">
+          <p class="job-title">Sterling Q Consulting & Management LLC — Principal Consultant <span class="meta">2018–Present</span></p>
+          <ul>
+            <li>Market entry, brand strategy, and digital positioning (Agile).</li>
+            <li>Scrum Master/Product Owner: backlogs, priorities, sprints.</li>
+            <li>Built GTM plans, investor decks, process docs.</li>
+          </ul>
+        </div>
+
+        <div class="experience-item">
+          <p class="job-title">Brooklyn Café (Start-up) — Founder/General Manager <span class="meta">2014–2017</span></p>
+          <ul>
+            <li>Top-10 lounge bar in a city of 34M; <strong>profitable exit (2018)</strong>.</li>
+            <li>Managed 15–20 staff across 4+ nationalities.</li>
+            <li>Owned ops, marketing, and event planning.</li>
+          </ul>
+        </div>
+
+        <div class="experience-item">
+          <p class="job-title">American Red Cross — Public Relations Intern <span class="meta">2008–2010</span></p>
+          <ul>
+            <li>Raised <strong>$2,000+/year</strong> for pre-disaster relief.</li>
+            <li>Coordinated <strong>100+ volunteers</strong> and events.</li>
+            <li>Wrote PSAs and press releases.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="education" class="section">
+      <button class="h" aria-expanded="false" aria-controls="p-education"><span class="caret">▸</span> Education</button>
+      <div id="p-education" class="panel">
+        <ul>
+          <li><strong>Chongqing University</strong> — Master of International Business (2018)</li>
+          <li><strong>Fairmont State University</strong> — B.A. Communications; B.A. Psychology (2010)</li>
+          <li><strong>Arizona State University</strong> — B.S. Graphic Information Technology (In Progress)</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="skills" class="section">
+      <button class="h" aria-expanded="false" aria-controls="p-skills"><span class="caret">▸</span> Skills & Certifications</button>
+      <div id="p-skills" class="panel">
+        <table>
+          <thead>
+            <tr><th>Technical</th><th>Soft</th><th>Certifications</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Project Mgmt (Jira, Scrum, Agile, SDLC); UA & Digital Marketing; Brand Dev</td>
+              <td>Leadership & Team Building; Cross-Cultural Communication</td>
+              <td>Atlassian Agile PM; Google UX Design; Google SEO; Game Design (CalArts)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="honors" class="section">
+      <button class="h" aria-expanded="false" aria-controls="p-honors"><span class="caret">▸</span> Honors & Notable Achievements</button>
+      <div id="p-honors" class="panel">
+        <ul>
+          <li><strong>U.S. Citizen Warden</strong> — U.S. Consulate, Chengdu (2018–present)</li>
+          <li><strong>UMF Man of the Year</strong> — Southwest China (2018)</li>
+          <li><strong>Jiang Xiao Bai Top Employee</strong> (2019)</li>
+          <li>4-year College Football letter winner (3-year starter)</li>
+          <li>Volunteer — American Red Cross, Boys & Girls Club, Special Olympics</li>
+          <li>William White Athletic Scholarship</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="contact" class="section">
+      <button class="h" aria-expanded="false" aria-controls="p-contact"><span class="caret">▸</span> Contact</button>
+      <div id="p-contact" class="panel">
+        <p><strong>Email:</strong> Sterling_Q@outlook.com<br>
+           <strong>Phone:</strong> 845-200-0197<br>
+           <strong>Location:</strong> Los Angeles, CA 90005<br>
+           <strong>Links:</strong> <a href="#" rel="nofollow">LinkedIn</a> · <a href="#" rel="nofollow">Portfolio</a>
+        </p>
+      </div>
+    </section>
+  </div>
+
+<script>
+  // Tabs -> open matching accordion section and close others
+  const tabs = [...document.querySelectorAll('.tab')];
+  const sections = [...document.querySelectorAll('.section')];
+
+  function openSection(id, focusHeader=false){
+    sections.forEach(sec=>{
+      const btn = sec.querySelector('.h');
+      const caret = btn.querySelector('.caret');
+      const panel = sec.querySelector('.panel');
+      const isTarget = sec.id === id;
+      panel.classList.toggle('show', isTarget);
+      btn.setAttribute('aria-expanded', isTarget ? 'true' : 'false');
+      caret.textContent = isTarget ? '▾' : '▸';
+      if (isTarget && focusHeader) btn.focus({preventScroll:true});
+    });
+    tabs.forEach(t=> t.setAttribute('aria-selected', t.dataset.target===id ? 'true':'false'));
+    // update hash so you can deep link from your Google Sites menu
+    if (location.hash !== '#'+id) history.replaceState(null, '', '#'+id);
+    // scroll the opened header into view (beneath your banner)
+    const targetHeader = document.querySelector('#'+id+' .h');
+    if (targetHeader) targetHeader.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  tabs.forEach(tab=>{
+    tab.addEventListener('click', ()=> openSection(tab.dataset.target));
+  });
+
+  // Accordion header toggles same section
+  sections.forEach(sec=>{
+    const btn = sec.querySelector('.h');
+    btn.addEventListener('click', ()=>{
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      if (!expanded) openSection(sec.id); // only open (we keep one open at a time)
+    });
+  });
+
+  // On load: open hash target or default to summary
+  const initial = (location.hash || '#summary').slice(1);
+  openSection(initial, true);
+</script>
+</body>
+</html>
