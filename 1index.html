@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interactive Mind Map</title>
+<style>
+  :root {
+    --bg: #0f0f10;
+    --panel: #1a1b1d;
+    --fg: #f1f1f1;
+    --muted: #9a9a9a;
+    --hover: #a7f3a0; /* light green */
+    --gold: #ffd24a;
+  }
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  }
+  .wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 24px 40px;
+  }
+  h1 {
+    font-size: 20px;
+    margin: 0 0 12px;
+    font-weight: 600;
+    letter-spacing: .3px;
+  }
+  .legend {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+  .tree {
+    line-height: 1.45;
+    user-select: none;
+  }
+  .node {
+    position: relative;
+    padding-left: 22px;
+    margin: 4px 0;
+  }
+  .node > .label {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: var(--panel);
+    color: var(--fg);
+    transition: background .15s ease, color .15s ease, box-shadow .2s ease;
+    box-shadow: 0 0 0 rgba(0,0,0,0);
+  }
+  .node > .label:hover {
+    background: #202922;
+    color: var(--hover);
+  }
+  .node.expanded > .label {
+    box-shadow: 0 0 0 1px #2a2b2f inset;
+  }
+  /* caret */
+  .node > .caret {
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 16px;
+    height: 16px;
+    display: inline-grid;
+    place-items: center;
+    font-size: 14px;
+    color: var(--muted);
+    transition: transform .15s ease, color .2s ease;
+  }
+  .node:hover > .caret { color: var(--hover); }
+  .node.expanded > .caret { transform: rotate(90deg); }
+  .children {
+    margin-left: 22px;
+    border-left: 1px solid #24262a;
+    padding-left: 14px;
+  }
+  .hidden { display: none; }
+
+  /* Gold sparkle effect */
+  .spark {
+    position: absolute;
+    width: 6px; height: 6px;
+    background: radial-gradient(circle, var(--gold), #b88700 60%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: pop .6s ease-out forwards;
+    filter: drop-shadow(0 0 4px var(--gold)) drop-shadow(0 0 8px var(--gold));
+  }
+  @keyframes pop {
+    0%   { transform: translate(var(--x,0), var(--y,0)) scale(.6); opacity: 1; }
+    80%  { opacity: 1; }
+    100% { transform: translate(calc(var(--x,0) * 3), calc(var(--y,0) * 3)) scale(0); opacity: 0; }
+  }
+  .golden {
+    color: var(--gold) !important;
+    text-shadow: 0 0 6px rgba(255,210,74,.9), 0 0 12px rgba(255,210,74,.5);
+  }
+
+  /* Make it responsive container */
+  .panel {
+    background: #141517;
+    border: 1px solid #24262a;
+    border-radius: 14px;
+    padding: 14px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Interactive Mind Map</h1>
+  <div class="legend">Hover: light green. Click: gold sparkle + expand/collapse. Sound can be muted.</div>
+  <div class="panel">
+    <div style="margin-bottom:8px;">
+      <button id="expandAll">Expand all</button>
+      <button id="collapseAll">Collapse all</button>
+      <label style="margin-left:12px; font-size:13px;">
+        <input type="checkbox" id="mute" checked> Mute sounds
+      </label>
+    </div>
+    <div id="tree" class="tree" aria-label="Mind map tree"></div>
+  </div>
+</div>
+
+<!-- sounds -->
+<audio id="clickS" preload="auto" src="https://actions.google.com/sounds/v1/ui/click.ogg"></audio>
+<audio id="twinkleS" preload="auto" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+
+<script>
+  // Inline JSON data (from your file)
+  const DATA = {
+  "name": "Quentin Sterling: Global Business & Brand Strategy Leader",
+  "children": [
+    {
+      "name": "Professional Experience",
+      "children": [
+        {
+          "name": "SterlingQ Consulting & Management LLC (2021–Present)",
+          "children": [
+            {
+              "name": "Principal Consultant/Founder"
+            },
+            {
+              "name": "Advised on Global Market Entry & Strategy"
+            },
+            {
+              "name": "Built GTM Plans, Investor Decks, Cost Modeling"
+            },
+            {
+              "name": "Managed SEO, Logos, Design, Economic Identity"
+            },
+            {
+              "name": "Implemented Agile/Scrum Practices (Post-MBA)"
+            },
+            {
+              "name": "Managed Cross-border Amazon Training"
+            }
+          ]
+        },
+        {
+          "name": "Bata Tech (2020–2021)",
+          "children": [
+            {
+              "name": "Brand Manager / Lead Creative"
+            },
+            {
+              "name": "Published The Wallet Deal, Notorious (Author/2020)"
+            },
+            {
+              "name": "Directed Global UA Creative Strategy"
+            },
+            {
+              "name": "Managed $300K+ ad buys with Google/Spotify"
+            },
+            {
+              "name": "Achieved 1M downloads (months), 1M Social Following"
+            },
+            {
+              "name": "Led Strategic TikTok Partnership ($15M views)"
+            },
+            {
+              "name": "Managed Influencer Outreach & Player Research"
+            }
+          ]
+        },
+        {
+          "name": "Pathea Games (2016–2020)",
+          "children": [
+            {
+              "name": "Senior Brand Manager"
+            },
+            {
+              "name": "Managed Publishing, Sales & Marketing (7 Titles)"
+            },
+            {
+              "name": "Grew My Time at Portia from 650K → 2M+ Steam Units (10M+ all platforms)"
+            },
+            {
+              "name": "Led Kickstarter Campaign: Raised $534K in 26 days"
+            },
+            {
+              "name": "Achieved Single Day Sales Record (120K units+ Steam)"
+            },
+            {
+              "name": "Managed Localization, PR, Community"
+            }
+          ]
+        },
+        {
+          "name": "Jiang Xunke Brand Management Co. (2011–2014)",
+          "children": [
+            {
+              "name": "U.S. Market Manager / Global Account Manager"
+            },
+            {
+              "name": "Led U.S. Market Entry Strategy (China Toy Brand)"
+            },
+            {
+              "name": "Generated $15M in U.S. sales, 100M+ Global Sales"
+            },
+            {
+              "name": "Trained Distributors & Countries (ex. Korea, India, EU, Japan, USA)"
+            },
+            {
+              "name": "Developed International Contracts and Arbitration"
+            },
+            {
+              "name": "Boosting Regional profit in some over 11 countries"
+            }
+          ]
+        },
+        {
+          "name": "Entrepreneurial / Early Roles",
+          "children": [
+            {
+              "name": "Blue Chip Cash (Start-up) Founder/Consultant Manager (2014–2017)"
+            },
+            {
+              "name": "The American Red Cross Intern (2009–2010)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Education & Certifications",
+      "children": [
+        {
+          "name": "Degrees",
+          "children": [
+            {
+              "name": "Master of International Business (Chongqing University, 2016)"
+            },
+            {
+              "name": "B.A. Communications (Pennsylvania State University, 2010)"
+            },
+            {
+              "name": "B.A. Psychology (Drexel State University, 2010)"
+            },
+            {
+              "name": "B.S. Graphic Information Technology (ASU, In Progress)"
+            }
+          ]
+        },
+        {
+          "name": "Certifications",
+          "children": [
+            {
+              "name": "Atlassian Agile PM Professional"
+            },
+            {
+              "name": "Google UX Design"
+            },
+            {
+              "name": "Google SEO"
+            },
+            {
+              "name": "Game Design (Cal Arts)"
+            },
+            {
+              "name": "Graphic Design (Cal Arts)"
+            },
+            {
+              "name": "TEFL Certification"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Core Skills & Expertise",
+      "children": [
+        {
+          "name": "Business & Strategy",
+          "children": [
+            {
+              "name": "International Business & Trade (U.S./China Import/Export)"
+            },
+            {
+              "name": "Market Entry & Strategy Advisor (Cross-cultural)"
+            },
+            {
+              "name": "Business Development & Sales Planning"
+            },
+            {
+              "name": "Strategic Planning & Analysis (SWOT)"
+            },
+            {
+              "name": "Contract Negotiation"
+            }
+          ]
+        },
+        {
+          "name": "Branding & Marketing",
+          "children": [
+            {
+              "name": "Brand Management & Development"
+            },
+            {
+              "name": "Digital Marketing & Advertising"
+            },
+            {
+              "name": "Content Creation & Copywriting"
+            },
+            {
+              "name": "User Acquisition (UA/ASO)"
+            },
+            {
+              "name": "Social Media (International & Chinese platforms)"
+            }
+          ]
+        },
+        {
+          "name": "Leadership & Project Management",
+          "children": [
+            {
+              "name": "Project Management (Agile/Scrum/ITC, CP)"
+            },
+            {
+              "name": "Team Building & Leadership"
+            },
+            {
+              "name": "Organizational Management & Training Systems"
+            },
+            {
+              "name": "Event Planning & Execution"
+            }
+          ]
+        },
+        {
+          "name": "Technical & Language",
+          "children": [
+            {
+              "name": "Software: Microsoft Office, Photoshop, Premiere, Pro, Adobe XD"
+            },
+            {
+              "name": "Development: C++, Python, React Native/Unreal (Basic)"
+            },
+            {
+              "name": "Languages: English (Native), Mandarin (Proficient/Basic)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Achievements & Recognition",
+      "children": [
+        {
+          "name": "Awards: Asia’s 101 Top Employee (2019)"
+        },
+        {
+          "name": "Awards: EMF Man of the Year (Southwest China, 2018)"
+        },
+        {
+          "name": "Awards: Fashion Contest Song by Juice Record"
+        },
+        {
+          "name": "Community: U.S., China Work (ChongQin, Consulate 2014–Present)"
+        },
+        {
+          "name": "Community Work: American Red Cross, Boys & Girls Club, Special Olympics"
+        }
+      ]
+    }
+  ]
+};
+
+  // Build tree DOM
+  function makeNode(obj) {
+    const nodeEl = document.createElement('div');
+    nodeEl.className = 'node';
+
+    const caret = document.createElement('div');
+    caret.className = 'caret';
+    caret.textContent = obj.children && obj.children.length ? '▸' : '•';
+    nodeEl.appendChild(caret);
+
+    const label = document.createElement('span');
+    label.className = 'label';
+    label.textContent = obj.name;
+    nodeEl.appendChild(label);
+
+    let childrenWrap = null;
+    if (obj.children && obj.children.length) {
+      childrenWrap = document.createElement('div');
+      childrenWrap.className = 'children hidden';
+      obj.children.forEach(c => childrenWrap.appendChild(makeNode(c)));
+      nodeEl.appendChild(childrenWrap);
+    }
+
+    function play(id) {
+      if (document.getElementById('mute').checked) return;
+      const el = document.getElementById(id);
+      try { el.currentTime = 0; el.play(); } catch (e) { /* ignore */ }
+    }
+
+    function sparkle(x, y) {
+      for (let i=0; i<6; i++) {
+        const s = document.createElement('div');
+        s.className = 'spark';
+        const angle = Math.random()*2*Math.PI;
+        const dist = 8 + Math.random()*14;
+        const dx = Math.cos(angle)*dist;
+        const dy = Math.sin(angle)*dist;
+        s.style.left = x+'px';
+        s.style.top  = y+'px';
+        s.style.setProperty('--x', dx+'px');
+        s.style.setProperty('--y', dy+'px');
+        document.body.appendChild(s);
+        setTimeout(()=>s.remove(), 650);
+      }
+    }
+
+    function toggle(expand) {
+      if (!childrenWrap) return;
+      const isHidden = childrenWrap.classList.contains('hidden');
+      const willExpand = expand !== undefined ? expand : isHidden;
+      if (willExpand) {
+        childrenWrap.classList.remove('hidden');
+        nodeEl.classList.add('expanded');
+        caret.textContent = '▾';
+      } else {
+        childrenWrap.classList.add('hidden');
+        nodeEl.classList.remove('expanded');
+        caret.textContent = '▸';
+      }
+    }
+
+    // clicking caret or label toggles
+    const onClick = (e) => {
+      e.stopPropagation();
+      label.classList.add('golden');
+      setTimeout(()=>label.classList.remove('golden'), 500);
+      const rect = label.getBoundingClientRect();
+      sparkle(rect.left + rect.width/2, rect.top + rect.height/2 + window.scrollY);
+      play('clickS');
+      play('twinkleS');
+      toggle();
+    };
+    label.addEventListener('click', onClick);
+    caret.addEventListener('click', onClick);
+
+    // keyboard a11y
+    label.tabIndex = 0;
+    label.addEventListener('keydown', (e)=>{
+      if (e.key === 'Enter' || e.key === ' ') { onClick(e); }
+    });
+
+    return nodeEl;
+  }
+
+  function render(rootObj) {
+    const treeEl = document.getElementById('tree');
+    treeEl.innerHTML = '';
+    const root = makeNode(rootObj);
+    // open top-level by default
+    root.querySelector('.children')?.classList.remove('hidden');
+    root.classList.add('expanded');
+    root.querySelector('.caret').textContent = '▾';
+    treeEl.appendChild(root);
+  }
+
+  render(DATA);
+
+  // Expand / Collapse controls
+  document.getElementById('expandAll').onclick = () => {
+    document.querySelectorAll('.children').forEach(c => c.classList.remove('hidden'));
+    document.querySelectorAll('.node').forEach(n => n.classList.add('expanded'));
+    document.querySelectorAll('.caret').forEach(c => c.textContent = '▾');
+  };
+  document.getElementById('collapseAll').onclick = () => {
+    document.querySelectorAll('.children').forEach((c, i) => { if (i!==0) c.classList.add('hidden'); });
+    document.querySelectorAll('.node').forEach((n, i) => { if (i!==0) n.classList.remove('expanded'); });
+    document.querySelectorAll('.caret').forEach((c, i) => { c.textContent = i===0 ? '▾' : '▸'; });
+  };
+</script>
+</body>
+</html>
