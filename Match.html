@@ -9,69 +9,104 @@
     --gold:#d4af37;
     --ink:#111;
     --muted:#6b7280;
-    --line:#e5e7eb;
-    --pill:#fafafa;
-    --hover:#0f172a;
   }
-  *{box-sizing:border-box}
+  *{box-sizing:border-box;margin:0;padding:0}
   html,body{margin:0}
   body{background:#fff;color:var(--ink);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
   .wrap{max-width:1024px;margin:24px auto;padding:0 18px}
 
   /* TABS */
-  .tabs{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:6px 0 18px}
+  .tabs{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:6px 0 32px}
   .tab{
-    appearance:none;cursor:pointer;border:1px solid var(--line);background:var(--pill);color:var(--ink);
-    padding:10px 14px;border-radius:999px;font-weight:700;transition:all .18s ease;
+    appearance:none;cursor:pointer;border:2px solid #e5e7eb;background:#fff;color:var(--ink);
+    padding:10px 18px;border-radius:999px;font-weight:700;transition:all .4s ease;
   }
-  .tab:hover{border-color:var(--gold);box-shadow:0 0 0 2px rgba(212,175,55,.15)}
-  .tab:hover,.tab:focus-visible{outline:none;color:#000;background:linear-gradient(#fff,#fff) padding-box, linear-gradient(90deg,var(--gold),#f6d979) border-box;border-color:transparent}
-  .tab[aria-selected="true"]{
-    background:var(--gold);color:#000;border-color:var(--gold);transform:scale(1.06)
+  .tab:hover{border-color:var(--gold);color:#000;transform:scale(1.03)}
+  .tab.clicked{
+    background:var(--gold);color:#000;border-color:var(--gold);animation:tabClick .6s ease;
+  }
+  @keyframes tabClick{
+    0%{transform:scale(1);background:var(--gold)}
+    50%{transform:scale(1.08);background:var(--gold)}
+    100%{transform:scale(1);background:#fff;border-color:var(--gold)}
   }
 
-  /* SECTION HEADERS + PANELS */
-  .section{border-top:1px solid var(--line)}
+  /* SECTION HEADERS */
+  .section{margin:28px 0}
   .h{
     display:flex;align-items:center;gap:10px;width:100%;text-align:left;
-    padding:14px 0;border:none;background:transparent;font-weight:800;font-size:18px;cursor:pointer;
+    padding:16px 0;border:none;background:transparent;font-weight:800;font-size:22px;cursor:pointer;
+    transition:all .5s ease;
   }
-  .h .caret{width:14px;height:14px;display:inline-grid;place-items:center;color:#64748b}
-  .h:hover .caret{color:#0f172a}
-  .panel{display:none;padding:0 0 18px 0}
-  .panel.show{display:block;animation:fade .18s ease}
-  @keyframes fade{from{opacity:0;transform:translateY(-2px)} to{opacity:1;transform:none}}
-  .meta{color:var(--muted);font-style:italic}
+  .h:hover{transform:translateX(10px);color:var(--gold)}
+  .h .caret{width:18px;height:18px;display:inline-grid;place-items:center;color:#94a3b8;transition:all .4s ease}
+  .h:hover .caret{color:var(--gold);transform:rotate(90deg)}
+  .h.centering{
+    animation:slideCenter 1.8s ease forwards;
+  }
+  @keyframes slideCenter{
+    0%{transform:translateX(0);color:var(--ink)}
+    50%{transform:translateX(calc(50vw - 50%));color:var(--gold);text-shadow:0 0 25px rgba(212,175,55,.8)}
+    100%{transform:translateX(calc(50vw - 50%));color:var(--gold);text-shadow:0 0 25px rgba(212,175,55,.8)}
+  }
 
-  /* SUB-ACCORDIONS (companies, schools, skill categories) */
+  .panel{display:none;padding:0 0 18px 0}
+  .panel.show{display:block;animation:fadeIn .6s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:none}}
+  .meta{color:var(--muted);font-style:italic;font-size:14px}
+
+  /* JOB/SCHOOL CARDS - minimal boxes */
   .sub{
-    border:1px solid var(--line);border-radius:10px;margin:10px 0;overflow:hidden;background:#fff;
+    margin:20px 0;padding:18px;background:#fafafa;border-radius:8px;
+    transition:all .4s ease;
   }
+  .sub:hover{background:#f0f0f0;transform:translateX(6px)}
   .sub .sub-h{
-    width:100%;text-align:left;background:#fff;border:0;padding:12px 14px;cursor:pointer;
-    display:flex;align-items:center;gap:10px;font-weight:700;
+    width:100%;text-align:left;background:transparent;border:0;padding:0;cursor:pointer;
+    display:flex;align-items:flex-start;gap:10px;font-weight:700;font-size:17px;
   }
-  .sub .sub-h .caret{width:14px;height:14px;color:#64748b}
-  .sub .sub-h:hover{background:#f8fafc}
-  .sub .sub-p{display:none;border-top:1px solid var(--line);padding:10px 14px}
-  .sub .sub-p.show{display:block;animation:fade .2s ease}
+  .sub .sub-h .caret{width:14px;height:14px;color:#94a3b8;transition:all .4s ease;margin-top:4px}
+  .sub .sub-h:hover .caret{color:var(--gold);transform:rotate(90deg)}
+  .job-header{display:flex;justify-content:space-between;flex:1;gap:20px}
+  .job-title{display:flex;flex-direction:column;gap:4px}
+  .company-name{font-size:18px;color:var(--ink)}
+  .position-name{font-size:16px;font-weight:600;color:var(--muted)}
+  .job-meta{display:flex;flex-direction:column;gap:4px;text-align:right;align-items:flex-end}
+  .sub .sub-p{display:none;margin-top:12px}
+  .sub .sub-p.show{display:block}
 
   /* Staggered list reveal */
-  .list{margin:0 0 6px 18px;padding:0;list-style:disc}
-  .list li{opacity:0;transform:translateY(4px)}
-  .list li.reveal{animation:in .28s ease forwards}
-  @keyframes in{to{opacity:1;transform:none}}
+  .list{margin:10px 0 6px 20px;padding:0;list-style:disc}
+  .list li{opacity:0;transform:translateY(8px);margin:8px 0;transition:all .5s ease}
+  .list li.reveal{animation:revealItem .6s ease forwards}
+  .list li.hide{animation:hideItem .4s ease forwards}
+  @keyframes revealItem{to{opacity:1;transform:none}}
+  @keyframes hideItem{from{opacity:1;transform:none} to{opacity:0;transform:translateY(-8px)}}
 
   /* Metric highlight on hover */
-  .metric{font-weight:800;border-bottom:2px solid rgba(212,175,55,.35)}
-  .list li:hover .metric{color:#000; text-shadow:0 0 6px rgba(212,175,55,.55),0 0 12px rgba(212,175,55,.35)}
+  .metric{font-weight:800;color:var(--ink);transition:all .3s ease}
+  .list li:hover .metric{color:var(--gold);text-shadow:0 0 8px rgba(212,175,55,.6)}
 
-  /* Two-column skills */
-  .cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-  .pill{display:inline-block;margin:6px 6px 0 0;padding:6px 10px;border-radius:999px;background:#f3f4f6;border:1px solid var(--line)}
+  /* Two-column skills - FLAT LAYOUT */
+  .skills-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px 40px;margin:20px 0}
+  .skill-item{
+    padding:10px 0;font-weight:500;color:var(--ink);
+    transition:all .4s ease;opacity:0;transform:translateY(8px);
+  }
+  .skill-item.reveal{animation:revealItem .6s ease forwards}
+  .skill-item.hide{animation:hideItem .4s ease forwards}
+  .skill-item:hover{color:var(--gold);transform:translateX(8px) translateY(0)}
 
-  /* Anchor offset for embedding under your site banner */
-  :target{scroll-margin-top:90px}
+  /* Lists in certs/honors */
+  #p-certs .list, #p-honors .list{list-style:none;margin-left:0}
+  #p-certs .list li, #p-honors .list li{
+    padding:8px 0;transition:all .4s ease;
+  }
+  #p-certs .list li:hover, #p-honors .list li:hover{color:var(--gold);transform:translateX(8px)}
+
+  /* Two-column layouts */
+  #p-certs .list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 30px}
+  #p-honors .list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 30px}
 </style>
 </head>
 <body>
@@ -79,18 +114,18 @@
 
   <!-- centered tabs -->
   <nav class="tabs" aria-label="Sections">
-    <button class="tab" data-target="summary" aria-controls="summary" aria-selected="true">Professional Summary</button>
-    <button class="tab" data-target="experience" aria-controls="experience" aria-selected="false">Experience</button>
-    <button class="tab" data-target="education" aria-controls="education" aria-selected="false">Education</button>
-    <button class="tab" data-target="skills" aria-controls="skills" aria-selected="false">Skills</button>
-    <button class="tab" data-target="certs" aria-controls="certs" aria-selected="false">Professional Certificates</button>
-    <button class="tab" data-target="honors" aria-controls="honors" aria-selected="false">Honors & Achievements</button>
+    <button class="tab" data-target="summary">Professional Summary</button>
+    <button class="tab" data-target="experience">Experience</button>
+    <button class="tab" data-target="education">Education</button>
+    <button class="tab" data-target="skills">Skills</button>
+    <button class="tab" data-target="certs">Professional Certificates</button>
+    <button class="tab" data-target="honors">Honors & Achievements</button>
   </nav>
 
-  <!-- SUMMARY: paragraph only -->
+  <!-- SUMMARY -->
   <section id="summary" class="section">
-    <button class="h" aria-expanded="true" aria-controls="p-summary"><span class="caret">▾</span> Professional Summary</button>
-    <div id="p-summary" class="panel show">
+    <button class="h" aria-expanded="false"><span class="caret">▸</span> Professional Summary</button>
+    <div id="p-summary" class="panel">
       <p>
         Proven leader in launching and scaling global brands and games across the U.S. and Asia. Experienced in go-to-market,
         publishing, and user acquisition with a strong focus on results, cross-cultural execution, and Agile delivery.
@@ -98,13 +133,25 @@
     </div>
   </section>
 
-  <!-- EXPERIENCE: companies as sub-accordions with staggered bullets -->
+  <!-- EXPERIENCE -->
   <section id="experience" class="section">
-    <button class="h" aria-expanded="false" aria-controls="p-experience"><span class="caret">▸</span> Experience</button>
+    <button class="h" aria-expanded="false"><span class="caret">▸</span> Experience</button>
     <div id="p-experience" class="panel">
 
       <div class="sub">
-        <button class="sub-h" aria-expanded="false"><span class="caret">▸</span> Sterling Q Consulting — Principal Consultant <span class="meta">Los Angeles, CA / Chongqing, China | 2018–Present</span></button>
+        <button class="sub-h" aria-expanded="false">
+          <span class="caret">▸</span>
+          <div class="job-header">
+            <div class="job-title">
+              <span class="company-name">Sterling Q Consulting</span>
+              <span class="position-name">Principal Consultant</span>
+            </div>
+            <div class="job-meta">
+              <span class="meta">Los Angeles, CA / Chongqing, China</span>
+              <span class="meta">2018–Present</span>
+            </div>
+          </div>
+        </button>
         <div class="sub-p">
           <ul class="list">
             <li>Implemented systems across operations, marketing, and product development that optimized delivery.</li>
@@ -117,7 +164,19 @@
       </div>
 
       <div class="sub">
-        <button class="sub-h" aria-expanded="false"><span class="caret">▸</span> Elex Tech — Brand Manager (Lead Brand Creative) <span class="meta">Beijing, China | 2020–2022</span></button>
+        <button class="sub-h" aria-expanded="false">
+          <span class="caret">▸</span>
+          <div class="job-header">
+            <div class="job-title">
+              <span class="company-name">Elex Tech</span>
+              <span class="position-name">Brand Manager (Lead Brand Creative)</span>
+            </div>
+            <div class="job-meta">
+              <span class="meta">Beijing, China</span>
+              <span class="meta">2020–2022</span>
+            </div>
+          </div>
+        </button>
         <div class="sub-p">
           <ul class="list">
             <li>Published <em>The Walking Dead: Survivors</em> mobile game; reached <span class="metric">1,000,000 downloads</span> in the first six months.</li>
@@ -131,7 +190,19 @@
       </div>
 
       <div class="sub">
-        <button class="sub-h" aria-expanded="false"><span class="caret">▸</span> Pathea Games — Senior Brand Manager <span class="meta">Chongqing, China | 2019–2020</span></button>
+        <button class="sub-h" aria-expanded="false">
+          <span class="caret">▸</span>
+          <div class="job-header">
+            <div class="job-title">
+              <span class="company-name">Pathea Games</span>
+              <span class="position-name">Senior Brand Manager</span>
+            </div>
+            <div class="job-meta">
+              <span class="meta">Chongqing, China</span>
+              <span class="meta">2019–2020</span>
+            </div>
+          </div>
+        </button>
         <div class="sub-p">
           <ul class="list">
             <li>Improved <em>My Time at Portia</em> by <span class="metric">200%</span>, from <span class="metric">650K to 2,000,000+</span> Steam units, and <span class="metric">10,000,000+</span> on all platforms.</li>
@@ -145,7 +216,19 @@
       </div>
 
       <div class="sub">
-        <button class="sub-h" aria-expanded="false"><span class="caret">▸</span> Jiang Xiao Bai Brand Management Company — Global Brand Manager <span class="meta">Chongqing, China | 2017–2019</span></button>
+        <button class="sub-h" aria-expanded="false">
+          <span class="caret">▸</span>
+          <div class="job-header">
+            <div class="job-title">
+              <span class="company-name">Jiang Xiao Bai Brand Management Company</span>
+              <span class="position-name">Global Brand Manager</span>
+            </div>
+            <div class="job-meta">
+              <span class="meta">Chongqing, China</span>
+              <span class="meta">2017–2019</span>
+            </div>
+          </div>
+        </button>
         <div class="sub-p">
           <ul class="list">
             <li>Drove growth from no global sales to over <span class="metric">30M CNY</span> in revenue and collaborated with international partners.</li>
@@ -158,88 +241,66 @@
     </div>
   </section>
 
-  <!-- EDUCATION: schools as sub-accordions -->
+  <!-- EDUCATION -->
   <section id="education" class="section">
-    <button class="h" aria-expanded="false" aria-controls="p-education"><span class="caret">▸</span> Education</button>
+    <button class="h" aria-expanded="false"><span class="caret">▸</span> Education</button>
     <div id="p-education" class="panel">
 
       <div class="sub">
         <button class="sub-h" aria-expanded="false"><span class="caret">▸</span> Arizona State University</button>
         <div class="sub-p">
-          <p class="revealTarget"><strong>B.S., Graphic Info Tech (Full-Stack Development)</strong> — 2024–Present <span class="meta">Tempe, AZ (Online)</span></p>
+          <p><strong>B.S., Graphic Info Tech (Full-Stack Development)</strong> — 2024–Present <span class="meta">Tempe, AZ (Online)</span></p>
         </div>
       </div>
 
       <div class="sub">
         <button class="sub-h" aria-expanded="false"><span class="caret">▸</span> Chongqing University</button>
         <div class="sub-p">
-          <p class="revealTarget"><strong>M.A., Master of International Business</strong> — 2018 <span class="meta">Chongqing, China</span></p>
+          <p><strong>M.A., Master of International Business</strong> — 2018 <span class="meta">Chongqing, China</span></p>
         </div>
       </div>
 
       <div class="sub">
         <button class="sub-h" aria-expanded="false"><span class="caret">▸</span> Fairmont State University</button>
         <div class="sub-p">
-          <p class="revealTarget"><strong>B.A., Communications | B.S., Psychology</strong> — 2010 <span class="meta">Fairmont, WV</span></p>
+          <p><strong>B.A., Communications | B.S., Psychology</strong> — 2010 <span class="meta">Fairmont, WV</span></p>
         </div>
       </div>
 
     </div>
   </section>
 
-  <!-- SKILLS (split) -->
+  <!-- SKILLS -->
   <section id="skills" class="section">
-    <button class="h" aria-expanded="false" aria-controls="p-skills"><span class="caret">▸</span> Skills</button>
+    <button class="h" aria-expanded="false"><span class="caret">▸</span> Skills</button>
     <div id="p-skills" class="panel">
-      <div class="sub">
-        <button class="sub-h" aria-expanded="false"><span class="caret">▸</span> Technical Skills</button>
-        <div class="sub-p">
-          <div class="cols">
-            <div>
-              <span class="pill">AI Prompt Engineering (ChatGPT, Claude, Gemini)</span>
-              <span class="pill">Project Management (Agile - Git, Jira)</span>
-              <span class="pill">Adobe (PS, XD, PR, AI, ID, Figma)</span>
-              <span class="pill">C#, Python, HTML (Basic)</span>
-              <span class="pill">Microsoft Excel</span>
-            </div>
-            <div>
-              <span class="pill">Unity (basic)</span>
-              <span class="pill">Unreal Engine (basic)</span>
-              <span class="pill">Visual Studio Code</span>
-              <span class="pill">Process Documentation & Reporting</span>
-            </div>
-          </div>
-        </div>
+      <div class="skills-grid">
+        <div class="skill-item">AI Prompt Engineering (ChatGPT, Claude, Gemini)</div>
+        <div class="skill-item">Project & Team Leadership</div>
+        <div class="skill-item">Project Management (Agile - Git, Jira)</div>
+        <div class="skill-item">Strategic Planning</div>
+        <div class="skill-item">Adobe (PS, XD, PR, AI, ID, Figma)</div>
+        <div class="skill-item">Stakeholder Reporting</div>
+        <div class="skill-item">C#, Python, HTML (Basic)</div>
+        <div class="skill-item">Process Optimization</div>
+        <div class="skill-item">Microsoft Excel</div>
+        <div class="skill-item">Cross-Functional Teamwork</div>
+        <div class="skill-item">Unity (basic)</div>
+        <div class="skill-item">Data-Driven Decision-Making</div>
+        <div class="skill-item">Unreal Engine (basic)</div>
+        <div class="skill-item">Change Management</div>
+        <div class="skill-item">Visual Studio Code</div>
+        <div class="skill-item">Analytical Reasoning</div>
+        <div class="skill-item">Process Documentation & Reporting</div>
+        <div class="skill-item">Creative Development</div>
+        <div class="skill-item">Mandarin Chinese (Basic Proficiency)</div>
       </div>
-
-      <div class="sub">
-        <button class="sub-h" aria-expanded="false"><span class="caret">▸</span> Skills</button>
-        <div class="sub-p">
-          <div class="cols">
-            <div>
-              <span class="pill">Project & Team Leadership</span>
-              <span class="pill">Strategic Planning</span>
-              <span class="pill">Stakeholder Reporting</span>
-              <span class="pill">Process Optimization</span>
-              <span class="pill">Cross-Functional Teamwork</span>
-            </div>
-            <div>
-              <span class="pill">Data-Driven Decision-Making</span>
-              <span class="pill">Change Management</span>
-              <span class="pill">Analytical Reasoning</span>
-              <span class="pill">Creative Development</span>
-              <span class="pill">Mandarin Chinese (Basic Proficiency)</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
     </div>
   </section>
 
   <!-- CERTIFICATIONS -->
   <section id="certs" class="section">
-    <button class="h" aria-expanded="false" aria-controls="p-certs"><span class="caret">▸</span> Professional Certificates</button>
+    <button class="h" aria-expanded="false"><span class="caret">▸</span> Professional Certificates</button>
     <div id="p-certs" class="panel">
       <ul class="list">
         <li>UX Design – Google</li>
@@ -258,7 +319,7 @@
 
   <!-- HONORS -->
   <section id="honors" class="section">
-    <button class="h" aria-expanded="false" aria-controls="p-honors"><span class="caret">▸</span> Honors & Achievements</button>
+    <button class="h" aria-expanded="false"><span class="caret">▸</span> Honors & Achievements</button>
     <div id="p-honors" class="panel">
       <ul class="list">
         <li>ASU Deans List 2024</li>
@@ -285,63 +346,144 @@
 </div>
 
 <script>
-  // main tab logic
-  const tabs=[...document.querySelectorAll('.tab')];
-  const sections=[...document.querySelectorAll('.section')];
-  function openSection(id, focusHeader=false){
-    sections.forEach(sec=>{
-      const btn=sec.querySelector('.h');
-      const caret=btn.querySelector('.caret');
-      const panel=sec.querySelector('.panel');
-      const on=sec.id===id;
-      panel.classList.toggle('show',on);
-      btn.setAttribute('aria-expanded',on?'true':'false');
-      caret.textContent=on?'▾':'▸';
-      if(on&&focusHeader) btn.focus({preventScroll:true});
-    });
-    tabs.forEach(t=>t.setAttribute('aria-selected',t.dataset.target===id?'true':'false'));
-    if(location.hash!=='#'+id) history.replaceState(null,'','#'+id);
-    const header=document.querySelector('#'+id+' .h');
-    if(header) header.scrollIntoView({behavior:'smooth',block:'start'});
-  }
-  tabs.forEach(t=>t.addEventListener('click',()=>openSection(t.dataset.target)));
+  const tabs = [...document.querySelectorAll('.tab')];
+  const sections = [...document.querySelectorAll('.section')];
 
-  // sub-accordion logic + staggered reveal for lists
-  function wireSubAccordions(scope){
-    scope.querySelectorAll('.sub').forEach(box=>{
-      const h=box.querySelector('.sub-h');
-      const caret=h.querySelector('.caret');
-      const p=box.querySelector('.sub-p');
-      const list=p.querySelectorAll('.list li');
-      let wired=false;
-      h.addEventListener('click',()=>{
-        const on=h.getAttribute('aria-expanded')==='true';
-        h.setAttribute('aria-expanded', on?'false':'true');
-        p.classList.toggle('show', !on);
-        caret.textContent= on?'▸':'▾';
-        if(!on && !wired){
-          list.forEach((li,i)=> setTimeout(()=> li.classList.add('reveal'), 90*i));
-          // glow on hover already handled in CSS via .metric
-          wired=true;
+  // Tab click handler
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const targetId = tab.dataset.target;
+      const section = document.getElementById(targetId);
+      const header = section.querySelector('.h');
+      const panel = section.querySelector('.panel');
+      const caret = header.querySelector('.caret');
+
+      // Add clicked animation to tab
+      tab.classList.add('clicked');
+      setTimeout(() => tab.classList.remove('clicked'), 600);
+
+      // Toggle section
+      const isOpen = panel.classList.contains('show');
+
+      if (!isOpen) {
+        panel.classList.add('show');
+        header.setAttribute('aria-expanded', 'true');
+        caret.textContent = '▾';
+
+        // Add centering animation to header
+        header.classList.add('centering');
+        setTimeout(() => header.classList.remove('centering'), 1800);
+
+        // Scroll to section
+        setTimeout(() => {
+          header.scrollIntoView({behavior: 'smooth', block: 'start'});
+        }, 100);
+
+        // Wire up sub-accordions and animate items
+        wireSubAccordions(section);
+        animateItems(section, true);
+      }
+    });
+  });
+
+  // Section header click handler
+  sections.forEach(section => {
+    const header = section.querySelector('.h');
+    const panel = section.querySelector('.panel');
+    const caret = header.querySelector('.caret');
+
+    header.addEventListener('click', () => {
+      const isOpen = panel.classList.contains('show');
+
+      if (isOpen) {
+        // Closing - animate out first
+        animateItems(section, false);
+        setTimeout(() => {
+          panel.classList.remove('show');
+          header.setAttribute('aria-expanded', 'false');
+          caret.textContent = '▸';
+        }, 500);
+      } else {
+        // Opening
+        panel.classList.add('show');
+        header.setAttribute('aria-expanded', 'true');
+        caret.textContent = '▾';
+
+        // Add centering animation
+        header.classList.add('centering');
+        setTimeout(() => header.classList.remove('centering'), 1800);
+
+        // Wire up sub-accordions and animate
+        wireSubAccordions(section);
+        animateItems(section, true);
+      }
+    });
+  });
+
+  // Animate items in a section
+  function animateItems(section, reveal) {
+    const sectionId = section.id;
+
+    if (sectionId === 'skills') {
+      const items = section.querySelectorAll('.skill-item');
+      items.forEach((item, i) => {
+        item.classList.remove('reveal', 'hide');
+        setTimeout(() => {
+          item.classList.add(reveal ? 'reveal' : 'hide');
+        }, i * 80);
+      });
+    } else if (sectionId === 'certs' || sectionId === 'honors') {
+      const items = section.querySelectorAll('.list li');
+      items.forEach((item, i) => {
+        item.classList.remove('reveal', 'hide');
+        setTimeout(() => {
+          item.classList.add(reveal ? 'reveal' : 'hide');
+        }, i * 80);
+      });
+    }
+  }
+
+  // Sub-accordion logic
+  function wireSubAccordions(scope) {
+    scope.querySelectorAll('.sub').forEach(box => {
+      const h = box.querySelector('.sub-h');
+      if (!h) return;
+      if (h.dataset.wired) return; // Already wired
+
+      const caret = h.querySelector('.caret');
+      const p = box.querySelector('.sub-p');
+      const list = p.querySelectorAll('.list li, p');
+
+      h.dataset.wired = 'true';
+
+      h.addEventListener('click', () => {
+        const on = h.getAttribute('aria-expanded') === 'true';
+
+        if (on) {
+          // Closing - animate out
+          list.forEach((item, i) => {
+            item.classList.remove('reveal');
+            item.classList.add('hide');
+          });
+          setTimeout(() => {
+            h.setAttribute('aria-expanded', 'false');
+            p.classList.remove('show');
+            caret.textContent = '▸';
+          }, 500);
+        } else {
+          // Opening
+          h.setAttribute('aria-expanded', 'true');
+          p.classList.add('show');
+          caret.textContent = '▾';
+
+          list.forEach((item, i) => {
+            item.classList.remove('hide');
+            setTimeout(() => item.classList.add('reveal'), i * 100);
+          });
         }
       });
     });
   }
-  // initial wiring for all sections
-  sections.forEach(sec=>{
-    wireSubAccordions(sec);
-  });
-
-  // education degree lines glow on hover
-  document.querySelectorAll('#education .sub-p .revealTarget').forEach(p=>{
-    p.style.transition="text-shadow .15s ease";
-    p.addEventListener('mouseenter',()=> p.style.textShadow="0 0 6px rgba(212,175,55,.55),0 0 12px rgba(212,175,55,.35)");
-    p.addEventListener('mouseleave',()=> p.style.textShadow="none");
-  });
-
-  // start: open summary only; others hidden until clicked (handled by default state)
-  const initial=(location.hash||'#summary').slice(1);
-  openSection(initial, true);
 </script>
 </body>
 </html>
