@@ -9,14 +9,241 @@
     --gold:#d4af37;
     --ink:#111;
     --muted:#6b7280;
+    --green:#10b981;
+    --green-dark:#059669;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{margin:0}
-  body{background:#fff;color:var(--ink);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-  .wrap{max-width:1024px;margin:24px auto;padding:0 18px}
+  body{background:#fff;color:var(--ink);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;position:relative}
+  .wrap{max-width:1024px;margin:24px auto;padding:0 18px;margin-top:140px}
+
+  /* PROGRESS BAR - HORIZONTAL TOP */
+  .progress-top{
+    position:fixed;top:0;left:0;right:0;height:60px;background:#fff;
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);z-index:1000;display:flex;align-items:center;
+    padding:0 20px;gap:15px;
+  }
+  .progress-top-label{font-weight:700;font-size:14px;white-space:nowrap}
+  .progress-top-bar{flex:1;height:28px;background:#e5e7eb;border-radius:999px;overflow:hidden;position:relative}
+  .progress-top-fill{height:100%;background:linear-gradient(90deg, var(--green-dark), var(--green));
+    transition:width .5s ease, background .8s ease;position:relative}
+  .progress-top-fill.complete{background:linear-gradient(90deg, var(--gold), #f6d979);
+    animation:goldPulse 2s ease infinite}
+  @keyframes goldPulse{0%,100%{opacity:1} 50%{opacity:.85}}
+  .progress-top-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    font-weight:700;font-size:13px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.3);z-index:2}
+  .progress-top-xp{font-weight:700;font-size:14px;color:var(--gold);white-space:nowrap}
+
+  /* XP BAR - VERTICAL LEFT */
+  .progress-left{
+    position:fixed;left:10px;top:80px;width:50px;height:400px;background:#fff;
+    border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);z-index:999;
+    padding:10px 8px;display:flex;flex-direction:column;align-items:center;
+  }
+  .progress-left-icon{font-size:24px;margin-bottom:8px}
+  .progress-left-bar{flex:1;width:30px;background:#e5e7eb;border-radius:999px;
+    position:relative;display:flex;flex-direction:column-reverse;overflow:hidden}
+  .progress-left-fill{width:100%;background:linear-gradient(180deg, var(--gold), #f6d979);
+    transition:height .5s ease;animation:goldPulse 2s ease infinite}
+  .progress-left-percent{margin-top:8px;font-weight:700;font-size:11px;color:var(--gold)}
+
+  /* ACHIEVEMENT TRACKER SIDEBAR */
+  .achievement-panel{
+    position:fixed;right:10px;top:80px;width:280px;max-height:500px;background:#fff;
+    border-radius:8px;box-shadow:0 2px 15px rgba(0,0,0,0.15);z-index:999;
+    overflow:hidden;transition:transform .3s ease;
+  }
+  .achievement-panel.collapsed{transform:translateX(calc(100% - 40px))}
+  .achievement-header{
+    padding:12px 15px;background:linear-gradient(135deg, var(--gold), #f6d979);
+    color:#000;font-weight:800;font-size:14px;display:flex;justify-content:space-between;
+    align-items:center;cursor:pointer;user-select:none}
+  .achievement-toggle{font-size:18px;transition:transform .3s ease}
+  .achievement-panel.collapsed .achievement-toggle{transform:rotate(180deg)}
+  .achievement-body{padding:15px;max-height:440px;overflow-y:auto}
+  .achievement-counter{font-weight:700;margin-bottom:12px;color:var(--gold);font-size:15px}
+  .achievement-item{
+    display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0;
+    transition:all .3s ease}
+  .achievement-item:last-child{border-bottom:none}
+  .achievement-item.unlocked{opacity:1}
+  .achievement-item.locked{opacity:.5}
+  .achievement-icon{font-size:18px;line-height:1}
+  .achievement-info{flex:1}
+  .achievement-name{font-weight:600;font-size:13px}
+  .achievement-hint{font-size:11px;color:var(--muted);font-style:italic;margin-top:2px}
+  .achievement-xp{font-size:11px;color:var(--gold);font-weight:700}
+  .achievement-item.locked .achievement-icon{animation:pulse 2s ease infinite}
+  @keyframes pulse{0%,100%{opacity:.5} 50%{opacity:1}}
+
+  /* FLOATING XP NOTIFICATIONS */
+  .xp-float{
+    position:fixed;font-weight:800;font-size:20px;color:var(--gold);
+    pointer-events:none;z-index:9999;text-shadow:0 2px 4px rgba(0,0,0,.3);
+    animation:floatUp 1.5s ease forwards}
+  @keyframes floatUp{
+    0%{opacity:1;transform:translateY(0) scale(1)}
+    100%{opacity:0;transform:translateY(-100px) scale(1.3)}}
+
+  /* SPARKLE EFFECT */
+  .sparkle{
+    position:absolute;width:4px;height:4px;background:var(--gold);border-radius:50%;
+    pointer-events:none;animation:sparkleAnim .8s ease forwards}
+  @keyframes sparkleAnim{
+    0%{opacity:1;transform:translate(0,0) scale(1)}
+    100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0)}}
+
+  /* START SCREEN */
+  .start-screen{
+    position:fixed;inset:0;background:linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+    z-index:10001;display:flex;align-items:center;justify-content:center;
+    animation:fadeIn .5s ease}
+  .start-screen.hidden{display:none}
+  .start-content{text-align:center;padding:40px}
+  .start-title{
+    font-size:48px;font-weight:800;color:var(--gold);
+    margin-bottom:20px;text-shadow:0 0 30px rgba(212,175,55,.8);
+    letter-spacing:2px;animation:goldPulse 2s ease infinite}
+  .start-subtitle{
+    font-size:20px;color:#888;margin-bottom:40px;font-weight:300;letter-spacing:1px}
+  .play-button{
+    padding:20px 60px;font-size:24px;font-weight:800;background:var(--gold);
+    color:#000;border:3px solid var(--gold);border-radius:12px;cursor:pointer;
+    transition:all .3s ease;text-transform:uppercase;letter-spacing:2px;
+    box-shadow:0 8px 20px rgba(212,175,55,.4)}
+  .play-button:hover{
+    background:#000;color:var(--gold);transform:scale(1.05);
+    box-shadow:0 12px 30px rgba(212,175,55,.6)}
+
+  /* COMPLETION MODAL */
+  .completion-modal{
+    position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:10000;
+    display:none;align-items:center;justify-content:center;padding:20px;
+    animation:fadeIn .5s ease}
+  .completion-modal.show{display:flex}
+  .completion-content{
+    background:#fff;border-radius:12px;max-width:600px;width:100%;max-height:90vh;
+    overflow-y:auto;padding:40px;position:relative;
+    border:4px solid var(--gold);box-shadow:0 0 40px rgba(212,175,55,.5),
+    inset 0 0 0 8px #fff, inset 0 0 0 12px var(--gold);
+    animation:scaleIn .5s ease}
+  @keyframes scaleIn{from{opacity:0;transform:scale(.8)} to{opacity:1;transform:scale(1)}}
+  .completion-title{
+    font-size:28px;font-weight:800;text-align:center;color:var(--gold);
+    margin-bottom:25px;text-shadow:2px 2px 4px rgba(212,175,55,.3);
+    letter-spacing:1px}
+  .completion-stats{
+    background:#f9fafb;padding:20px;border-radius:8px;margin-bottom:25px;
+    border:2px solid #e5e7eb}
+  .stat-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e5e7eb}
+  .stat-row:last-child{border-bottom:none}
+  .stat-label{font-weight:600;display:flex;align-items:center;gap:8px}
+  .stat-value{font-weight:800;color:var(--gold)}
+  .completion-message{
+    text-align:center;font-size:15px;line-height:1.6;margin-bottom:25px;
+    padding:15px;background:#fef3c7;border-radius:8px;border:1px solid #fbbf24}
+  .completion-divider{
+    height:2px;background:linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin:25px 0}
+  .completion-section-title{
+    font-size:20px;font-weight:800;margin-bottom:15px;color:var(--ink);
+    display:flex;align-items:center;gap:10px}
+  .completion-cta{
+    display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:25px}
+  .cta-btn{
+    padding:12px 24px;border-radius:8px;font-weight:700;text-decoration:none;
+    transition:all .3s ease;border:2px solid;font-size:14px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:8px}
+  .cta-btn-primary{background:var(--gold);color:#000;border-color:var(--gold)}
+  .cta-btn-primary:hover{background:#000;color:var(--gold);transform:translateY(-2px);
+    box-shadow:0 4px 12px rgba(212,175,55,.4)}
+  .cta-btn-secondary{background:#fff;color:var(--ink);border-color:#e5e7eb}
+  .cta-btn-secondary:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-2px)}
+  .next-levels{
+    background:#f9fafb;padding:20px;border-radius:8px;border:2px solid #e5e7eb}
+  .level-item{
+    display:flex;align-items:center;gap:12px;padding:10px;margin-bottom:8px;
+    background:#fff;border-radius:6px;border:1px solid #e5e7eb}
+  .level-item:last-child{margin-bottom:0}
+  .level-number{
+    width:40px;height:40px;border-radius:50%;background:var(--gold);
+    color:#000;font-weight:800;display:flex;align-items:center;justify-content:center;
+    font-size:16px}
+  .level-item.locked .level-number{background:#d1d5db;color:#6b7280}
+  .level-info{flex:1}
+  .level-name{font-weight:700;font-size:14px}
+  .level-desc{font-size:12px;color:var(--muted)}
+  /* SETTINGS BUTTON & PANEL */
+  .settings-button{
+    position:fixed;bottom:20px;right:20px;width:50px;height:50px;border-radius:50%;
+    background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;
+    justify-content:center;font-size:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);
+    z-index:998;transition:all .3s ease}
+  .settings-button:hover{transform:scale(1.1) rotate(90deg);box-shadow:0 6px 20px rgba(212,175,55,.4)}
+  .settings-panel{
+    position:fixed;bottom:80px;right:20px;background:#fff;border-radius:12px;
+    padding:20px;box-shadow:0 8px 30px rgba(0,0,0,.2);z-index:999;min-width:200px;
+    display:none}
+  .settings-panel.show{display:block;animation:fadeIn .3s ease}
+  .setting-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;
+    border-bottom:1px solid #e5e7eb}
+  .setting-item:last-child{border-bottom:none}
+  .setting-label{font-weight:600;font-size:14px}
+  .toggle-switch{
+    width:50px;height:26px;background:#ccc;border-radius:13px;position:relative;
+    cursor:pointer;transition:background .3s ease}
+  .toggle-switch.on{background:var(--gold)}
+  .toggle-slider{
+    width:22px;height:22px;background:#fff;border-radius:50%;position:absolute;
+    top:2px;left:2px;transition:left .3s ease;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+  .toggle-switch.on .toggle-slider{left:26px}
+
+  /* LEADERBOARD BUTTON */
+  .leaderboard-button{
+    position:fixed;bottom:20px;right:80px;width:50px;height:50px;border-radius:50%;
+    background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;
+    justify-content:center;font-size:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);
+    z-index:998;transition:all .3s ease}
+  .leaderboard-button:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(212,175,55,.4)}
+
+  /* LEADERBOARD MODAL */
+  .leaderboard-modal{
+    position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:10000;
+    display:none;align-items:center;justify-content:center;padding:20px}
+  .leaderboard-modal.show{display:flex;animation:fadeIn .3s ease}
+  .leaderboard-content{
+    background:#fff;border-radius:12px;max-width:500px;width:100%;max-height:80vh;
+    overflow-y:auto;padding:30px;border:3px solid var(--gold)}
+  .leaderboard-title{
+    font-size:24px;font-weight:800;text-align:center;color:var(--gold);
+    margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:10px}
+  .leaderboard-list{list-style:none;margin:0;padding:0}
+  .leaderboard-item{
+    display:flex;justify-content:space-between;padding:12px;margin-bottom:8px;
+    background:#f9fafb;border-radius:8px;border:2px solid #e5e7eb}
+  .leaderboard-item.current{border-color:var(--gold);background:#fef3c7}
+  .leaderboard-rank{font-weight:800;font-size:18px;color:var(--gold);width:40px}
+  .leaderboard-name{flex:1;font-weight:600}
+  .leaderboard-score{font-weight:800;color:var(--gold)}
+
+  body.dark-mode{background:#1a1a1a;color:#e5e7eb}
+  body.dark-mode .wrap{color:#e5e7eb}
+  body.dark-mode .section .h{color:#e5e7eb}
+  body.dark-mode .tab{background:#2a2a2a;color:#e5e7eb;border-color:#3a3a3a}
+  body.dark-mode .sub{background:#2a2a2a}
+  body.dark-mode .sub:hover{background:#333}
+  body.dark-mode .progress-top{background:#2a2a2a}
+  body.dark-mode .progress-left{background:#2a2a2a}
+  body.dark-mode .achievement-panel{background:#2a2a2a}
+  body.dark-mode .settings-panel{background:#2a2a2a;color:#e5e7eb}
+  body.dark-mode .leaderboard-content{background:#2a2a2a;color:#e5e7eb}
+  body.dark-mode .leaderboard-item{background:#333;border-color:#444}
+  body.dark-mode .completion-content{background:#2a2a2a;color:#e5e7eb}
 
   /* TABS */
-  .tabs{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:6px 0 32px}
+  .tabs{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:6px 0 32px;
+    position:fixed;top:60px;left:0;right:0;background:#fff;padding:12px 20px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);z-index:999}
   .tab{
     appearance:none;cursor:pointer;border:2px solid #e5e7eb;background:#fff;color:var(--ink);
     padding:10px 18px;border-radius:999px;font-weight:700;transition:all .4s ease;
@@ -55,7 +282,7 @@
   @keyframes fadeIn{from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:none}}
   .meta{color:var(--muted);font-style:italic;font-size:14px}
 
-  /* JOB/SCHOOL CARDS - minimal boxes */
+  /* JOB/SCHOOL CARDS */
   .sub{
     margin:20px 0;padding:18px;background:#fafafa;border-radius:8px;
     transition:all .4s ease;
@@ -87,7 +314,7 @@
   .metric{font-weight:800;color:var(--ink);transition:all .3s ease}
   .list li:hover .metric{color:var(--gold);text-shadow:0 0 8px rgba(212,175,55,.6)}
 
-  /* Two-column skills - FLAT LAYOUT */
+  /* Skills grid */
   .skills-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px 40px;margin:20px 0}
   .skill-item{
     padding:10px 0;font-weight:500;color:var(--ink);
@@ -110,6 +337,174 @@
 </style>
 </head>
 <body>
+
+<!-- START SCREEN -->
+<div class="start-screen" id="startScreen">
+  <div class="start-content">
+    <div class="start-title">QUENTIN STERLING</div>
+    <div class="start-subtitle">Interactive Resume Experience</div>
+    <button class="play-button" onclick="startGame()">PLAY NOW</button>
+  </div>
+</div>
+
+<!-- HORIZONTAL PROGRESS BAR -->
+<div class="progress-top">
+  <div class="progress-top-label">⚡ PROGRESS:</div>
+  <div class="progress-top-bar">
+    <div class="progress-top-fill" id="progressTopFill" style="width:0%">
+      <div class="progress-top-text"><span id="progressTopPercent">0%</span></div>
+    </div>
+  </div>
+  <div class="progress-top-xp" id="progressTopXP">0 / 500 XP</div>
+</div>
+
+<!-- VERTICAL PROGRESS BAR -->
+<div class="progress-left">
+  <div class="progress-left-icon">⚡</div>
+  <div class="progress-left-bar">
+    <div class="progress-left-fill" id="progressLeftFill" style="height:0%"></div>
+  </div>
+  <div class="progress-left-percent" id="progressLeftPercent">0%</div>
+</div>
+
+<!-- ACHIEVEMENT TRACKER -->
+<div class="achievement-panel" id="achievementPanel">
+  <div class="achievement-header" onclick="toggleAchievementPanel()">
+    <span>🏆 ACHIEVEMENTS</span>
+    <span class="achievement-toggle">◀</span>
+  </div>
+  <div class="achievement-body">
+    <div class="achievement-counter" id="achievementCounter">0 / 70 Unlocked</div>
+    <div id="achievementList"></div>
+  </div>
+</div>
+
+<!-- SETTINGS BUTTON -->
+<button class="settings-button" id="settingsButton" onclick="toggleSettings()">⚙️</button>
+
+<!-- SETTINGS PANEL -->
+<div class="settings-panel" id="settingsPanel">
+  <div class="setting-item">
+    <span class="setting-label">Sound</span>
+    <div class="toggle-switch" id="soundToggle" onclick="toggleSound()">
+      <div class="toggle-slider"></div>
+    </div>
+  </div>
+  <div class="setting-item">
+    <span class="setting-label">Dark Mode</span>
+    <div class="toggle-switch" id="darkModeToggle" onclick="toggleDarkMode()">
+      <div class="toggle-slider"></div>
+    </div>
+  </div>
+</div>
+
+<!-- LEADERBOARD BUTTON -->
+<button class="leaderboard-button" id="leaderboardButton" onclick="toggleLeaderboard()">🏆</button>
+
+<!-- LEADERBOARD MODAL -->
+<div class="leaderboard-modal" id="leaderboardModal">
+  <div class="leaderboard-content">
+    <div class="leaderboard-title">🏆 TOP SCORES 🏆</div>
+    <ul class="leaderboard-list" id="leaderboardList"></ul>
+    <div style="text-align:center;margin-top:20px">
+      <button class="cta-btn cta-btn-secondary" onclick="toggleLeaderboard()">← Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- COMPLETION MODAL -->
+<div class="completion-modal" id="completionModal">
+  <div class="completion-content">
+    <div class="completion-title">🏆 LEVEL 1 COMPLETE: RESUME MASTERY 🏆</div>
+
+    <div class="completion-stats">
+      <div class="stat-row">
+        <span class="stat-label">⚡ Experience Points</span>
+        <span class="stat-value" id="finalXP">0 / 500 XP</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">🎯 Achievements Unlocked</span>
+        <span class="stat-value" id="finalAchievements">0 / 70</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">⏱️ Exploration Time</span>
+        <span class="stat-value" id="finalTime">0m 0s</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">🏅 Rank</span>
+        <span class="stat-value" id="finalRank">NOVICE</span>
+      </div>
+    </div>
+
+    <div class="completion-message">
+      You've discovered <span id="completionPercent">0%</span> of my professional journey.
+      Some secrets may remain hidden...
+    </div>
+
+    <div class="completion-divider"></div>
+
+    <div class="completion-section-title">🎮 READY FOR LEVEL 2?</div>
+    <p style="text-align:center;margin-bottom:20px;line-height:1.6">
+      Let's discuss how I can bring this level of dedication and strategic results to your organization.
+    </p>
+
+    <div class="completion-cta">
+      <a href="mailto:your.email@example.com" class="cta-btn cta-btn-primary">📧 Email Me</a>
+      <a href="https://linkedin.com/in/yourprofile" target="_blank" class="cta-btn cta-btn-primary">💼 LinkedIn</a>
+      <a href="#" class="cta-btn cta-btn-primary">📞 Schedule Call</a>
+    </div>
+
+    <div class="completion-cta">
+      <a href="#" class="cta-btn cta-btn-secondary">📄 Download Resume PDF</a>
+    </div>
+
+    <div class="completion-divider"></div>
+
+    <div class="completion-section-title">NEXT LEVELS:</div>
+    <div class="next-levels">
+      <div class="level-item locked">
+        <div class="level-number">2</div>
+        <div class="level-info">
+          <div class="level-name">First Contact 🔒</div>
+          <div class="level-desc">Reach out for interview or conversation</div>
+        </div>
+      </div>
+      <div class="level-item locked">
+        <div class="level-number">3</div>
+        <div class="level-info">
+          <div class="level-name">Meet Quentin Sterling 🔒</div>
+          <div class="level-desc">Have an interview or discussion</div>
+        </div>
+      </div>
+      <div class="level-item locked">
+        <div class="level-number">4</div>
+        <div class="level-info">
+          <div class="level-name">Collaboration Begins 🔒</div>
+          <div class="level-desc">Start working together</div>
+        </div>
+      </div>
+      <div class="level-item locked">
+        <div class="level-number">5</div>
+        <div class="level-info">
+          <div class="level-name">Boss Fight - Project Success 🔒</div>
+          <div class="level-desc">Complete a successful project together</div>
+        </div>
+      </div>
+      <div class="level-item locked">
+        <div class="level-number">★</div>
+        <div class="level-info">
+          <div class="level-name">Final Achievement 🔒</div>
+          <div class="level-desc">Submit testimonial</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:25px">
+      <button class="cta-btn cta-btn-secondary" onclick="closeCompletionModal()">← Back to Resume</button>
+    </div>
+  </div>
+</div>
+
 <div class="wrap">
 
   <!-- centered tabs -->
@@ -346,144 +741,537 @@
 </div>
 
 <script>
-  const tabs = [...document.querySelectorAll('.tab')];
-  const sections = [...document.querySelectorAll('.section')];
+// === GAMIFICATION SYSTEM ===
+const GAME = {
+  xp: 0,
+  maxXP: 500,
+  achievements: [],
+  startTime: Date.now(),
+  soundEnabled: false,
+  konamiSequence: [],
+  nameClickCount: 0,
 
-  // Tab click handler
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const targetId = tab.dataset.target;
-      const section = document.getElementById(targetId);
-      const header = section.querySelector('.h');
-      const panel = section.querySelector('.panel');
-      const caret = header.querySelector('.caret');
+  // Achievement definitions
+  achievementDefs: [
+    // Main sections
+    {id: 'section_summary', name: 'Read Professional Summary', xp: 10, icon: '📄', hint: 'Open the summary section'},
+    {id: 'section_experience', name: 'Explored Experience', xp: 10, icon: '💼', hint: 'Open the experience section'},
+    {id: 'section_education', name: 'Checked Education', xp: 10, icon: '🎓', hint: 'Open the education section'},
+    {id: 'section_skills', name: 'Reviewed Skills', xp: 10, icon: '⚡', hint: 'Open the skills section'},
+    {id: 'section_certs', name: 'Viewed Certificates', xp: 10, icon: '📜', hint: 'Open the certificates section'},
+    {id: 'section_honors', name: 'Discovered Honors', xp: 10, icon: '🏅', hint: 'Open the honors section'},
 
-      // Add clicked animation to tab
-      tab.classList.add('clicked');
-      setTimeout(() => tab.classList.remove('clicked'), 600);
+    // Jobs
+    {id: 'job_sterling', name: 'Sterling Q Deep Dive', xp: 5, icon: '🔍', hint: 'Expand Sterling Q Consulting'},
+    {id: 'job_elex', name: 'Elex Tech Explorer', xp: 5, icon: '🔍', hint: 'Expand Elex Tech'},
+    {id: 'job_pathea', name: 'Pathea Games Investigator', xp: 5, icon: '🔍', hint: 'Expand Pathea Games'},
+    {id: 'job_jiangxiaobai', name: 'Jiang Xiao Bai Researcher', xp: 5, icon: '🔍', hint: 'Expand Jiang Xiao Bai'},
 
-      // Toggle section
-      const isOpen = panel.classList.contains('show');
+    // Education
+    {id: 'edu_asu', name: 'ASU Scholar', xp: 5, icon: '🎓', hint: 'Expand Arizona State University'},
+    {id: 'edu_chongqing', name: 'Chongqing Graduate', xp: 5, icon: '🎓', hint: 'Expand Chongqing University'},
+    {id: 'edu_fairmont', name: 'Fairmont Alumni', xp: 5, icon: '🎓', hint: 'Expand Fairmont State University'},
 
-      if (!isOpen) {
-        panel.classList.add('show');
-        header.setAttribute('aria-expanded', 'true');
-        caret.textContent = '▾';
+    // Completion bonuses
+    {id: 'bonus_all_jobs', name: 'Career Completionist', xp: 15, icon: '🌟', hint: 'View all 4 work experiences'},
+    {id: 'bonus_all_edu', name: 'Academic Achiever', xp: 15, icon: '🌟', hint: 'View all 3 educational institutions'},
+    {id: 'bonus_all_skills', name: 'Skill Collector', xp: 15, icon: '🌟', hint: 'Hover over all 19 skills'},
+    {id: 'bonus_all_certs', name: 'Certification Hunter', xp: 15, icon: '🌟', hint: 'View all 10 certificates'},
+    {id: 'bonus_all_honors', name: 'Honor Roll', xp: 15, icon: '🌟', hint: 'View all 17 honors'},
 
-        // Add centering animation to header
-        header.classList.add('centering');
-        setTimeout(() => header.classList.remove('centering'), 1800);
+    // Individual items (created dynamically)
+    // Skills: 19 items x 1 XP = 19 XP
+    // Certs: 10 items x 1 XP = 10 XP
+    // Honors: 17 items x 1 XP = 17 XP
+    // Metrics: ~15 items x 2 XP = 30 XP
 
-        // Scroll to section
-        setTimeout(() => {
-          header.scrollIntoView({behavior: 'smooth', block: 'start'});
-        }, 100);
+    // Easter eggs
+    {id: 'secret_konami', name: 'Konami Master', xp: 25, icon: '🎮', hint: 'Try the classic sequence...'},
+    {id: 'secret_metrics', name: 'Detail Obsessed', xp: 20, icon: '🔬', hint: 'Numbers tell stories - hover over them all'},
+    {id: 'secret_name', name: 'Name Recognition', xp: 15, icon: '👤', hint: 'My name is important - click it 5 times'},
+    {id: 'secret_patient', name: 'Patient Explorer', xp: 20, icon: '⏱️', hint: 'Good things take time (5+ minutes)'},
+    {id: 'secret_completionist', name: 'True Completionist', xp: 30, icon: '💯', hint: 'Leave no stone unturned - open everything'},
+  ],
 
-        // Wire up sub-accordions and animate items
-        wireSubAccordions(section);
-        animateItems(section, true);
+  init() {
+    this.loadProgress();
+    this.setupEventListeners();
+    this.renderAchievements();
+    this.updateUI();
+    this.startTimers();
+  },
+
+  loadProgress() {
+    const saved = localStorage.getItem('resumeGameProgress');
+    if (saved) {
+      const data = JSON.parse(saved);
+      this.xp = data.xp || 0;
+      this.achievements = data.achievements || [];
+      // Show welcome back message
+      if (data.visitCount) {
+        this.showXPFloat('Welcome back! Previous score: ' + data.xp + ' XP', window.innerWidth / 2, 100);
       }
-    });
-  });
+      localStorage.setItem('resumeGameProgress', JSON.stringify({
+        ...data,
+        visitCount: (data.visitCount || 0) + 1
+      }));
+    }
+  },
 
-  // Section header click handler
-  sections.forEach(section => {
+  saveProgress() {
+    const data = JSON.parse(localStorage.getItem('resumeGameProgress') || '{}');
+    data.xp = this.xp;
+    data.achievements = this.achievements;
+    data.highScore = Math.max(data.highScore || 0, this.xp);
+    localStorage.setItem('resumeGameProgress', JSON.stringify(data));
+  },
+
+  addXP(amount, achievementId) {
+    if (achievementId && this.achievements.includes(achievementId)) {
+      return; // Already unlocked
+    }
+
+    if (achievementId) {
+      this.achievements.push(achievementId);
+    }
+
+    this.xp += amount;
+    if (this.xp > this.maxXP) this.xp = this.maxXP;
+
+    this.updateUI();
+    this.saveProgress();
+    this.playSound('xp');
+
+    // Check for 100% completion
+    if (this.xp >= this.maxXP && !this.achievements.includes('completed_resume')) {
+      this.achievements.push('completed_resume');
+      setTimeout(() => this.showCompletionModal(), 1000);
+    }
+  },
+
+  updateUI() {
+    const percent = Math.round((this.xp / this.maxXP) * 100);
+    const isComplete = percent >= 100;
+
+    // Update both progress bars
+    document.getElementById('progressTopFill').style.width = percent + '%';
+    document.getElementById('progressTopPercent').textContent = percent + '%';
+    document.getElementById('progressTopXP').textContent = this.xp + ' / ' + this.maxXP + ' XP';
+    document.getElementById('progressTopFill').classList.toggle('complete', isComplete);
+
+    document.getElementById('progressLeftFill').style.height = percent + '%';
+    document.getElementById('progressLeftPercent').textContent = percent + '%';
+    document.getElementById('progressLeftFill').classList.toggle('complete', isComplete);
+
+    // Update achievement counter
+    const totalAchievements = this.achievementDefs.length + 19 + 10 + 17; // + skills + certs + honors
+    document.getElementById('achievementCounter').textContent =
+      this.achievements.length + ' / ' + totalAchievements + ' Unlocked';
+
+    // Re-render achievements to show unlocked status in real-time
+    this.renderAchievements();
+
+    // Sparkle effects at milestones
+    if ([25, 50, 75, 100].includes(percent) && !this.achievements.includes('milestone_' + percent)) {
+      this.achievements.push('milestone_' + percent);
+      this.createSparkles(document.getElementById('progressTopFill'));
+      this.playSound('milestone');
+    }
+  },
+
+  showXPFloat(text, x, y) {
+    const float = document.createElement('div');
+    float.className = 'xp-float';
+    float.textContent = text;
+    float.style.left = x + 'px';
+    float.style.top = y + 'px';
+    document.body.appendChild(float);
+    setTimeout(() => float.remove(), 1500);
+  },
+
+  createSparkles(element) {
+    const rect = element.getBoundingClientRect();
+    for (let i = 0; i < 12; i++) {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'sparkle';
+      const angle = (Math.PI * 2 * i) / 12;
+      const distance = 40 + Math.random() * 20;
+      sparkle.style.cssText = `
+        left: ${rect.left + rect.width / 2}px;
+        top: ${rect.top + rect.height / 2}px;
+        --tx: ${Math.cos(angle) * distance}px;
+        --ty: ${Math.sin(angle) * distance}px;
+      `;
+      document.body.appendChild(sparkle);
+      setTimeout(() => sparkle.remove(), 800);
+    }
+  },
+
+  setupEventListeners() {
+    // Track sections opened
+    const tabs = document.querySelectorAll('.tab');
+    const sections = document.querySelectorAll('.section');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const sectionId = 'section_' + tab.dataset.target;
+        if (!this.achievements.includes(sectionId)) {
+          const rect = tab.getBoundingClientRect();
+          this.showXPFloat('+10 XP', rect.left + rect.width / 2, rect.top);
+          this.addXP(10, sectionId);
+        }
+      });
+    });
+
+    sections.forEach(section => {
+      const header = section.querySelector('.h');
+      header.addEventListener('click', () => {
+        const sectionId = 'section_' + section.id;
+        if (!this.achievements.includes(sectionId)) {
+          const rect = header.getBoundingClientRect();
+          this.showXPFloat('+10 XP', rect.left + rect.width / 2, rect.top);
+          this.addXP(10, sectionId);
+        }
+      });
+    });
+
+    // Track job/edu expansions
+    const jobMapping = {
+      'Sterling Q Consulting': 'job_sterling',
+      'Elex Tech': 'job_elex',
+      'Pathea Games': 'job_pathea',
+      'Jiang Xiao Bai': 'job_jiangxiaobai',
+      'Arizona State University': 'edu_asu',
+      'Chongqing University': 'edu_chongqing',
+      'Fairmont State University': 'edu_fairmont'
+    };
+
+    document.querySelectorAll('.sub-h').forEach(subH => {
+      subH.addEventListener('click', () => {
+        const text = subH.textContent;
+        for (const [key, id] of Object.entries(jobMapping)) {
+          if (text.includes(key) && !this.achievements.includes(id)) {
+            const rect = subH.getBoundingClientRect();
+            this.showXPFloat('+5 XP', rect.left + rect.width / 2, rect.top);
+            this.addXP(5, id);
+            break;
+          }
+        }
+      });
+    });
+
+    // Track skill hovers
+    document.querySelectorAll('.skill-item').forEach((skill, idx) => {
+      skill.addEventListener('mouseenter', () => {
+        const id = 'skill_' + idx;
+        if (!this.achievements.includes(id)) {
+          const rect = skill.getBoundingClientRect();
+          this.showXPFloat('+1 XP', rect.left + rect.width / 2, rect.top);
+          this.addXP(1, id);
+        }
+      });
+    });
+
+    // Track cert/honor hovers
+    document.querySelectorAll('#p-certs .list li').forEach((cert, idx) => {
+      cert.addEventListener('mouseenter', () => {
+        const id = 'cert_' + idx;
+        if (!this.achievements.includes(id)) {
+          const rect = cert.getBoundingClientRect();
+          this.showXPFloat('+1 XP', rect.left + rect.width / 2, rect.top);
+          this.addXP(1, id);
+        }
+      });
+    });
+
+    document.querySelectorAll('#p-honors .list li').forEach((honor, idx) => {
+      honor.addEventListener('mouseenter', () => {
+        const id = 'honor_' + idx;
+        if (!this.achievements.includes(id)) {
+          const rect = honor.getBoundingClientRect();
+          this.showXPFloat('+1 XP', rect.left + rect.width / 2, rect.top);
+          this.addXP(1, id);
+        }
+      });
+    });
+
+    // Track metric hovers
+    document.querySelectorAll('.metric').forEach((metric, idx) => {
+      metric.addEventListener('mouseenter', () => {
+        const id = 'metric_' + idx;
+        if (!this.achievements.includes(id)) {
+          const rect = metric.getBoundingClientRect();
+          this.showXPFloat('+2 XP', rect.left + rect.width / 2, rect.top);
+          this.addXP(2, id);
+        }
+      });
+    });
+
+    // Easter egg: Name clicks
+    document.querySelectorAll('.company-name, .h').forEach(el => {
+      el.addEventListener('click', () => {
+        if (el.textContent.includes('Sterling')) {
+          this.nameClickCount++;
+          if (this.nameClickCount >= 5 && !this.achievements.includes('secret_name')) {
+            this.showXPFloat('SECRET UNLOCKED: Name Recognition! +15 XP', window.innerWidth / 2, 200);
+            this.addXP(15, 'secret_name');
+            this.playSound('secret');
+          }
+        }
+      });
+    });
+  },
+
+  startTimers() {
+    // Check for patient explorer achievement
+    setInterval(() => {
+      const elapsed = Date.now() - this.startTime;
+      if (elapsed > 300000 && !this.achievements.includes('secret_patient')) {
+        this.showXPFloat('SECRET UNLOCKED: Patient Explorer! +20 XP', window.innerWidth / 2, 200);
+        this.addXP(20, 'secret_patient');
+        this.playSound('secret');
+      }
+    }, 60000);
+  },
+
+  playSound(type) {
+    if (!this.soundEnabled) return;
+    // Placeholder for sound implementation
+    // In production, load actual audio files
+  },
+
+  renderAchievements() {
+    const list = document.getElementById('achievementList');
+    list.innerHTML = '';
+
+    this.achievementDefs.forEach(ach => {
+      const unlocked = this.achievements.includes(ach.id);
+      const div = document.createElement('div');
+      div.className = 'achievement-item ' + (unlocked ? 'unlocked' : 'locked');
+      div.innerHTML = `
+        <div class="achievement-icon">${unlocked ? ach.icon : '🔒'}</div>
+        <div class="achievement-info">
+          <div class="achievement-name">${ach.name}</div>
+          ${!unlocked ? `<div class="achievement-hint">${ach.hint}</div>` : ''}
+        </div>
+        <div class="achievement-xp">+${ach.xp} XP</div>
+      `;
+      list.appendChild(div);
+    });
+  },
+
+  showCompletionModal() {
+    const modal = document.getElementById('completionModal');
+    const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+    const minutes = Math.floor(elapsed / 60);
+    const seconds = elapsed % 60;
+
+    document.getElementById('finalXP').textContent = this.xp + ' / ' + this.maxXP + ' XP';
+    document.getElementById('finalAchievements').textContent = this.achievements.length + ' / 70';
+    document.getElementById('finalTime').textContent = minutes + 'm ' + seconds + 's';
+    document.getElementById('completionPercent').textContent = Math.round((this.xp / this.maxXP) * 100) + '%';
+
+    // Determine rank
+    const percent = (this.xp / this.maxXP) * 100;
+    let rank = 'NOVICE EXPLORER';
+    if (percent >= 95) rank = 'LEGENDARY COMPLETIONIST';
+    else if (percent >= 85) rank = 'EXPERT INVESTIGATOR';
+    else if (percent >= 70) rank = 'SKILLED RESEARCHER';
+    else if (percent >= 50) rank = 'DEDICATED VIEWER';
+    document.getElementById('finalRank').textContent = rank;
+
+    modal.classList.add('show');
+    this.playSound('complete');
+    this.createSparkles(modal);
+  }
+};
+
+// Global functions
+function toggleAchievementPanel() {
+  document.getElementById('achievementPanel').classList.toggle('collapsed');
+}
+
+function toggleSettings() {
+  document.getElementById('settingsPanel').classList.toggle('show');
+}
+
+function toggleSound() {
+  GAME.soundEnabled = !GAME.soundEnabled;
+  const toggle = document.getElementById('soundToggle');
+  toggle.classList.toggle('on', GAME.soundEnabled);
+}
+
+function toggleDarkMode() {
+  document.body.classList.toggle('dark-mode');
+  const toggle = document.getElementById('darkModeToggle');
+  toggle.classList.toggle('on', document.body.classList.contains('dark-mode'));
+  localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+}
+
+function toggleLeaderboard() {
+  const modal = document.getElementById('leaderboardModal');
+  if (modal.classList.contains('show')) {
+    modal.classList.remove('show');
+  } else {
+    renderLeaderboard();
+    modal.classList.add('show');
+  }
+}
+
+function renderLeaderboard() {
+  const list = document.getElementById('leaderboardList');
+  const scores = JSON.parse(localStorage.getItem('leaderboardScores') || '[]');
+  const currentScore = GAME.xp;
+
+  list.innerHTML = '';
+
+  if (scores.length === 0) {
+    list.innerHTML = '<li style="text-align:center;padding:20px;color:#888">No scores yet. Be the first!</li>';
+    return;
+  }
+
+  scores.sort((a, b) => b.score - a.score).slice(0, 10).forEach((entry, idx) => {
+    const isCurrent = entry.score === currentScore && entry.timestamp === GAME.startTime;
+    const li = document.createElement('li');
+    li.className = 'leaderboard-item' + (isCurrent ? ' current' : '');
+    li.innerHTML = `
+      <span class="leaderboard-rank">#${idx + 1}</span>
+      <span class="leaderboard-name">${entry.name || 'Anonymous'}</span>
+      <span class="leaderboard-score">${entry.score} XP</span>
+    `;
+    list.appendChild(li);
+  });
+}
+
+function closeCompletionModal() {
+  document.getElementById('completionModal').classList.remove('show');
+}
+
+// Initialize existing accordion code
+const tabs = [...document.querySelectorAll('.tab')];
+const sections = [...document.querySelectorAll('.section')];
+
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    const targetId = tab.dataset.target;
+    const section = document.getElementById(targetId);
     const header = section.querySelector('.h');
     const panel = section.querySelector('.panel');
     const caret = header.querySelector('.caret');
 
-    header.addEventListener('click', () => {
-      const isOpen = panel.classList.contains('show');
+    tab.classList.add('clicked');
+    setTimeout(() => tab.classList.remove('clicked'), 600);
 
-      if (isOpen) {
-        // Closing - animate out first
-        animateItems(section, false);
+    const isOpen = panel.classList.contains('show');
+    if (!isOpen) {
+      panel.classList.add('show');
+      header.setAttribute('aria-expanded', 'true');
+      caret.textContent = '▾';
+      header.classList.add('centering');
+      setTimeout(() => header.classList.remove('centering'), 1800);
+      setTimeout(() => {
+        header.scrollIntoView({behavior: 'smooth', block: 'start'});
+      }, 100);
+      wireSubAccordions(section);
+      animateItems(section, true);
+    }
+  });
+});
+
+sections.forEach(section => {
+  const header = section.querySelector('.h');
+  const panel = section.querySelector('.panel');
+  const caret = header.querySelector('.caret');
+
+  header.addEventListener('click', () => {
+    const isOpen = panel.classList.contains('show');
+    if (isOpen) {
+      animateItems(section, false);
+      setTimeout(() => {
+        panel.classList.remove('show');
+        header.setAttribute('aria-expanded', 'false');
+        caret.textContent = '▸';
+      }, 500);
+    } else {
+      panel.classList.add('show');
+      header.setAttribute('aria-expanded', 'true');
+      caret.textContent = '▾';
+      header.classList.add('centering');
+      setTimeout(() => header.classList.remove('centering'), 1800);
+      wireSubAccordions(section);
+      animateItems(section, true);
+    }
+  });
+});
+
+function animateItems(section, reveal) {
+  const sectionId = section.id;
+  if (sectionId === 'skills') {
+    const items = section.querySelectorAll('.skill-item');
+    items.forEach((item, i) => {
+      item.classList.remove('reveal', 'hide');
+      setTimeout(() => {
+        item.classList.add(reveal ? 'reveal' : 'hide');
+      }, i * 80);
+    });
+  } else if (sectionId === 'certs' || sectionId === 'honors') {
+    const items = section.querySelectorAll('.list li');
+    items.forEach((item, i) => {
+      item.classList.remove('reveal', 'hide');
+      setTimeout(() => {
+        item.classList.add(reveal ? 'reveal' : 'hide');
+      }, i * 80);
+    });
+  }
+}
+
+function wireSubAccordions(scope) {
+  scope.querySelectorAll('.sub').forEach(box => {
+    const h = box.querySelector('.sub-h');
+    if (!h) return;
+    if (h.dataset.wired) return;
+
+    const caret = h.querySelector('.caret');
+    const p = box.querySelector('.sub-p');
+    const list = p.querySelectorAll('.list li, p');
+
+    h.dataset.wired = 'true';
+
+    h.addEventListener('click', () => {
+      const on = h.getAttribute('aria-expanded') === 'true';
+      if (on) {
+        list.forEach((item, i) => {
+          item.classList.remove('reveal');
+          item.classList.add('hide');
+        });
         setTimeout(() => {
-          panel.classList.remove('show');
-          header.setAttribute('aria-expanded', 'false');
+          h.setAttribute('aria-expanded', 'false');
+          p.classList.remove('show');
           caret.textContent = '▸';
         }, 500);
       } else {
-        // Opening
-        panel.classList.add('show');
-        header.setAttribute('aria-expanded', 'true');
+        h.setAttribute('aria-expanded', 'true');
+        p.classList.add('show');
         caret.textContent = '▾';
-
-        // Add centering animation
-        header.classList.add('centering');
-        setTimeout(() => header.classList.remove('centering'), 1800);
-
-        // Wire up sub-accordions and animate
-        wireSubAccordions(section);
-        animateItems(section, true);
+        list.forEach((item, i) => {
+          item.classList.remove('hide');
+          setTimeout(() => item.classList.add('reveal'), i * 100);
+        });
       }
     });
   });
+}
 
-  // Animate items in a section
-  function animateItems(section, reveal) {
-    const sectionId = section.id;
+// Start game function
+function startGame() {
+  document.getElementById('startScreen').classList.add('hidden');
+  GAME.startTime = Date.now(); // Reset timer when game starts
+}
 
-    if (sectionId === 'skills') {
-      const items = section.querySelectorAll('.skill-item');
-      items.forEach((item, i) => {
-        item.classList.remove('reveal', 'hide');
-        setTimeout(() => {
-          item.classList.add(reveal ? 'reveal' : 'hide');
-        }, i * 80);
-      });
-    } else if (sectionId === 'certs' || sectionId === 'honors') {
-      const items = section.querySelectorAll('.list li');
-      items.forEach((item, i) => {
-        item.classList.remove('reveal', 'hide');
-        setTimeout(() => {
-          item.classList.add(reveal ? 'reveal' : 'hide');
-        }, i * 80);
-      });
-    }
-  }
-
-  // Sub-accordion logic
-  function wireSubAccordions(scope) {
-    scope.querySelectorAll('.sub').forEach(box => {
-      const h = box.querySelector('.sub-h');
-      if (!h) return;
-      if (h.dataset.wired) return; // Already wired
-
-      const caret = h.querySelector('.caret');
-      const p = box.querySelector('.sub-p');
-      const list = p.querySelectorAll('.list li, p');
-
-      h.dataset.wired = 'true';
-
-      h.addEventListener('click', () => {
-        const on = h.getAttribute('aria-expanded') === 'true';
-
-        if (on) {
-          // Closing - animate out
-          list.forEach((item, i) => {
-            item.classList.remove('reveal');
-            item.classList.add('hide');
-          });
-          setTimeout(() => {
-            h.setAttribute('aria-expanded', 'false');
-            p.classList.remove('show');
-            caret.textContent = '▸';
-          }, 500);
-        } else {
-          // Opening
-          h.setAttribute('aria-expanded', 'true');
-          p.classList.add('show');
-          caret.textContent = '▾';
-
-          list.forEach((item, i) => {
-            item.classList.remove('hide');
-            setTimeout(() => item.classList.add('reveal'), i * 100);
-          });
-        }
-      });
-    });
-  }
+// Initialize game system
+document.addEventListener('DOMContentLoaded', () => {
+  GAME.init();
+});
 </script>
 </body>
 </html>
