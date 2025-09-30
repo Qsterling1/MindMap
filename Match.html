@@ -11,6 +11,10 @@
     --muted:#6b7280;
     --green:#10b981;
     --green-dark:#059669;
+    --neon-pink:#ff3cac;
+    --neon-blue:#4acfff;
+    --neon-purple:#7b5bff;
+    --panel-bg:#111827;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{margin:0}
@@ -23,59 +27,74 @@
     box-shadow:0 2px 10px rgba(0,0,0,0.1);z-index:1000;display:flex;align-items:center;
     padding:0 20px;gap:15px;
   }
-  .progress-top-label{font-weight:700;font-size:14px;white-space:nowrap}
+  .progress-top-label{font-weight:700;font-size:14px;white-space:nowrap;color:#6fc3ff;letter-spacing:.4px;text-transform:uppercase}
   .progress-top-bar{flex:1;height:28px;background:#e5e7eb;border-radius:999px;overflow:hidden;position:relative}
-  .progress-top-fill{height:100%;background:linear-gradient(90deg, var(--green-dark), var(--green));
+  .progress-top-fill{height:100%;background:linear-gradient(90deg, var(--neon-purple), var(--neon-blue));
     transition:width .5s ease, background .8s ease;position:relative}
   .progress-top-fill.complete{background:linear-gradient(90deg, var(--gold), #f6d979);
     animation:goldPulse 2s ease infinite}
   @keyframes goldPulse{0%,100%{opacity:1} 50%{opacity:.85}}
+  @keyframes neonCycle{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+  @keyframes emojiShake{0%,100%{transform:translate(0,0) rotate(0deg)}20%{transform:translate(2px,-1px) rotate(-4deg)}40%{transform:translate(-2px,1px) rotate(4deg)}60%{transform:translate(2px,-1px) rotate(-3deg)}80%{transform:translate(-1px,1px) rotate(3deg)}}
   .progress-top-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
     font-weight:700;font-size:13px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.3);z-index:2}
   .progress-top-xp{font-weight:700;font-size:14px;color:var(--gold);white-space:nowrap}
 
   /* XP BAR - VERTICAL LEFT */
   .progress-left{
-    position:fixed;left:10px;top:80px;width:50px;height:400px;background:#fff;
-    border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);z-index:999;
-    padding:10px 8px;display:flex;flex-direction:column;align-items:center;
+    position:fixed;left:18px;top:100px;width:58px;height:410px;background:rgba(7,10,20,.92);
+    border-radius:20px;box-shadow:0 18px 35px rgba(0,0,0,.45);z-index:940;
+    padding:14px 10px;display:flex;flex-direction:column;align-items:center;border:1px solid rgba(74,207,255,.2)
   }
-  .progress-left-icon{font-size:24px;margin-bottom:8px}
-  .progress-left-bar{flex:1;width:30px;background:#e5e7eb;border-radius:999px;
-    position:relative;display:flex;flex-direction:column-reverse;overflow:hidden}
-  .progress-left-fill{width:100%;background:linear-gradient(180deg, var(--gold), #f6d979);
-    transition:height .5s ease;animation:goldPulse 2s ease infinite}
-  .progress-left-percent{margin-top:8px;font-weight:700;font-size:11px;color:var(--gold)}
+  .progress-left-icon{font-size:24px;margin-bottom:8px;color:var(--neon-blue)}
+  .progress-left-bar{flex:1;width:34px;background:rgba(23,31,51,.9);border-radius:999px;
+    position:relative;display:flex;flex-direction:column-reverse;overflow:hidden;border:1px solid rgba(74,207,255,.2)}
+  .progress-left-fill{width:100%;background:linear-gradient(180deg, var(--neon-blue), var(--neon-pink));
+    transition:height .5s ease;animation:neonCycle 8s ease infinite}
+  .progress-left-percent{margin-top:8px;font-weight:700;font-size:11px;color:var(--neon-blue);letter-spacing:.4px;text-transform:uppercase}
 
   /* ACHIEVEMENT TRACKER SIDEBAR */
   .achievement-panel{
-    position:fixed;right:10px;top:80px;width:280px;max-height:500px;background:#fff;
-    border-radius:8px;box-shadow:0 2px 15px rgba(0,0,0,0.15);z-index:999;
-    overflow:hidden;transition:transform .3s ease;
+    position:fixed;right:32px;top:80px;width:360px;height:calc(100vh - 120px);background:rgba(7,10,20,.92);
+    border-radius:24px;padding:18px;box-shadow:0 18px 40px rgba(0,0,0,.55);z-index:950;
+    overflow:hidden;transition:transform .3s ease;display:flex;flex-direction:column;gap:16px
   }
-  .achievement-panel.collapsed{transform:translateX(calc(100% - 40px))}
+  .achievement-panel::before{
+    content:"";position:absolute;inset:0;border-radius:24px;border:2px solid transparent;
+    background:linear-gradient(120deg,var(--neon-blue),var(--neon-purple),var(--neon-pink)) border-box;
+    background-size:260% 260%;animation:neonCycle 10s ease infinite;
+    -webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none
+  }
+  .achievement-panel > *{position:relative}
+  .achievement-panel.collapsed{transform:translateX(calc(100% - 56px))}
   .achievement-header{
-    padding:12px 15px;background:linear-gradient(135deg, var(--gold), #f6d979);
-    color:#000;font-weight:800;font-size:14px;display:flex;justify-content:space-between;
-    align-items:center;cursor:pointer;user-select:none}
-  .achievement-toggle{font-size:18px;transition:transform .3s ease}
+    padding:16px 20px;border-radius:18px;background:rgba(10,12,25,.92);
+    color:var(--neon-blue);font-weight:800;font-size:15px;display:flex;justify-content:space-between;
+    align-items:center;cursor:pointer;user-select:none;letter-spacing:.6px;box-shadow:0 10px 22px rgba(74,207,255,.32)
+  }
+  .achievement-header span:first-child{display:flex;align-items:center;gap:8px}
+  .achievement-toggle{font-size:18px;transition:transform .3s ease;color:var(--neon-pink)}
   .achievement-panel.collapsed .achievement-toggle{transform:rotate(180deg)}
-  .achievement-body{padding:15px;max-height:440px;overflow-y:auto}
-  .achievement-counter{font-weight:700;margin-bottom:12px;color:var(--gold);font-size:15px}
+  .achievement-body{flex:1;overflow-y:auto;padding:4px 6px 6px}
+  .achievement-body::-webkit-scrollbar{width:6px}
+  .achievement-body::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--neon-blue),var(--neon-pink));border-radius:999px}
+  .achievement-body{scrollbar-width:thin;scrollbar-color:var(--neon-blue) transparent}
+  .achievement-counter{font-weight:700;margin-bottom:12px;color:var(--neon-pink);font-size:15px;text-transform:uppercase;letter-spacing:.8px}
+  #achievementList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
   .achievement-item{
-    display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0;
-    transition:all .3s ease}
-  .achievement-item:last-child{border-bottom:none}
-  .achievement-item.unlocked{opacity:1}
-  .achievement-item.locked{opacity:.5}
-  .achievement-icon{font-size:18px;line-height:1}
+    display:flex;align-items:flex-start;gap:12px;padding:12px;background:rgba(18,24,38,.9);
+    border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.35);transition:transform .3s ease, box-shadow .3s ease;
+    border:1px solid rgba(74,207,255,.12)
+  }
+  .achievement-item.unlocked{background:rgba(33,42,68,.95);box-shadow:0 10px 24px rgba(123,91,255,.35);transform:translateY(-2px)}
+  .achievement-item.locked{opacity:.65}
+  .achievement-icon{font-size:20px;line-height:1}
+  .achievement-item.unlocked .achievement-icon{animation:emojiShake 1.8s ease-in-out infinite}
   .achievement-info{flex:1}
-  .achievement-name{font-weight:600;font-size:13px}
-  .achievement-hint{font-size:11px;color:var(--muted);font-style:italic;margin-top:2px}
-  .achievement-xp{font-size:11px;color:var(--gold);font-weight:700}
-  .achievement-item.locked .achievement-icon{animation:pulse 2s ease infinite}
-  @keyframes pulse{0%,100%{opacity:.5} 50%{opacity:1}}
-
+  .achievement-name{font-weight:600;font-size:13px;color:#e5e7ff}
+  .achievement-hint{font-size:11px;color:#8aa4ff;font-style:italic;margin-top:4px}
+  .achievement-xp{font-size:11px;color:var(--neon-pink);font-weight:700}
   /* FLOATING XP NOTIFICATIONS */
   .xp-float{
     position:fixed;font-weight:800;font-size:20px;color:var(--gold);
@@ -95,17 +114,52 @@
 
   /* START SCREEN */
   .start-screen{
-    position:fixed;inset:0;background:linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+    position:fixed;inset:0;background:#07080f;
     z-index:10001;display:flex;align-items:center;justify-content:center;
-    animation:fadeIn .5s ease}
+    animation:fadeIn .5s ease;overflow:hidden
+  }
+  .start-screen::before{
+    content:"";position:absolute;inset:28px;border-radius:32px;border:3px solid transparent;
+    background:linear-gradient(120deg,var(--neon-blue),var(--neon-purple),var(--neon-pink)) border-box;
+    background-size:300% 300%;animation:neonCycle 8s ease infinite;
+    -webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none
+  }
   .start-screen.hidden{display:none}
-  .start-content{text-align:center;padding:40px}
+  .start-content{
+    position:relative;text-align:center;padding:48px 56px;background:rgba(7,10,20,.9);
+    border-radius:24px;display:flex;flex-direction:column;align-items:center;gap:24px;
+    box-shadow:0 30px 60px rgba(0,0,0,.45);
+  }
   .start-title{
-    font-size:48px;font-weight:800;color:var(--gold);
-    margin-bottom:20px;text-shadow:0 0 30px rgba(212,175,55,.8);
-    letter-spacing:2px;animation:goldPulse 2s ease infinite}
+    font-size:52px;font-weight:800;color:var(--gold);
+    text-shadow:0 0 30px rgba(212,175,55,.7);
+    letter-spacing:2px;animation:goldPulse 2s ease infinite
+  }
   .start-subtitle{
-    font-size:20px;color:#888;margin-bottom:40px;font-weight:300;letter-spacing:1px}
+    font-size:20px;color:#cad2ff;font-weight:400;letter-spacing:1px
+  }
+  .play-button{margin-bottom:4px}
+  .start-actions{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
+  .start-secondary-btn{padding:12px 20px;border-radius:999px;font-weight:700;border:2px solid var(--neon-blue);
+    color:var(--neon-blue);background:transparent;cursor:pointer;transition:all .3s ease;min-width:170px;
+    text-transform:uppercase;letter-spacing:.6px}
+  .start-secondary-btn:hover{background:var(--neon-blue);color:#02121f;box-shadow:0 10px 24px rgba(74,207,255,.45);transform:translateY(-3px)}
+  .start-encouragement{margin-top:4px;font-size:15px;color:#9ce5ff;letter-spacing:.6px;text-transform:uppercase}
+
+  .completion-dock{position:fixed;right:26px;bottom:26px;background:rgba(7,10,20,.92);border-radius:18px;box-shadow:0 18px 35px rgba(0,0,0,.55);padding:20px 22px;max-width:280px;display:none;flex-direction:column;gap:14px;z-index:960;border:1px solid rgba(74,207,255,.25)}
+  .completion-dock.show{display:flex;animation:fadeIn .4s ease}
+  .completion-dock-title{font-weight:800;font-size:16px;color:var(--neon-blue);text-transform:uppercase;letter-spacing:.6px}
+  .completion-dock-actions{display:flex;flex-direction:column;gap:8px}
+  .completion-dock button,.completion-dock a{padding:10px 14px;border-radius:999px;font-weight:600;text-align:center;text-decoration:none;border:2px solid var(--neon-blue);color:var(--neon-blue);background:transparent;transition:all .3s ease;text-transform:uppercase;letter-spacing:.5px}
+  .completion-dock button:hover,.completion-dock a:hover{background:var(--neon-blue);color:#02121f;transform:translateY(-2px);box-shadow:0 10px 22px rgba(74,207,255,.35)}
+  body.dark-mode .completion-dock{background:rgba(7,10,20,.92);color:#e5e7eb}
+  body.dark-mode .completion-dock button,body.dark-mode .completion-dock a{color:var(--neon-blue);border-color:var(--neon-blue)}
+  body.dark-mode .completion-dock button:hover,body.dark-mode .completion-dock a:hover{background:var(--neon-blue);color:#02121f}
+
+  .xp-burst{position:fixed;pointer-events:none;z-index:1100;opacity:0;animation:xpBurst .9s ease forwards}
+  .xp-burst > span{display:block;font-weight:800;color:var(--neon-pink);text-shadow:0 2px 6px rgba(0,0,0,.45);font-size:18px;transform-origin:center}
+  @keyframes xpBurst{0%{opacity:0;transform:scale(.6)}40%{opacity:1;transform:scale(1.05)}100%{opacity:0;transform:scale(1.4) translateY(-40px)}}
   .play-button{
     padding:20px 60px;font-size:24px;font-weight:800;background:var(--gold);
     color:#000;border:3px solid var(--gold);border-radius:12px;cursor:pointer;
@@ -116,63 +170,44 @@
     box-shadow:0 12px 30px rgba(212,175,55,.6)}
 
   /* COMPLETION MODAL */
-  .completion-modal{
-    position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:10000;
-    display:none;align-items:center;justify-content:center;padding:20px;
-    animation:fadeIn .5s ease}
+  .completion-modal{position:fixed;inset:0;background:rgba(7,10,20,.86);z-index:15000;display:none;align-items:center;justify-content:center;padding:20px;animation:fadeIn .5s ease}
   .completion-modal.show{display:flex}
   .completion-content{
-    background:#fff;border-radius:12px;max-width:600px;width:100%;max-height:90vh;
-    overflow-y:auto;padding:40px;position:relative;
-    border:4px solid var(--gold);box-shadow:0 0 40px rgba(212,175,55,.5),
-    inset 0 0 0 8px #fff, inset 0 0 0 12px var(--gold);
-    animation:scaleIn .5s ease}
-  @keyframes scaleIn{from{opacity:0;transform:scale(.8)} to{opacity:1;transform:scale(1)}}
-  .completion-title{
-    font-size:28px;font-weight:800;text-align:center;color:var(--gold);
-    margin-bottom:25px;text-shadow:2px 2px 4px rgba(212,175,55,.3);
-    letter-spacing:1px}
-  .completion-stats{
-    background:#f9fafb;padding:20px;border-radius:8px;margin-bottom:25px;
-    border:2px solid #e5e7eb}
-  .stat-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e5e7eb}
-  .stat-row:last-child{border-bottom:none}
-  .stat-label{font-weight:600;display:flex;align-items:center;gap:8px}
-  .stat-value{font-weight:800;color:var(--gold)}
-  .completion-message{
-    text-align:center;font-size:15px;line-height:1.6;margin-bottom:25px;
-    padding:15px;background:#fef3c7;border-radius:8px;border:1px solid #fbbf24}
-  .completion-divider{
-    height:2px;background:linear-gradient(90deg, transparent, var(--gold), transparent);
-    margin:25px 0}
-  .completion-section-title{
-    font-size:20px;font-weight:800;margin-bottom:15px;color:var(--ink);
-    display:flex;align-items:center;gap:10px}
-  .completion-cta{
-    display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:25px}
-  .cta-btn{
-    padding:12px 24px;border-radius:8px;font-weight:700;text-decoration:none;
-    transition:all .3s ease;border:2px solid;font-size:14px;cursor:pointer;
-    display:inline-flex;align-items:center;gap:8px}
-  .cta-btn-primary{background:var(--gold);color:#000;border-color:var(--gold)}
-  .cta-btn-primary:hover{background:#000;color:var(--gold);transform:translateY(-2px);
-    box-shadow:0 4px 12px rgba(212,175,55,.4)}
-  .cta-btn-secondary{background:#fff;color:var(--ink);border-color:#e5e7eb}
-  .cta-btn-secondary:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-2px)}
-  .next-levels{
-    background:#f9fafb;padding:20px;border-radius:8px;border:2px solid #e5e7eb}
-  .level-item{
-    display:flex;align-items:center;gap:12px;padding:10px;margin-bottom:8px;
-    background:#fff;border-radius:6px;border:1px solid #e5e7eb}
-  .level-item:last-child{margin-bottom:0}
-  .level-number{
-    width:40px;height:40px;border-radius:50%;background:var(--gold);
-    color:#000;font-weight:800;display:flex;align-items:center;justify-content:center;
-    font-size:16px}
-  .level-item.locked .level-number{background:#d1d5db;color:#6b7280}
+    background:rgba(7,10,20,.95);border-radius:28px;max-width:680px;width:100%;max-height:90vh;overflow-y:auto;
+    padding:48px 56px;position:relative;border:3px solid transparent;box-shadow:0 30px 80px rgba(0,0,0,.6)
+  }
+  .completion-content::before{content:"";position:absolute;inset:0;border-radius:28px;border:3px solid transparent;
+    background:linear-gradient(120deg,var(--neon-blue),var(--neon-purple),var(--neon-pink)) border-box;
+    background-size:260% 260%;animation:neonCycle 10s ease infinite;
+    -webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+  .completion-content > *{position:relative}
+  .completion-title{font-size:34px;font-weight:800;text-align:center;color:#fef6ff;margin-bottom:28px;letter-spacing:1.2px;text-transform:uppercase;text-shadow:0 0 25px rgba(123,91,255,.55)}
+  .completion-stats{background:rgba(12,16,30,.9);padding:24px;border-radius:18px;margin-bottom:30px;border:1px solid rgba(74,207,255,.18);display:grid;gap:14px}
+  .stat-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0}
+  .stat-label{font-weight:600;display:flex;align-items:center;gap:8px;color:#9ca7ff;letter-spacing:.4px;text-transform:uppercase;font-size:13px}
+  .stat-value{font-weight:800;color:#fef6ff;font-size:16px}
+  .completion-message{text-align:center;font-size:15px;line-height:1.7;margin-bottom:28px;padding:18px;border-radius:16px;background:rgba(123,91,255,.12);color:#d5d8ff;border:1px solid rgba(123,91,255,.35)}
+  .completion-divider{height:2px;background:linear-gradient(90deg,transparent,var(--neon-purple),var(--neon-pink),transparent);margin:32px 0}
+  .completion-section-title{font-size:18px;font-weight:800;color:#a7b4ff;text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px}
+  .completion-primary{display:flex;flex-direction:column;gap:14px;margin-bottom:16px}
+  .completion-secondary{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:12px}
+  .completion-footer{margin-top:24px;display:flex;flex-direction:column;gap:12px}
+  .completion-footer-actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+  .cta-btn{padding:14px 20px;border-radius:999px;font-weight:700;text-decoration:none;transition:all .3s ease;border:2px solid transparent;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:10px;text-transform:uppercase;letter-spacing:.6px;justify-content:center}
+  .cta-btn-primary{background:linear-gradient(120deg,var(--neon-pink),var(--neon-purple));color:#05060f;border:none;box-shadow:0 16px 32px rgba(255,60,172,.35)}
+  .cta-btn-primary:hover{filter:brightness(1.08);transform:translateY(-3px)}
+  .cta-btn-secondary{background:transparent;color:var(--neon-blue);border:2px solid var(--neon-blue);box-shadow:0 12px 24px rgba(74,207,255,.25)}
+  .cta-btn-secondary:hover{background:var(--neon-blue);color:#02121f;transform:translateY(-3px)}
+  .cta-btn-ghost{background:transparent;color:#f5f5f5;border:2px solid rgba(255,255,255,.25)}
+  .cta-btn-ghost:hover{border-color:rgba(74,207,255,.6);color:var(--neon-blue);transform:translateY(-2px)}
+  .next-levels{background:rgba(11,15,28,.92);padding:24px;border-radius:18px;border:1px solid rgba(74,207,255,.18);display:flex;flex-direction:column;gap:12px}
+  .level-item{display:flex;align-items:center;gap:16px;padding:14px;background:rgba(18,24,38,.85);border-radius:14px;border:1px solid rgba(74,207,255,.12)}
+  .level-item.locked{opacity:.85}
+  .level-number{width:42px;height:42px;border-radius:50%;background:linear-gradient(140deg,var(--neon-blue),var(--neon-purple));color:#05060f;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:16px}
   .level-info{flex:1}
-  .level-name{font-weight:700;font-size:14px}
-  .level-desc{font-size:12px;color:var(--muted)}
+  .level-name{font-weight:700;font-size:14px;color:#e5e7ff;text-transform:uppercase;letter-spacing:.6px}
+  .level-desc{font-size:12px;color:#94a3ff}
   /* SETTINGS BUTTON & PANEL */
   .settings-button{
     position:fixed;bottom:20px;right:20px;width:50px;height:50px;border-radius:50%;
@@ -182,7 +217,7 @@
   .settings-button:hover{transform:scale(1.1) rotate(90deg);box-shadow:0 6px 20px rgba(212,175,55,.4)}
   .settings-panel{
     position:fixed;bottom:80px;right:20px;background:#fff;border-radius:12px;
-    padding:20px;box-shadow:0 8px 30px rgba(0,0,0,.2);z-index:999;min-width:200px;
+    padding:20px;box-shadow:0 8px 30px rgba(0,0,0,.2);z-index:13000;min-width:200px;
     display:none}
   .settings-panel.show{display:block;animation:fadeIn .3s ease}
   .setting-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;
@@ -208,23 +243,46 @@
 
   /* LEADERBOARD MODAL */
   .leaderboard-modal{
-    position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:10000;
+    position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:14000;
     display:none;align-items:center;justify-content:center;padding:20px}
   .leaderboard-modal.show{display:flex;animation:fadeIn .3s ease}
   .leaderboard-content{
-    background:#fff;border-radius:12px;max-width:500px;width:100%;max-height:80vh;
-    overflow-y:auto;padding:30px;border:3px solid var(--gold)}
+    position:relative;background:rgba(7,10,20,.94);border-radius:24px;max-width:520px;width:100%;max-height:80vh;
+    overflow-y:auto;padding:36px 40px;border:2px solid transparent;box-shadow:0 20px 50px rgba(0,0,0,.55)}
+  .leaderboard-content::before{content:"";position:absolute;inset:0;border-radius:24px;border:2px solid transparent;
+    background:linear-gradient(120deg,var(--neon-blue),var(--neon-purple),var(--neon-pink)) border-box;
+    background-size:250% 250%;animation:neonCycle 10s ease infinite;
+    -webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+  .leaderboard-content > *{position:relative}
   .leaderboard-title{
     font-size:24px;font-weight:800;text-align:center;color:var(--gold);
     margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:10px}
-  .leaderboard-list{list-style:none;margin:0;padding:0}
+  .leaderboard-cta{margin-bottom:16px;text-align:center;font-size:13px;color:var(--muted);font-weight:600;letter-spacing:.4px}
+  body.dark-mode .leaderboard-cta{color:#9ca3af}
+  .leaderboard-list{list-style:none;margin:0;padding:0} // TEXT NOTE: leaderboard copy & layout
   .leaderboard-item{
-    display:flex;justify-content:space-between;padding:12px;margin-bottom:8px;
-    background:#f9fafb;border-radius:8px;border:2px solid #e5e7eb}
-  .leaderboard-item.current{border-color:var(--gold);background:#fef3c7}
-  .leaderboard-rank{font-weight:800;font-size:18px;color:var(--gold);width:40px}
-  .leaderboard-name{flex:1;font-weight:600}
-  .leaderboard-score{font-weight:800;color:var(--gold)}
+    display:flex;justify-content:space-between;align-items:center;padding:14px 16px;margin-bottom:10px;
+    background:rgba(12,16,30,.9);border-radius:14px;border:1px solid rgba(74,207,255,.16);box-shadow:0 12px 24px rgba(0,0,0,.35)}
+  .leaderboard-item.current{border-color:var(--neon-pink);background:rgba(45,32,72,.9)}
+  .leaderboard-rank{font-weight:800;font-size:18px;color:var(--neon-pink);width:48px}
+  .leaderboard-name{flex:1;font-weight:600;color:#f5f7ff}
+  .leaderboard-score{font-weight:800;color:var(--neon-blue)}
+
+  .leaderboard-details{flex:1;display:flex;flex-direction:column;gap:4px}
+  .leaderboard-meta{font-size:11px;color:var(--muted)}
+  .leaderboard-entry{background:#f9fafb;padding:16px;border-radius:8px;border:1px solid #e5e7eb;margin:20px 0}
+  .leaderboard-entry-controls{display:flex;gap:10px;flex-wrap:wrap}
+  .leaderboard-entry input{flex:1;min-width:180px;padding:10px;border:2px solid #e5e7eb;border-radius:6px;font-size:14px}
+  .leaderboard-feedback{margin-top:10px;font-size:12px;color:var(--muted)}
+  .leaderboard-feedback.success{color:var(--green)}
+  .leaderboard-feedback.error{color:#b91c1c}
+  body.dark-mode .leaderboard-entry{background:#2a2a2a;border-color:#3a3a3a}
+  body.dark-mode .leaderboard-entry input{background:#1f1f1f;color:#e5e7eb;border-color:#3a3a3a}
+  body.dark-mode .leaderboard-meta{color:#9ca3af}
+  body.dark-mode .leaderboard-feedback{color:#9ca3af}
+  body.dark-mode .leaderboard-feedback.error{color:#f87171}
+  body.dark-mode .leaderboard-feedback.success{color:var(--green)}
 
   body.dark-mode{background:#1a1a1a;color:#e5e7eb}
   body.dark-mode .wrap{color:#e5e7eb}
@@ -234,11 +292,11 @@
   body.dark-mode .sub:hover{background:#333}
   body.dark-mode .progress-top{background:#2a2a2a}
   body.dark-mode .progress-left{background:#2a2a2a}
-  body.dark-mode .achievement-panel{background:#2a2a2a}
+  body.dark-mode .achievement-panel{background:rgba(7,10,20,.92)}
   body.dark-mode .settings-panel{background:#2a2a2a;color:#e5e7eb}
-  body.dark-mode .leaderboard-content{background:#2a2a2a;color:#e5e7eb}
-  body.dark-mode .leaderboard-item{background:#333;border-color:#444}
-  body.dark-mode .completion-content{background:#2a2a2a;color:#e5e7eb}
+  body.dark-mode .leaderboard-content{background:rgba(7,10,20,.94);color:#e5e7eb}
+  body.dark-mode .leaderboard-item{background:rgba(22,28,45,.9);border-color:rgba(74,207,255,.18)}
+  body.dark-mode .completion-content{background:rgba(7,10,20,.95);color:#e5e7eb}
 
   /* TABS */
   .tabs{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:6px 0 32px;
@@ -338,33 +396,40 @@
 </head>
 <body>
 
+<!-- TEXT NOTE: Start screen copy lives here for quick edits -->
 <!-- START SCREEN -->
 <div class="start-screen" id="startScreen">
   <div class="start-content">
     <div class="start-title">QUENTIN STERLING</div>
     <div class="start-subtitle">Interactive Resume Experience</div>
     <button class="play-button" onclick="startGame()">PLAY NOW</button>
+    <!-- TEXT NOTE: Secondary actions beneath PLAY NOW -->
+    <div class="start-actions">
+      <button type="button" class="start-secondary-btn" onclick="openSettingsPanel()">Settings</button>
+      <button type="button" class="start-secondary-btn" onclick="openLeaderboardModal()">Leaderboard</button>
+    </div>
+    <div class="start-encouragement"></div> <!-- TEXT NOTE: tweak motivation line here -->
   </div>
 </div>
 
 <!-- HORIZONTAL PROGRESS BAR -->
 <div class="progress-top">
-  <div class="progress-top-label">⚡ PROGRESS:</div>
+  <div class="progress-top-label">Sections Progress:</div>
   <div class="progress-top-bar">
     <div class="progress-top-fill" id="progressTopFill" style="width:0%">
       <div class="progress-top-text"><span id="progressTopPercent">0%</span></div>
     </div>
   </div>
-  <div class="progress-top-xp" id="progressTopXP">0 / 500 XP</div>
+  <div class="progress-top-xp" id="progressTopXP">Sections 0 / 6</div>
 </div>
 
 <!-- VERTICAL PROGRESS BAR -->
 <div class="progress-left">
-  <div class="progress-left-icon">⚡</div>
+  <div class="progress-left-icon">XP</div>
   <div class="progress-left-bar">
     <div class="progress-left-fill" id="progressLeftFill" style="height:0%"></div>
   </div>
-  <div class="progress-left-percent" id="progressLeftPercent">0%</div>
+  <div class="progress-left-percent" id="progressLeftPercent">0 XP</div>
 </div>
 
 <!-- ACHIEVEMENT TRACKER -->
@@ -380,7 +445,7 @@
 </div>
 
 <!-- SETTINGS BUTTON -->
-<button class="settings-button" id="settingsButton" onclick="toggleSettings()">⚙️</button>
+  <button class="settings-button" id="settingsButton" onclick="toggleSettings()">&#9881;</button>
 
 <!-- SETTINGS PANEL -->
 <div class="settings-panel" id="settingsPanel">
@@ -399,114 +464,134 @@
 </div>
 
 <!-- LEADERBOARD BUTTON -->
-<button class="leaderboard-button" id="leaderboardButton" onclick="toggleLeaderboard()">🏆</button>
+  <button class="leaderboard-button" id="leaderboardButton" onclick="toggleLeaderboard()">&#127942;</button>
 
 <!-- LEADERBOARD MODAL -->
 <div class="leaderboard-modal" id="leaderboardModal">
   <div class="leaderboard-content">
-    <div class="leaderboard-title">🏆 TOP SCORES 🏆</div>
+    <div class="leaderboard-title">Top Scores</div>
+    <p class="leaderboard-cta">Can you beat your last score?</p>
     <ul class="leaderboard-list" id="leaderboardList"></ul>
     <div style="text-align:center;margin-top:20px">
-      <button class="cta-btn cta-btn-secondary" onclick="toggleLeaderboard()">← Close</button>
+      <button class="cta-btn cta-btn-secondary" onclick="toggleLeaderboard()">Close</button>
     </div>
   </div>
 </div>
 
+<!-- TEXT NOTE: Completion modal messaging + CTAs -->
 <!-- COMPLETION MODAL -->
 <div class="completion-modal" id="completionModal">
   <div class="completion-content">
-    <div class="completion-title">🏆 LEVEL 1 COMPLETE: RESUME MASTERY 🏆</div>
+    <div class="completion-title">LEVEL 1 COMPLETE: RESUME MASTERY</div>
 
     <div class="completion-stats">
       <div class="stat-row">
-        <span class="stat-label">⚡ Experience Points</span>
-        <span class="stat-value" id="finalXP">0 / 500 XP</span>
+        <span class="stat-label">?? Experience Points</span>
+        <span class="stat-value" id="finalXP">0 XP</span>
       </div>
       <div class="stat-row">
-        <span class="stat-label">🎯 Achievements Unlocked</span>
+        <span class="stat-label">?? Achievements Unlocked</span>
         <span class="stat-value" id="finalAchievements">0 / 70</span>
       </div>
       <div class="stat-row">
-        <span class="stat-label">⏱️ Exploration Time</span>
+        <span class="stat-label">? Exploration Time</span>
         <span class="stat-value" id="finalTime">0m 0s</span>
       </div>
       <div class="stat-row">
-        <span class="stat-label">🏅 Rank</span>
+        <span class="stat-label">?? Rank</span>
         <span class="stat-value" id="finalRank">NOVICE</span>
       </div>
     </div>
 
     <div class="completion-message">
-      You've discovered <span id="completionPercent">0%</span> of my professional journey.
-      Some secrets may remain hidden...
+      You've discovered <span id="completionPercent">0%</span> of my professional journey. Some secrets may remain hidden...
+    </div>
+
+    <div class="completion-primary">
+      <a href="https://www.thesterlingsgroup.com/schedule-a-conversation" target="_blank" class="cta-btn cta-btn-primary">Schedule a Conversation</a>
+      <a href="https://www.thesterlingsgroup.com/portfolio" target="_blank" class="cta-btn cta-btn-primary">Explore the Portfolio</a>
+      <a href="https://www.linkedin.com/in/qsterling1/" target="_blank" class="cta-btn cta-btn-primary">Connect on LinkedIn</a>
+    </div>
+
+    <div class="completion-secondary">
+      <a href="QuentinSterling_2025.pdf" download class="cta-btn cta-btn-secondary">Download PDF Resume</a>
+    </div>
+
+    <!-- TEXT NOTE: Leaderboard form copy + prompts -->
+    <div class="leaderboard-entry">
+      <label for="leaderboardNameInput" style="display:block;font-weight:700;margin-bottom:10px;">Add yourself to the leaderboard</label>
+      <div class="leaderboard-entry-controls">
+        <input type="text" id="leaderboardNameInput" placeholder="Your name or initials" maxlength="40"/>
+        <button type="button" class="cta-btn cta-btn-primary" onclick="submitLeaderboardScore()">Submit Score</button>
+        <button type="button" class="cta-btn cta-btn-secondary" onclick="removeMyLeaderboardScore()">Remove My Score</button>
+      </div>
+      <div class="leaderboard-feedback" id="leaderboardFeedback"></div>
+    </div>
+
+    <div class="completion-footer">
+      <button class="cta-btn cta-btn-ghost" onclick="minimizeCompletionModal()">Back to Resume</button>
+      <div class="completion-footer-actions">
+        <button type="button" class="cta-btn cta-btn-secondary" onclick="openLeaderboardModal()">View Leaderboard</button>
+        <button type="button" class="cta-btn cta-btn-secondary" onclick="playAgain()">Play Again</button>
+      </div>
     </div>
 
     <div class="completion-divider"></div>
-
-    <div class="completion-section-title">🎮 READY FOR LEVEL 2?</div>
-    <p style="text-align:center;margin-bottom:20px;line-height:1.6">
-      Let's discuss how I can bring this level of dedication and strategic results to your organization.
-    </p>
-
-    <div class="completion-cta">
-      <a href="mailto:your.email@example.com" class="cta-btn cta-btn-primary">📧 Email Me</a>
-      <a href="https://linkedin.com/in/yourprofile" target="_blank" class="cta-btn cta-btn-primary">💼 LinkedIn</a>
-      <a href="#" class="cta-btn cta-btn-primary">📞 Schedule Call</a>
-    </div>
-
-    <div class="completion-cta">
-      <a href="#" class="cta-btn cta-btn-secondary">📄 Download Resume PDF</a>
-    </div>
-
-    <div class="completion-divider"></div>
-
-    <div class="completion-section-title">NEXT LEVELS:</div>
+    <div class="completion-section-title">Next Levels</div>
     <div class="next-levels">
       <div class="level-item locked">
         <div class="level-number">2</div>
         <div class="level-info">
-          <div class="level-name">First Contact 🔒</div>
+          <div class="level-name">First Contact</div>
           <div class="level-desc">Reach out for interview or conversation</div>
         </div>
       </div>
       <div class="level-item locked">
         <div class="level-number">3</div>
         <div class="level-info">
-          <div class="level-name">Meet Quentin Sterling 🔒</div>
+          <div class="level-name">Meet Quentin Sterling</div>
           <div class="level-desc">Have an interview or discussion</div>
         </div>
       </div>
       <div class="level-item locked">
         <div class="level-number">4</div>
         <div class="level-info">
-          <div class="level-name">Collaboration Begins 🔒</div>
+          <div class="level-name">Collaboration Begins</div>
           <div class="level-desc">Start working together</div>
         </div>
       </div>
       <div class="level-item locked">
         <div class="level-number">5</div>
         <div class="level-info">
-          <div class="level-name">Boss Fight - Project Success 🔒</div>
+          <div class="level-name">Boss Fight - Project Success</div>
           <div class="level-desc">Complete a successful project together</div>
         </div>
       </div>
       <div class="level-item locked">
-        <div class="level-number">★</div>
+        <div class="level-number">?</div>
         <div class="level-info">
-          <div class="level-name">Final Achievement 🔒</div>
-          <div class="level-desc">Submit testimonial</div>
+          <div class="level-name">Boss Fight - Legendary Testimonial</div>
+          <div class="level-desc">Celebrate the win with a glowing review</div>
         </div>
       </div>
     </div>
-
-    <div style="text-align:center;margin-top:25px">
-      <button class="cta-btn cta-btn-secondary" onclick="closeCompletionModal()">← Back to Resume</button>
-    </div>
+  </div>
+</div>
+<!-- COMPLETION DOCK (minimized contact panel for post-run access) -->
+<div class="completion-dock" id="completionDock">
+  <div class="completion-dock-title">Let's keep the momentum going.</div>
+  <div class="completion-dock-actions">
+    <a href="https://www.thesterlingsgroup.com/schedule-a-conversation" target="_blank">Schedule a Conversation</a>
+    <a href="https://www.thesterlingsgroup.com/portfolio" target="_blank">Explore the Portfolio</a>
+    <a href="QuentinSterling_2025.pdf" download>Download PDF Resume</a>
+    <button type="button" onclick="openLeaderboardModal()">View Leaderboard</button>
+    <button type="button" onclick="maximizeCompletionModal()">Expand Celebration</button>
   </div>
 </div>
 
 <div class="wrap">
 
+  <!-- TEXT NOTE: Tab labels for resume sections -->
   <!-- centered tabs -->
   <nav class="tabs" aria-label="Sections">
     <button class="tab" data-target="summary">Professional Summary</button>
@@ -746,13 +831,26 @@ const GAME = {
   xp: 0,
   maxXP: 500,
   achievements: [],
+  sectionsOpened: new Set(),
+  sectionIds: ['summary','experience','education','skills','certs','honors'],
+  milestoneIds: ['milestone_25','milestone_50','milestone_75','milestone_100'],
+  skillCount: 0,
+  certCount: 0,
+  honorCount: 0,
+  metricCount: 0,
+  totalAchievements: 0,
+  sectionCompletionShown: false,
+  currentRunId: null,
+  lastSavedScoreId: null,
+  leaderboardKey: 'resumeLeaderboard_v2',
   startTime: Date.now(),
   soundEnabled: false,
+  audioCtx: null,
   konamiSequence: [],
   nameClickCount: 0,
 
   // Achievement definitions
-  achievementDefs: [
+  achievementDefs: [ // TEXT NOTE: Update achievement names & hints here
     // Main sections
     {id: 'section_summary', name: 'Read Professional Summary', xp: 10, icon: '📄', hint: 'Open the summary section'},
     {id: 'section_experience', name: 'Explored Experience', xp: 10, icon: '💼', hint: 'Open the experience section'},
@@ -791,39 +889,184 @@ const GAME = {
     {id: 'secret_name', name: 'Name Recognition', xp: 15, icon: '👤', hint: 'My name is important - click it 5 times'},
     {id: 'secret_patient', name: 'Patient Explorer', xp: 20, icon: '⏱️', hint: 'Good things take time (5+ minutes)'},
     {id: 'secret_completionist', name: 'True Completionist', xp: 30, icon: '💯', hint: 'Leave no stone unturned - open everything'},
+    {id: 'completed_resume', name: 'Resume Mastery Complete', xp: 0, icon: '*', hint: 'Explore every section to finish the experience'},
   ],
 
   init() {
-    this.loadProgress();
+    this.resetSession();
+    this.cacheDynamicCounts();
+    this.restorePreferences();
     this.setupEventListeners();
     this.renderAchievements();
     this.updateUI();
     this.startTimers();
   },
 
-  loadProgress() {
-    const saved = localStorage.getItem('resumeGameProgress');
-    if (saved) {
-      const data = JSON.parse(saved);
-      this.xp = data.xp || 0;
-      this.achievements = data.achievements || [];
-      // Show welcome back message
-      if (data.visitCount) {
-        this.showXPFloat('Welcome back! Previous score: ' + data.xp + ' XP', window.innerWidth / 2, 100);
+  resetSession() {
+    this.xp = 0;
+    this.achievements = [];
+    this.sectionsOpened = new Set();
+    this.konamiSequence = [];
+    this.nameClickCount = 0;
+    this.sectionCompletionShown = false;
+    this.startTime = Date.now();
+    this.currentRunId = 'run_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+    localStorage.removeItem('resumeGameProgress');
+    localStorage.removeItem('resumeLeaderboard');
+  },
+
+  cacheDynamicCounts() {
+    this.skillCount = document.querySelectorAll('.skill-item').length;
+    this.certCount = document.querySelectorAll('#p-certs .list li').length;
+    this.honorCount = document.querySelectorAll('#p-honors .list li').length;
+    this.metricCount = document.querySelectorAll('.metric').length;
+    const baseXP = this.achievementDefs.reduce((total, ach) => total + (ach.xp || 0), 0);
+    const dynamicXP = this.skillCount + this.certCount + this.honorCount + (this.metricCount * 2);
+    this.maxXP = baseXP + dynamicXP;
+    this.totalAchievements = this.achievementDefs.length + this.skillCount + this.certCount + this.honorCount + this.metricCount + this.milestoneIds.length;
+  },
+
+  restorePreferences() {
+    const darkMode = localStorage.getItem('resumeDarkMode');
+    if (darkMode === 'true') {
+      document.body.classList.add('dark-mode');
+      const darkToggle = document.getElementById('darkModeToggle');
+      if (darkToggle) {
+        darkToggle.classList.add('on');
       }
-      localStorage.setItem('resumeGameProgress', JSON.stringify({
-        ...data,
-        visitCount: (data.visitCount || 0) + 1
-      }));
+    }
+
+    const soundPref = localStorage.getItem('resumeSound');
+    if (soundPref) {
+      this.soundEnabled = soundPref === 'on';
+      const soundToggle = document.getElementById('soundToggle');
+      if (soundToggle) {
+        soundToggle.classList.toggle('on', this.soundEnabled);
+      }
+    }
+  },
+  markSectionOpened(sectionId) {
+    if (!sectionId || !this.sectionIds.includes(sectionId)) return;
+    if (!this.sectionsOpened.has(sectionId)) {
+      this.sectionsOpened.add(sectionId);
+      this.updateUI();
+      if (this.sectionsOpened.size === this.sectionIds.length) {
+        this.onSectionsComplete();
+      }
+    }
+  },
+  getLeaderboard() {
+    try {
+      return JSON.parse(localStorage.getItem(this.leaderboardKey) || '[]');
+    } catch (err) {
+      console.warn('Unable to parse leaderboard data', err);
+      return [];
     }
   },
 
-  saveProgress() {
-    const data = JSON.parse(localStorage.getItem('resumeGameProgress') || '{}');
-    data.xp = this.xp;
-    data.achievements = this.achievements;
-    data.highScore = Math.max(data.highScore || 0, this.xp);
-    localStorage.setItem('resumeGameProgress', JSON.stringify(data));
+  saveLeaderboard(entries) {
+    localStorage.setItem(this.leaderboardKey, JSON.stringify(entries.slice(0, 25)));
+  },
+
+  submitLeaderboardEntry(name) {
+    if (this.lastSavedScoreId === this.currentRunId) {
+      return {status: 'duplicate'};
+    }
+
+    const cleanName = (name || '').trim() || 'Anonymous';
+    const entry = {
+      runId: this.currentRunId,
+      name: cleanName.slice(0, 40),
+      score: this.xp,
+      sections: this.sectionsOpened.size,
+      timestamp: Date.now()
+    };
+
+    const entries = this.getLeaderboard();
+    entries.push(entry);
+    entries.sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      if (b.sections !== a.sections) return b.sections - a.sections;
+      return a.timestamp - b.timestamp;
+    });
+    this.saveLeaderboard(entries);
+    this.lastSavedScoreId = entry.runId;
+    return {status: 'saved', entry};
+  },
+
+  onSectionsComplete() {
+    if (this.sectionCompletionShown) return;
+    this.sectionCompletionShown = true;
+    if (!this.achievements.includes('completed_resume')) {
+      this.achievements.push('completed_resume');
+    }
+    this.showCompletionModal();
+  },
+
+  restartRun() {
+    this.resetSession();
+    this.renderAchievements();
+    this.updateUI();
+    this.hideCompletionDock();
+    const modal = document.getElementById('completionModal');
+    if (modal) modal.classList.remove('show');
+    const nameInput = document.getElementById('leaderboardNameInput');
+    if (nameInput) nameInput.value = '';
+    const feedback = document.getElementById('leaderboardFeedback');
+    if (feedback) {
+      feedback.textContent = '';
+      feedback.classList.remove('success', 'error');
+    }
+    const startScreen = document.getElementById('startScreen');
+    if (startScreen) {
+      startScreen.classList.remove('hidden');
+      const playButton = startScreen.querySelector('.play-button');
+      if (playButton) playButton.focus();
+    }
+  },
+
+  ensureAudioContext() {
+    if (this.audioCtx || !(window.AudioContext || window.webkitAudioContext)) return;
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    this.audioCtx = new Ctx();
+  },
+
+  showAchievementBurst(achievementId, amount) {
+    if (amount < 5) return;
+    const defs = this.achievementDefs.find(a => a.id === achievementId);
+    const title = defs ? defs.name : 'Achievement Unlocked';
+    const burst = document.createElement('div');
+    burst.className = 'xp-burst';
+    const centerX = window.innerWidth / 2;
+    const topY = 140;
+    burst.style.left = `${centerX - 120}px`;
+    burst.style.top = `${topY}px`;
+    burst.innerHTML = `<span>${title} +${amount} XP</span>`;
+    document.body.appendChild(burst);
+    const xpBar = document.getElementById('progressLeftFill');
+    if (xpBar) {
+      this.createSparkles(xpBar);
+    }
+    setTimeout(() => burst.remove(), 900);
+  },
+
+  showCompletionDock() {
+    const dock = document.getElementById('completionDock');
+    if (dock) dock.classList.add('show');
+  },
+
+  hideCompletionDock() {
+    const dock = document.getElementById('completionDock');
+    if (dock) dock.classList.remove('show');
+  },
+
+  removeLeaderboardEntry() {
+    if (!this.lastSavedScoreId) return { status: 'missing' };
+    const entries = this.getLeaderboard().filter(entry => entry.runId !== this.lastSavedScoreId);
+    this.saveLeaderboard(entries);
+    const removedId = this.lastSavedScoreId;
+    this.lastSavedScoreId = null;
+    return { status: 'removed', runId: removedId };
   },
 
   addXP(amount, achievementId) {
@@ -833,48 +1076,54 @@ const GAME = {
 
     if (achievementId) {
       this.achievements.push(achievementId);
+      this.showAchievementBurst(achievementId, amount);
     }
 
     this.xp += amount;
     if (this.xp > this.maxXP) this.xp = this.maxXP;
 
     this.updateUI();
-    this.saveProgress();
     this.playSound('xp');
 
-    // Check for 100% completion
-    if (this.xp >= this.maxXP && !this.achievements.includes('completed_resume')) {
-      this.achievements.push('completed_resume');
-      setTimeout(() => this.showCompletionModal(), 1000);
+    // Check for 100% completion via XP
+    if (this.xp >= this.maxXP && this.sectionsOpened.size === this.sectionIds.length && !this.sectionCompletionShown) {
+      setTimeout(() => this.showCompletionModal(), 600);
     }
   },
 
   updateUI() {
-    const percent = Math.round((this.xp / this.maxXP) * 100);
-    const isComplete = percent >= 100;
+    const sectionPercent = Math.round((this.sectionsOpened.size / this.sectionIds.length) * 100) || 0;
+    const xpPercent = Math.round((this.xp / this.maxXP) * 100);
+    const sectionsComplete = sectionPercent >= 100;
+    const xpComplete = xpPercent >= 100;
 
-    // Update both progress bars
-    document.getElementById('progressTopFill').style.width = percent + '%';
-    document.getElementById('progressTopPercent').textContent = percent + '%';
-    document.getElementById('progressTopXP').textContent = this.xp + ' / ' + this.maxXP + ' XP';
-    document.getElementById('progressTopFill').classList.toggle('complete', isComplete);
+    const topFill = document.getElementById('progressTopFill');
+    if (topFill) {
+      topFill.style.width = sectionPercent + '%';
+      topFill.classList.toggle('complete', sectionsComplete);
+      const topText = document.getElementById('progressTopPercent');
+      if (topText) topText.textContent = sectionPercent + '%';
+      const topCount = document.getElementById('progressTopXP');
+      if (topCount) topCount.textContent = `Sections ${this.sectionsOpened.size} / ${this.sectionIds.length}`;
+    }
 
-    document.getElementById('progressLeftFill').style.height = percent + '%';
-    document.getElementById('progressLeftPercent').textContent = percent + '%';
-    document.getElementById('progressLeftFill').classList.toggle('complete', isComplete);
+    const leftFill = document.getElementById('progressLeftFill');
+    if (leftFill) {
+      leftFill.style.height = xpPercent + '%';
+      leftFill.classList.toggle('complete', xpComplete);
+      const leftText = document.getElementById('progressLeftPercent');
+      if (leftText) leftText.textContent = `${this.xp} XP (${xpPercent}%)`;
+    }
 
-    // Update achievement counter
-    const totalAchievements = this.achievementDefs.length + 19 + 10 + 17; // + skills + certs + honors
+    const totalAchievements = this.totalAchievements || this.achievementDefs.length;
     document.getElementById('achievementCounter').textContent =
       this.achievements.length + ' / ' + totalAchievements + ' Unlocked';
 
-    // Re-render achievements to show unlocked status in real-time
     this.renderAchievements();
 
-    // Sparkle effects at milestones
-    if ([25, 50, 75, 100].includes(percent) && !this.achievements.includes('milestone_' + percent)) {
-      this.achievements.push('milestone_' + percent);
-      this.createSparkles(document.getElementById('progressTopFill'));
+    if ([25, 50, 75, 100].includes(xpPercent) && !this.achievements.includes('milestone_' + xpPercent)) {
+      this.achievements.push('milestone_' + xpPercent);
+      this.createSparkles(leftFill || topFill || document.body);
       this.playSound('milestone');
     }
   },
@@ -914,11 +1163,13 @@ const GAME = {
 
     tabs.forEach(tab => {
       tab.addEventListener('click', () => {
-        const sectionId = 'section_' + tab.dataset.target;
-        if (!this.achievements.includes(sectionId)) {
+        const target = tab.dataset.target;
+        this.markSectionOpened(target);
+        const sectionAchievement = 'section_' + target;
+        if (!this.achievements.includes(sectionAchievement)) {
           const rect = tab.getBoundingClientRect();
           this.showXPFloat('+10 XP', rect.left + rect.width / 2, rect.top);
-          this.addXP(10, sectionId);
+          this.addXP(10, sectionAchievement);
         }
       });
     });
@@ -926,11 +1177,12 @@ const GAME = {
     sections.forEach(section => {
       const header = section.querySelector('.h');
       header.addEventListener('click', () => {
-        const sectionId = 'section_' + section.id;
-        if (!this.achievements.includes(sectionId)) {
+        this.markSectionOpened(section.id);
+        const sectionAchievement = 'section_' + section.id;
+        if (!this.achievements.includes(sectionAchievement)) {
           const rect = header.getBoundingClientRect();
           this.showXPFloat('+10 XP', rect.left + rect.width / 2, rect.top);
-          this.addXP(10, sectionId);
+          this.addXP(10, sectionAchievement);
         }
       });
     });
@@ -1036,8 +1288,36 @@ const GAME = {
 
   playSound(type) {
     if (!this.soundEnabled) return;
-    // Placeholder for sound implementation
-    // In production, load actual audio files
+    this.ensureAudioContext();
+    if (!this.audioCtx) return;
+
+    const ctx = this.audioCtx;
+    if (ctx.state === 'suspended') {
+      ctx.resume();
+    }
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    const profiles = {
+      xp: {frequency: 660, duration: 0.12},
+      milestone: {frequency: 880, duration: 0.22},
+      secret: {frequency: 990, duration: 0.3},
+      complete: {frequency: 523.25, duration: 0.4}
+    };
+
+    const profile = profiles[type] || profiles.xp;
+    osc.frequency.setValueAtTime(profile.frequency, ctx.currentTime);
+    osc.type = type === 'secret' ? 'triangle' : 'sine';
+
+    gain.gain.setValueAtTime(0.001, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + profile.duration);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + profile.duration);
   },
 
   renderAchievements() {
@@ -1062,22 +1342,34 @@ const GAME = {
 
   showCompletionModal() {
     const modal = document.getElementById('completionModal');
+    if (!modal) return;
+
+    if (!this.sectionCompletionShown) {
+      this.sectionCompletionShown = true;
+    }
+    if (!this.achievements.includes('completed_resume')) {
+      this.achievements.push('completed_resume');
+    }
+
+    this.hideCompletionDock();
+    this.updateUI();
+
     const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
     const minutes = Math.floor(elapsed / 60);
     const seconds = elapsed % 60;
+    const sectionPercent = Math.round((this.sectionsOpened.size / this.sectionIds.length) * 100) || 0;
+    const xpPercent = Math.round((this.xp / this.maxXP) * 100);
 
     document.getElementById('finalXP').textContent = this.xp + ' / ' + this.maxXP + ' XP';
-    document.getElementById('finalAchievements').textContent = this.achievements.length + ' / 70';
+    document.getElementById('finalAchievements').textContent = this.achievements.length + ' / ' + this.totalAchievements;
     document.getElementById('finalTime').textContent = minutes + 'm ' + seconds + 's';
-    document.getElementById('completionPercent').textContent = Math.round((this.xp / this.maxXP) * 100) + '%';
+    document.getElementById('completionPercent').textContent = sectionPercent + '%';
 
-    // Determine rank
-    const percent = (this.xp / this.maxXP) * 100;
     let rank = 'NOVICE EXPLORER';
-    if (percent >= 95) rank = 'LEGENDARY COMPLETIONIST';
-    else if (percent >= 85) rank = 'EXPERT INVESTIGATOR';
-    else if (percent >= 70) rank = 'SKILLED RESEARCHER';
-    else if (percent >= 50) rank = 'DEDICATED VIEWER';
+    if (xpPercent >= 95) rank = 'LEGENDARY COMPLETIONIST';
+    else if (xpPercent >= 85) rank = 'EXPERT INVESTIGATOR';
+    else if (xpPercent >= 70) rank = 'SKILLED RESEARCHER';
+    else if (xpPercent >= 50) rank = 'DEDICATED VIEWER';
     document.getElementById('finalRank').textContent = rank;
 
     modal.classList.add('show');
@@ -1095,17 +1387,48 @@ function toggleSettings() {
   document.getElementById('settingsPanel').classList.toggle('show');
 }
 
+function openSettingsPanel() { // TEXT NOTE: used by start screen button
+  const panel = document.getElementById('settingsPanel');
+  if (!panel.classList.contains('show')) {
+    panel.classList.add('show');
+  }
+  const leaderboardModal = document.getElementById('leaderboardModal');
+  if (leaderboardModal) {
+    leaderboardModal.classList.remove('show');
+  }
+}
+
 function toggleSound() {
   GAME.soundEnabled = !GAME.soundEnabled;
   const toggle = document.getElementById('soundToggle');
   toggle.classList.toggle('on', GAME.soundEnabled);
+  localStorage.setItem('resumeSound', GAME.soundEnabled ? 'on' : 'off');
+  if (GAME.soundEnabled) {
+    GAME.ensureAudioContext();
+    if (GAME.audioCtx && GAME.audioCtx.state === 'suspended') {
+      GAME.audioCtx.resume();
+    }
+  }
 }
 
 function toggleDarkMode() {
   document.body.classList.toggle('dark-mode');
   const toggle = document.getElementById('darkModeToggle');
-  toggle.classList.toggle('on', document.body.classList.contains('dark-mode'));
-  localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+  const isDark = document.body.classList.contains('dark-mode');
+  toggle.classList.toggle('on', isDark);
+  localStorage.setItem('resumeDarkMode', isDark ? 'true' : 'false');
+}
+
+function openLeaderboardModal() {
+  const modal = document.getElementById('leaderboardModal');
+  const settingsPanel = document.getElementById('settingsPanel');
+  if (settingsPanel) {
+    settingsPanel.classList.remove('show');
+  }
+  if (!modal.classList.contains('show')) {
+    renderLeaderboard();
+    modal.classList.add('show');
+  }
 }
 
 function toggleLeaderboard() {
@@ -1120,31 +1443,116 @@ function toggleLeaderboard() {
 
 function renderLeaderboard() {
   const list = document.getElementById('leaderboardList');
-  const scores = JSON.parse(localStorage.getItem('leaderboardScores') || '[]');
-  const currentScore = GAME.xp;
+  if (!list) return;
+  const scores = GAME.getLeaderboard();
+  const sorted = [...scores].sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    if ((b.sections || 0) !== (a.sections || 0)) return (b.sections || 0) - (a.sections || 0);
+    return (a.timestamp || 0) - (b.timestamp || 0);
+  });
 
   list.innerHTML = '';
 
-  if (scores.length === 0) {
-    list.innerHTML = '<li style="text-align:center;padding:20px;color:#888">No scores yet. Be the first!</li>';
+  if (!sorted.length) {
+    const empty = document.createElement('li');
+    empty.style.textAlign = 'center';
+    empty.style.padding = '20px';
+    empty.style.color = '#888';
+    empty.textContent = 'No scores yet. Be the first!';
+    list.appendChild(empty);
     return;
   }
 
-  scores.sort((a, b) => b.score - a.score).slice(0, 10).forEach((entry, idx) => {
-    const isCurrent = entry.score === currentScore && entry.timestamp === GAME.startTime;
+  sorted.slice(0, 10).forEach((entry, idx) => {
     const li = document.createElement('li');
-    li.className = 'leaderboard-item' + (isCurrent ? ' current' : '');
-    li.innerHTML = `
-      <span class="leaderboard-rank">#${idx + 1}</span>
-      <span class="leaderboard-name">${entry.name || 'Anonymous'}</span>
-      <span class="leaderboard-score">${entry.score} XP</span>
-    `;
+    li.className = 'leaderboard-item' + (entry.runId === GAME.lastSavedScoreId ? ' current' : '');
+
+    const rank = document.createElement('span');
+    rank.className = 'leaderboard-rank';
+    rank.textContent = '#' + (idx + 1);
+
+    const details = document.createElement('div');
+    details.className = 'leaderboard-details';
+
+    const name = document.createElement('span');
+    name.className = 'leaderboard-name';
+    name.textContent = entry.name || 'Anonymous';
+
+    const meta = document.createElement('span');
+    meta.className = 'leaderboard-meta';
+    const date = entry.timestamp ? new Date(entry.timestamp).toLocaleDateString() : '';
+    const metaParts = ['Sections ' + (entry.sections || 0) + ' / ' + GAME.sectionIds.length];
+    if (date) metaParts.push(date);
+    meta.textContent = metaParts.join(' | ');
+
+    details.appendChild(name);
+    details.appendChild(meta);
+
+    const score = document.createElement('span');
+    score.className = 'leaderboard-score';
+    score.textContent = entry.score + ' XP';
+
+    li.appendChild(rank);
+    li.appendChild(details);
+    li.appendChild(score);
     list.appendChild(li);
   });
 }
 
+function removeMyLeaderboardScore() { // TEXT NOTE: status messages shown under leaderboard form
+  const feedback = document.getElementById('leaderboardFeedback');
+  if (!feedback) return;
+  const outcome = GAME.removeLeaderboardEntry();
+  if (outcome.status === 'removed') {
+    feedback.textContent = 'Your recent score has been removed.';
+    feedback.classList.remove('error');
+    feedback.classList.add('success');
+  } else {
+    feedback.textContent = 'No saved score to remove yet.';
+    feedback.classList.remove('success');
+    feedback.classList.add('error');
+  }
+  renderLeaderboard();
+}
+
+// TEXT NOTE: adjust leaderboard form responses below
+function submitLeaderboardScore() {
+  const input = document.getElementById('leaderboardNameInput');
+  const feedback = document.getElementById('leaderboardFeedback');
+  if (!input || !feedback) return;
+
+  const outcome = GAME.submitLeaderboardEntry(input.value);
+  if (outcome.status === 'duplicate') {
+    feedback.textContent = 'Score already saved for this run.';
+    feedback.classList.add('error');
+    feedback.classList.remove('success');
+    return;
+  }
+
+  input.value = '';
+  feedback.textContent = 'Score saved! Open the leaderboard to see your rank.';
+  feedback.classList.remove('error');
+  feedback.classList.add('success');
+  renderLeaderboard();
+}
+
+function playAgain() {
+  GAME.restartRun();
+}
+
 function closeCompletionModal() {
   document.getElementById('completionModal').classList.remove('show');
+  GAME.hideCompletionDock();
+}
+
+function minimizeCompletionModal() { // TEXT NOTE: called by "Back to Resume" button
+  const modal = document.getElementById('completionModal');
+  if (modal) modal.classList.remove('show');
+  GAME.showCompletionDock();
+}
+
+function maximizeCompletionModal() {
+  GAME.showCompletionModal();
 }
 
 // Initialize existing accordion code
@@ -1264,8 +1672,35 @@ function wireSubAccordions(scope) {
 
 // Start game function
 function startGame() {
-  document.getElementById('startScreen').classList.add('hidden');
-  GAME.startTime = Date.now(); // Reset timer when game starts
+  GAME.resetSession();
+  GAME.renderAchievements();
+  GAME.updateUI();
+  GAME.hideCompletionDock();
+  const startScreen = document.getElementById('startScreen');
+  if (startScreen) startScreen.classList.add('hidden');
+  const completionModal = document.getElementById('completionModal');
+  if (completionModal) completionModal.classList.remove('show');
+  const leaderboardModal = document.getElementById('leaderboardModal');
+  if (leaderboardModal) {
+    leaderboardModal.classList.remove('show');
+  }
+  const settingsPanel = document.getElementById('settingsPanel');
+  if (settingsPanel) {
+    settingsPanel.classList.remove('show');
+  }
+  const nameInput = document.getElementById('leaderboardNameInput');
+  if (nameInput) nameInput.value = '';
+  const feedback = document.getElementById('leaderboardFeedback');
+  if (feedback) {
+    feedback.textContent = '';
+    feedback.classList.remove('success', 'error');
+  }
+  if (GAME.soundEnabled) {
+    GAME.ensureAudioContext();
+    if (GAME.audioCtx && GAME.audioCtx.state === 'suspended') {
+      GAME.audioCtx.resume();
+    }
+  }
 }
 
 // Initialize game system
