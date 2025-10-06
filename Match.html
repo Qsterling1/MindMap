@@ -1,45 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/> <!-- Character encoding for the page -->
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/> <!-- Makes page responsive on mobile devices -->
-<title>Resume — Accordion</title>
+<!-- ========================================
+     META TAGS - Basic page information
+     ======================================== -->
+<meta charset="utf-8"/> <!-- Character encoding: UTF-8 supports all languages and special characters -->
+
+<!-- VIEWPORT META TAG - Critical for mobile responsiveness -->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+<!-- Breakdown of viewport settings:
+     - width=device-width: Page width matches device screen width (prevents desktop layout on mobile)
+     - initial-scale=1: Page loads at 100% zoom (no automatic zoom in/out)
+     - maximum-scale=1: Prevents users from zooming in (keeps layout consistent)
+     - user-scalable=no: Disables pinch-to-zoom (prevents accidental zoom gestures) -->
+
+<title>Resume — Accordion</title> <!-- Browser tab title -->
 <style>
-  /* CSS VARIABLES - Define colors used throughout the page */
+  /* ========================================
+     CSS VARIABLES - Color palette used throughout the page
+     These are defined once and reused everywhere for consistency
+     ======================================== */
   :root{
-    --gold:#d4af37; /* Gold color for accents, buttons, highlights */
-    --ink:#111; /* Dark color for main text */
-    --muted:#6b7280; /* Gray color for secondary text */
-    --green:#10b981; /* Green color for success states */
-    --green-dark:#059669; /* Darker green shade */
-    --neon-pink:#ff3cac; /* Bright pink for neon effects */
-    --neon-blue:#4acfff; /* Bright blue for neon effects */
-    --neon-purple:#7b5bff; /* Purple for neon effects */
-    --panel-bg:#111827; /* Dark background for panels */
+    --gold:#d4af37; /* Gold (#d4af37): Used for buttons, accents, completion states, highlights */
+    --ink:#111; /* Ink (#111): Near-black color for main body text and headings */
+    --muted:#6b7280; /* Muted gray (#6b7280): Used for secondary text, labels, less important info */
+    --green:#10b981; /* Green (#10b981): Success states, positive indicators */
+    --green-dark:#059669; /* Dark green (#059669): Hover states for green elements */
+    --neon-pink:#ff3cac; /* Neon pink (#ff3cac): Vibrant accent for gamification effects, XP bursts */
+    --neon-blue:#4acfff; /* Neon blue (#4acfff): Primary neon color for progress bars, borders, glows */
+    --neon-purple:#7b5bff; /* Neon purple (#7b5bff): Secondary neon color, gradients, achievements */
+    --panel-bg:#111827; /* Panel background (#111827): Dark background for modal overlays and panels */
   }
 
-  /* GLOBAL RESETS - Remove default browser spacing */
-  *{box-sizing:border-box;margin:0;padding:0} /* Apply border-box sizing to all elements, remove all default margins/padding */
-  html,body{margin:0} /* Ensure no margins on html/body */
+  /* ========================================
+     GLOBAL RESETS - Remove browser defaults
+     Ensures consistent appearance across all browsers
+     ======================================== */
+  *{
+    box-sizing:border-box; /* Include padding/border in element's total width/height (easier sizing) */
+    margin:0; /* Remove all default margins set by browser */
+    padding:0 /* Remove all default padding set by browser */
+  }
+  html,body{
+    margin:0 /* Extra assurance: no margins on root elements */
+  }
 
-  /* BODY STYLING - Main page background and font */
+  /* ========================================
+     BODY STYLING - Base page appearance
+     ======================================== */
   body{
-    background:#fff; /* White background for the page */
-    color:var(--ink); /* Dark text color */
-    font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; /* Font size 16px, line height 1.6, system fonts */
-    position:relative; /* Allows absolute positioning of child elements */
-    -webkit-text-size-adjust:100%; /* Prevent auto text zoom on iOS */
-    -moz-text-size-adjust:100%; /* Prevent auto text zoom on Firefox mobile */
-    -ms-text-size-adjust:100%; /* Prevent auto text zoom on IE mobile */
-    text-size-adjust:100% /* Prevent auto text zoom */
+    background:#fff; /* White background for clean, professional look */
+    color:var(--ink); /* Use dark ink color for all text by default */
+    font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    /* Font breakdown:
+       - 16px: Base font size (readable on all devices)
+       - 1.6: Line height (space between lines for readability)
+       - system-ui, etc: Use device's native fonts for fast loading and familiar appearance */
+    position:relative; /* Allows child elements to use absolute positioning relative to body */
+
+    /* PREVENT AUTO TEXT ZOOM - Critical for mobile */
+    -webkit-text-size-adjust:100%; /* iOS Safari: Don't auto-zoom text when device rotates */
+    -moz-text-size-adjust:100%; /* Firefox mobile: Keep text at intended size */
+    -ms-text-size-adjust:100%; /* IE mobile: Prevent text size adjustments */
+    text-size-adjust:100% /* Standard property: Maintain consistent text sizing */
   }
 
-  /* MAIN CONTENT WRAPPER - Centers content and adds spacing */
+  /* ========================================
+     MAIN CONTENT WRAPPER - Centers content and adds spacing
+     ======================================== */
   .wrap{
-    max-width:1024px; /* Maximum width of content area */
-    margin:24px auto; /* 24px top/bottom margin, auto left/right centers it */
-    padding:0 18px; /* 18px padding on left/right sides */
-    margin-top:140px /* Extra top margin to clear fixed header bars */
+    max-width:1024px; /* Maximum width: 1024px - content won't stretch wider on large screens */
+    margin:24px auto; /* Vertical: 24px top/bottom | Horizontal: auto centers the container */
+    padding:0 18px; /* Horizontal padding: 18px left/right (prevents content from touching screen edges) */
+    margin-top:140px /* Extra top margin: 140px - creates space to clear the fixed progress bar and tabs at top */
   }
 
   /* ========================================
@@ -47,52 +80,65 @@
      The bar that shows overall progress at the top of the page
      ======================================== */
   .progress-top{
-    position:fixed; /* Stays at top when scrolling */
-    top:0; /* Position at very top of screen */
-    left:0; /* Stretch from left edge */
-    right:0; /* Stretch to right edge */
-    height:60px; /* Bar height in pixels */
-    background:#fff; /* White background */
-    box-shadow:0 2px 10px rgba(0,0,0,0.1); /* Subtle shadow below bar */
-    z-index:1000; /* Layer above most content */
-    display:flex; /* Use flexbox for layout */
-    align-items:center; /* Vertically center items */
-    padding:0 20px; /* 20px padding on left/right */
-    gap:15px; /* 15px space between child elements */
+    /* POSITIONING: Fixed to top of screen, always visible */
+    position:fixed; /* Stays at top even when user scrolls down the page */
+    top:0; /* Anchor to very top of screen (0px from top) */
+    left:0; /* Anchor to left edge of screen */
+    right:0; /* Anchor to right edge of screen (spans full width) */
+    z-index:1000; /* Stacking order: appears above page content (lower z-index), below modals (higher z-index) */
+
+    /* LAYOUT: Flexbox for horizontal arrangement */
+    display:flex; /* Use flexbox layout engine */
+    align-items:center; /* Center all child items vertically within the 60px height */
+    gap:15px; /* 15px space between label, progress bar, and XP text */
+    padding:0 20px; /* 20px padding on left and right sides (prevents edge touching) */
+
+    /* APPEARANCE */
+    height:60px; /* Fixed height: 60px tall */
+    background:#fff; /* Solid white background */
+    box-shadow:0 2px 10px rgba(0,0,0,0.1); /* Subtle drop shadow: 2px down, 10px blur, 10% black opacity */
   }
 
-  /* Label text that says "Sections Progress:" */
+  /* LABEL: "Sections Progress:" text */
   .progress-top-label{
-    font-weight:700; /* Bold text */
-    font-size:14px; /* Text size */
-    white-space:nowrap; /* Prevent text from wrapping to new line */
+    font-weight:700; /* Bold font weight for emphasis */
+    font-size:14px; /* 14px font size */
+    white-space:nowrap; /* Prevent text from wrapping to multiple lines */
     color:#6fc3ff; /* Light blue color */
-    letter-spacing:.4px; /* Space between letters */
-    text-transform:uppercase /* Make text all caps */
+    letter-spacing:.4px; /* Add 0.4px space between each letter for readability */
+    text-transform:uppercase /* Convert text to ALL CAPS */
   }
 
-  /* The gray background bar container */
+  /* PROGRESS BAR CONTAINER: Gray background track */
   .progress-top-bar{
-    flex:1; /* Takes up remaining space */
-    height:28px; /* Bar height */
-    background:#e5e7eb; /* Light gray background */
-    border-radius:999px; /* Fully rounded ends (pill shape) */
-    overflow:hidden; /* Hide content outside rounded corners */
-    position:relative /* For positioning child elements */
+    flex:1; /* Flex-grow: 1 - takes up all remaining horizontal space after label and XP text */
+    height:28px; /* 28px tall (shorter than container for visual balance) */
+    background:#e5e7eb; /* Light gray background (#e5e7eb) - represents unfilled portion */
+    border-radius:999px; /* Extremely large border radius creates pill/capsule shape with fully rounded ends */
+    overflow:hidden; /* Clip child elements (progress fill) to rounded shape */
+    position:relative /* Allows absolute positioning of child elements (percentage text) */
   }
 
-  /* The colored fill that shows progress */
+  /* PROGRESS FILL: Colored bar showing completion percentage */
   .progress-top-fill{
-    height:100%; /* Full height of parent bar */
-    background:linear-gradient(90deg, var(--neon-purple), var(--neon-blue)); /* Purple to blue gradient */
-    transition:width .5s ease, background .8s ease; /* Smooth width and color changes */
-    position:relative /* For positioning percentage text */
+    height:100%; /* Fill full height of parent bar (28px) */
+    background:linear-gradient(90deg, var(--neon-purple), var(--neon-blue));
+    /* Gradient explanation:
+       - linear-gradient: Creates smooth color transition
+       - 90deg: Horizontal direction (left to right)
+       - var(--neon-purple) to var(--neon-blue): Purple on left fading to blue on right */
+    transition:width .5s ease, background .8s ease;
+    /* Smooth animations:
+       - width: Animates over 0.5 seconds when progress changes (smooth filling)
+       - background: Animates over 0.8 seconds when color changes (purple/blue → gold)
+       - ease: Starts slow, speeds up, ends slow (natural feeling) */
+    position:relative /* Allows positioning of percentage text inside */
   }
 
-  /* Style when progress is complete (100%) */
+  /* COMPLETE STATE: Gold appearance when 100% progress reached */
   .progress-top-fill.complete{
-    background:linear-gradient(90deg, var(--gold), #f6d979); /* Gold gradient when done */
-    animation:goldPulse 2s ease infinite /* Pulsing animation */
+    background:linear-gradient(90deg, var(--gold), #f6d979); /* Gold to light gold gradient */
+    animation:goldPulse 2s ease infinite /* Pulsing animation: 2 second cycle, repeats forever */
   }
 
   /* ANIMATION: Pulsing effect for completed bar */
@@ -1068,103 +1114,218 @@
     .tab{padding:8px 14px;font-size:14px} /* Smaller tab buttons, smaller text */
   }
 
-  /* MOBILE / LARGE PHONES (768px and smaller) */
+  /* ========================================
+     MOBILE / LARGE PHONES (768px and smaller)
+     CRITICAL RESPONSIVE BREAKPOINT for mobile devices
+     These styles fix the zooming and layout issues on phones
+     ======================================== */
   @media (max-width: 768px) {
+    /* FIX OVERFLOW AND ZOOM ISSUES - Prevents page from being too wide or zoomed in */
     html, body{
-      overflow-x:hidden; /* Prevent horizontal scroll */
-      width:100%; /* Full width */
-      position:relative /* Contain content */
+      overflow-x:hidden; /* Prevent horizontal scrolling (cuts off content that extends past screen width) */
+      width:100%; /* Force full width - don't let content expand wider than screen */
+      position:relative /* Establish positioning context for fixed elements */
     }
     body{
-      font-size:14px; /* Smaller base font for mobile */
-      -webkit-text-size-adjust:100%; /* Prevent auto text zoom on iOS */
-      touch-action:manipulation /* Improve touch response */
+      font-size:14px; /* Reduce base font from 16px to 14px for better mobile fit */
+      -webkit-text-size-adjust:100%; /* CRITICAL: Prevents iOS Safari from auto-zooming text when device rotates */
+      touch-action:manipulation /* Removes 300ms click delay on mobile, improves touch responsiveness */
     }
-    .wrap{margin-top:100px;padding:0 12px;width:100%;overflow-x:hidden} /* Adjust top margin */
-    /* Shrink top progress bar */
-    .progress-top{height:auto;min-height:50px;padding:8px 12px;gap:8px;flex-wrap:wrap} /* Shorter, less padding, tighter gaps, allow wrapping */
-    .progress-top-label{font-size:11px} /* Smaller label text */
-    .progress-top-bar{height:20px;min-width:120px} /* Shorter bar */
-    .progress-top-text{font-size:10px} /* Smaller percentage */
-    .progress-top-xp{font-size:11px} /* Smaller XP text */
 
-    /* Shrink tabs */
-    .tabs{top:auto;bottom:auto;position:relative;margin:10px 0;padding:8px;gap:6px;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch} /* Lower position, less padding, tighter gaps */
-    .tab{padding:8px 12px;font-size:12px;box-shadow:0 1px 4px rgba(0,0,0,.1);white-space:nowrap;min-width:auto} /* Smaller buttons */
+    /* MAIN CONTENT WRAPPER - Adjust spacing for mobile */
+    .wrap{
+      margin-top:100px; /* Reduce from 140px - less space needed since top bar is shorter */
+      padding:0 12px; /* Reduce side padding from 18px to 12px */
+      width:100%; /* Ensure full width */
+      overflow-x:hidden /* Prevent horizontal scroll in content area */
+    }
 
-    /* Move achievements to bottom on mobile */
+    /* PROGRESS BAR - Make smaller and allow wrapping on narrow screens */
+    .progress-top{
+      height:auto; /* Remove fixed 60px height */
+      min-height:50px; /* Ensure at least 50px tall */
+      padding:8px 12px; /* Reduce padding (was 0 20px) */
+      gap:8px; /* Tighten gap between elements (was 15px) */
+      flex-wrap:wrap /* Allow items to wrap to new line if screen too narrow */
+    }
+    .progress-top-label{font-size:11px} /* Shrink label from 14px to 11px */
+    .progress-top-bar{height:20px;min-width:120px} /* Shorter bar (was 28px), ensure minimum width */
+    .progress-top-text{font-size:10px} /* Smaller percentage text (was 13px) */
+    .progress-top-xp{font-size:11px} /* Smaller XP text (was 14px) */
+
+    /* NAVIGATION TABS - CRITICAL FIX: Change from fixed to relative positioning */
+    .tabs{
+      top:auto; /* Remove fixed top position */
+      bottom:auto; /* Remove fixed bottom position */
+      position:relative; /* IMPORTANT: Change from fixed to relative - prevents overlap issues on mobile */
+      margin:10px 0; /* Add vertical margin for spacing */
+      padding:8px; /* Reduce padding */
+      gap:6px; /* Tighter gap between tabs */
+      width:100%; /* Full width */
+      overflow-x:auto; /* Allow horizontal scrolling if too many tabs */
+      -webkit-overflow-scrolling:touch /* Smooth momentum scrolling on iOS */
+    }
+    .tab{
+      padding:8px 12px; /* Adjust button padding */
+      font-size:12px; /* Smaller text */
+      box-shadow:0 1px 4px rgba(0,0,0,.1); /* Subtle shadow */
+      white-space:nowrap; /* Prevent tab text from wrapping */
+      min-width:auto /* Remove minimum width constraint */
+    }
+
+    /* ACHIEVEMENT PANEL - Move to bottom on mobile */
     .achievement-panel{
-      position:fixed;bottom:80px;top:auto;right:12px;left:12px; /* Bottom, full width with margins */
-      width:auto;max-width:none;max-height:180px; /* Full width, short height */
-      z-index:950 /* Keep below modals but above content */
+      position:fixed; /* Keep fixed positioning */
+      bottom:80px; /* Position 80px from bottom (above settings buttons) */
+      top:auto; /* Remove top positioning */
+      right:12px; /* 12px from right edge */
+      left:12px; /* 12px from left edge (creates full-width with margins) */
+      width:auto; /* Auto width based on left/right positioning */
+      max-width:none; /* Remove desktop max-width constraint */
+      max-height:180px; /* Short height so it doesn't cover content */
+      z-index:950 /* Below modals (1000+) but above page content */
     }
-    .achievement-panel.collapsed{max-height:44px} /* Smaller when collapsed */
+    .achievement-panel.collapsed{max-height:44px} /* When collapsed, very short */
     .achievement-header{padding:10px 12px;font-size:12px} /* Smaller header */
-    #achievementList{grid-template-columns:1fr;gap:8px;max-height:100px;overflow-y:auto} /* Single column, tighter gaps */
-    .achievement-item{padding:8px;gap:8px;font-size:12px} /* Less padding */
+    #achievementList{
+      grid-template-columns:1fr; /* Single column (was 2 columns on desktop) */
+      gap:8px; /* Tighter gap */
+      max-height:100px; /* Limit height */
+      overflow-y:auto /* Scroll if too many achievements */
+    }
+    .achievement-item{padding:8px;gap:8px;font-size:12px} /* Smaller achievement items */
 
-    /* Adjust job cards for mobile */
-    .sub{padding:12px} /* Less padding */
-    .job-header{flex-direction:column;gap:8px} /* Stack company name and dates vertically */
-    .job-meta{text-align:left;align-items:flex-start;font-size:12px} /* Dates align left instead of right */
-
-    /* Single column layouts on mobile */
-    .skills-grid{grid-template-columns:1fr} /* Skills in single column */
-    #p-certs .list{grid-template-columns:1fr} /* Certs in single column */
-    #p-honors .list{grid-template-columns:1fr} /* Honors in single column */
-
-    /* Fix modals for mobile */
-    .completion-modal, .leaderboard-modal{
-      max-width:95%;
-      max-height:85vh;
-      padding:16px;
-      margin:0 10px
+    /* JOB CARDS - Stack elements vertically */
+    .sub{padding:12px} /* Reduce padding */
+    .job-header{
+      flex-direction:column; /* Stack items vertically (was horizontal row) */
+      gap:8px /* Space between stacked items */
+    }
+    .job-meta{
+      text-align:left; /* Align dates to left (was right on desktop) */
+      align-items:flex-start; /* Align to start */
+      font-size:12px /* Smaller text */
     }
 
-    /* Make buttons more touch-friendly */
+    /* GRID LAYOUTS - Single column on mobile */
+    .skills-grid{grid-template-columns:1fr} /* One column (was multi-column on desktop) */
+    #p-certs .list{grid-template-columns:1fr} /* Certifications: single column */
+    #p-honors .list{grid-template-columns:1fr} /* Honors: single column */
+
+    /* MODALS - Make responsive */
+    .completion-modal, .leaderboard-modal{
+      max-width:95%; /* Almost full width (95% of screen) */
+      max-height:85vh; /* Maximum 85% of viewport height */
+      padding:16px; /* Moderate padding */
+      margin:0 10px /* Small side margins */
+    }
+
+    /* TOUCH TARGETS - Ensure all interactive elements are easy to tap */
     button, .tab, .cta-btn{
-      min-height:44px; /* iOS recommended touch target */
-      padding:12px 16px
+      min-height:44px; /* iOS Human Interface Guidelines: minimum 44x44px touch target */
+      padding:12px 16px /* Adequate padding for comfortable tapping */
     }
   }
 
-  /* SMALL PHONES (480px and smaller) */
+  /* ========================================
+     SMALL PHONES (480px and smaller)
+     Extra aggressive sizing for older/smaller phones (iPhone SE, etc.)
+     ======================================== */
   @media (max-width: 480px) {
-    body{font-size:13px} /* Even smaller base font */
-    .wrap{margin-top:90px;padding:0 10px;width:100%} /* Less top margin, minimal side padding */
-    .progress-top{height:auto;min-height:45px;padding:6px 8px;gap:6px} /* Even shorter bar */
-    .progress-top-label{display:none} /* Hide "Sections Progress:" label completely */
-    .progress-top-bar{min-width:100px;height:18px} /* Smaller bar */
-    .tabs{gap:4px;padding:6px;margin:8px 0;overflow-x:auto} /* Very tight gaps */
-    .tab{padding:8px 12px;font-size:11px;min-height:40px} /* Very small buttons */
-
-    /* Full width achievements */
-    .achievement-panel{max-width:100%;right:8px;left:8px;width:auto;bottom:70px;max-height:150px} /* Stretch across screen */
-    .achievement-item{font-size:11px;padding:6px} /* Smaller items */
-    .settings-button,.leaderboard-button{width:44px;height:44px;font-size:18px;bottom:16px} /* Smaller buttons */
-    .leaderboard-button{right:60px} /* Adjust position */
-
-    /* Smaller start screen elements */
-    .start-content{padding:24px 16px} /* Less padding */
-    .start-title{font-size:28px;line-height:1.2} /* Smaller title */
-    .start-subtitle{font-size:14px} /* Smaller subtitle */
-    .play-button{padding:14px 32px;font-size:18px;min-height:50px} /* Smaller button */
-
-    /* Ensure all interactive elements are touch-friendly */
-    a, button, .tab, input, select{min-height:40px;padding:10px 14px}
-
-    /* Fix accordion headers */
-    .acc-head{font-size:16px;padding:14px 12px}
-    .sub-head{font-size:15px;padding:12px 10px}
-
-    /* Modals full width on small screens */
-    .completion-modal, .leaderboard-modal{
-      width:calc(100% - 20px);
-      max-width:none;
-      padding:12px
+    /* FURTHER SIZE REDUCTIONS */
+    body{font-size:13px} /* Reduce base font from 14px to 13px */
+    .wrap{
+      margin-top:90px; /* Further reduce top margin (was 100px) */
+      padding:0 10px; /* Minimal side padding (was 12px) */
+      width:100% /* Full width */
     }
-    .completion-title{font-size:24px}
-    .start-screen{padding:10px}
+
+    /* PROGRESS BAR - Even more compact */
+    .progress-top{
+      height:auto; /* Flexible height */
+      min-height:45px; /* Minimum 45px (was 50px) */
+      padding:6px 8px; /* Tight padding */
+      gap:6px /* Minimal gaps */
+    }
+    .progress-top-label{display:none} /* HIDE label completely to save space on tiny screens */
+    .progress-top-bar{
+      min-width:100px; /* Smaller minimum width (was 120px) */
+      height:18px /* Thinner bar (was 20px) */
+    }
+
+    /* TABS - More compact */
+    .tabs{
+      gap:4px; /* Very tight gaps (was 6px) */
+      padding:6px; /* Minimal padding */
+      margin:8px 0; /* Vertical margin */
+      overflow-x:auto /* Allow horizontal scroll */
+    }
+    .tab{
+      padding:8px 12px; /* Compact padding */
+      font-size:11px; /* Small text (was 12px) */
+      min-height:40px /* Slightly smaller touch target (still usable) */
+    }
+
+    /* ACHIEVEMENT PANEL - Maximize width on small screens */
+    .achievement-panel{
+      max-width:100%; /* Allow full width */
+      right:8px; /* Smaller margins (was 12px) */
+      left:8px; /* Smaller margins (was 12px) */
+      width:auto; /* Auto width */
+      bottom:70px; /* Position above buttons */
+      max-height:150px /* Shorter height (was 180px) */
+    }
+    .achievement-item{
+      font-size:11px; /* Smaller text */
+      padding:6px /* Tight padding */
+    }
+
+    /* FLOATING BUTTONS - Compact positioning */
+    .settings-button,.leaderboard-button{
+      width:44px; /* 44x44px touch target */
+      height:44px;
+      font-size:18px; /* Smaller icon (was 20px) */
+      bottom:16px /* Position at bottom */
+    }
+    .leaderboard-button{right:60px} /* Position next to settings button */
+
+    /* START SCREEN - Smaller welcome screen */
+    .start-content{padding:24px 16px} /* Reduced padding */
+    .start-title{
+      font-size:28px; /* Smaller title (was 52px on desktop) */
+      line-height:1.2 /* Tighter line height */
+    }
+    .start-subtitle{font-size:14px} /* Smaller subtitle */
+    .play-button{
+      padding:14px 32px; /* Compact padding */
+      font-size:18px; /* Smaller text */
+      min-height:50px /* Ensure tappable */
+    }
+
+    /* UNIVERSAL TOUCH TARGETS - Ensure everything is tappable */
+    a, button, .tab, input, select{
+      min-height:40px; /* Minimum 40px height (44px preferred but 40px acceptable) */
+      padding:10px 14px /* Adequate padding */
+    }
+
+    /* ACCORDION HEADERS - Readable but compact */
+    .acc-head{
+      font-size:16px; /* Main section headers */
+      padding:14px 12px /* Tappable padding */
+    }
+    .sub-head{
+      font-size:15px; /* Sub-section headers */
+      padding:12px 10px /* Slightly less padding */
+    }
+
+    /* MODALS - Full width on small screens */
+    .completion-modal, .leaderboard-modal{
+      width:calc(100% - 20px); /* Full width minus 20px total margin */
+      max-width:none; /* Remove max-width constraint */
+      padding:12px /* Compact padding */
+    }
+    .completion-title{font-size:24px} /* Smaller modal title */
+    .start-screen{padding:10px} /* Minimal padding */
   }
 
   /* LANDSCAPE MODE on SHORT SCREENS (phones rotated sideways) */
@@ -1618,28 +1779,54 @@
 </div>
 
 <script>
-// === GAMIFICATION SYSTEM ===
+/* ========================================
+   JAVASCRIPT - GAMIFICATION SYSTEM
+   This script adds interactive game elements to the resume:
+   - XP points for exploring sections
+   - Achievements for completing tasks
+   - Progress tracking
+   - Leaderboard functionality
+   ======================================== */
+
+// MAIN GAME OBJECT - Stores all game state and methods
 const GAME = {
-  xp: 0,
-  maxXP: 500,
-  achievements: [],
-  sectionsOpened: new Set(),
-  sectionIds: ['summary','experience','education','skills','certs','honors'],
-  milestoneIds: ['milestone_25','milestone_50','milestone_75','milestone_100'],
-  skillCount: 0,
-  certCount: 0,
-  honorCount: 0,
-  metricCount: 0,
-  totalAchievements: 0,
-  sectionCompletionShown: false,
-  currentRunId: null,
-  lastSavedScoreId: null,
-  leaderboardKey: 'resumeLeaderboard_v2',
-  startTime: Date.now(),
-  soundEnabled: false,
-  audioCtx: null,
-  konamiSequence: [],
-  nameClickCount: 0,
+  // XP TRACKING
+  xp: 0, // Current XP points earned (starts at 0)
+  maxXP: 500, // Maximum possible XP (calculated dynamically based on page content)
+
+  // ACHIEVEMENTS
+  achievements: [], // Array of achievement IDs that have been unlocked (e.g., ['section_summary', 'job_sterling'])
+
+  // SECTION TRACKING
+  sectionsOpened: new Set(), // Set of section IDs opened (Set prevents duplicates)
+  sectionIds: ['summary','experience','education','skills','certs','honors'], // All main section IDs
+
+  // MILESTONE TRACKING
+  milestoneIds: ['milestone_25','milestone_50','milestone_75','milestone_100'], // Progress milestone IDs (25%, 50%, 75%, 100%)
+
+  // DYNAMIC COUNTS - Counted on page load
+  skillCount: 0, // Total number of skill items (counted from .skill-item elements)
+  certCount: 0, // Total number of certificates (counted from #p-certs .list li)
+  honorCount: 0, // Total number of honors (counted from #p-honors .list li)
+  metricCount: 0, // Total number of metrics (counted from .metric elements)
+  totalAchievements: 0, // Total possible achievements (calculated from all sources)
+
+  // SESSION STATE
+  sectionCompletionShown: false, // Has the completion modal been shown yet? (prevents duplicate)
+  currentRunId: null, // Unique ID for this gameplay session (e.g., 'run_1234567890_12345')
+  lastSavedScoreId: null, // ID of last score saved to leaderboard (prevents duplicate saves)
+  leaderboardKey: 'resumeLeaderboard_v2', // LocalStorage key for leaderboard data
+
+  // TIME TRACKING
+  startTime: Date.now(), // Timestamp when page loaded (milliseconds since 1970)
+
+  // AUDIO SETTINGS
+  soundEnabled: false, // Is sound on or off? (toggleable by user)
+  audioCtx: null, // Web Audio API context (for playing sound effects)
+
+  // EASTER EGG TRACKING
+  konamiSequence: [], // Stores recent keystrokes to detect Konami code (up, up, down, down, etc.)
+  nameClickCount: 0, // How many times has user clicked the name? (triggers easter egg at 5)
 
   // Achievement definitions
   achievementDefs: [ // TEXT NOTE: Update achievement names & hints here
@@ -1684,37 +1871,48 @@ const GAME = {
     {id: 'completed_resume', name: 'Resume Mastery Complete', xp: 0, icon: '*', hint: 'Explore every section to finish the experience'},
   ],
 
+  /* ========================================
+     INITIALIZATION METHOD
+     Called when page loads - sets up the entire game system
+     ======================================== */
   init() {
-    this.resetSession();
-    this.cacheDynamicCounts();
-    this.restorePreferences();
-    this.setupEventListeners();
-    this.renderAchievements();
-    this.updateUI();
-    this.startTimers();
+    this.resetSession(); // Clear any previous game data, start fresh
+    this.cacheDynamicCounts(); // Count skills, certs, honors on the page
+    this.restorePreferences(); // Load user settings (dark mode, sound) from localStorage
+    this.setupEventListeners(); // Attach click/hover handlers to page elements
+    this.renderAchievements(); // Display achievement list in panel
+    this.updateUI(); // Update progress bars, XP display
+    this.startTimers(); // Begin timing for time-based achievements
   },
 
+  /* RESET SESSION - Clear all game progress, start new run */
   resetSession() {
-    this.xp = 0;
-    this.achievements = [];
-    this.sectionsOpened = new Set();
-    this.konamiSequence = [];
-    this.nameClickCount = 0;
-    this.sectionCompletionShown = false;
-    this.startTime = Date.now();
-    this.currentRunId = 'run_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
-    localStorage.removeItem('resumeGameProgress');
-    localStorage.removeItem('resumeLeaderboard');
+    this.xp = 0; // Reset XP to zero
+    this.achievements = []; // Clear all unlocked achievements
+    this.sectionsOpened = new Set(); // Clear section tracking
+    this.konamiSequence = []; // Reset konami code sequence
+    this.nameClickCount = 0; // Reset name clicks
+    this.sectionCompletionShown = false; // Allow completion modal to show again
+    this.startTime = Date.now(); // Record new start time
+    this.currentRunId = 'run_' + Date.now() + '_' + Math.floor(Math.random() * 100000); // Generate unique run ID
+    localStorage.removeItem('resumeGameProgress'); // Remove saved progress from localStorage
+    localStorage.removeItem('resumeLeaderboard'); // Remove old leaderboard (v1)
   },
 
+  /* COUNT DYNAMIC ELEMENTS - Calculate how many skills, certs, honors exist on page */
   cacheDynamicCounts() {
-    this.skillCount = document.querySelectorAll('.skill-item').length;
-    this.certCount = document.querySelectorAll('#p-certs .list li').length;
-    this.honorCount = document.querySelectorAll('#p-honors .list li').length;
-    this.metricCount = document.querySelectorAll('.metric').length;
-    const baseXP = this.achievementDefs.reduce((total, ach) => total + (ach.xp || 0), 0);
-    const dynamicXP = this.skillCount + this.certCount + this.honorCount + (this.metricCount * 2);
-    this.maxXP = baseXP + dynamicXP;
+    // COUNT: How many of each element type exists?
+    this.skillCount = document.querySelectorAll('.skill-item').length; // Count skill items
+    this.certCount = document.querySelectorAll('#p-certs .list li').length; // Count certificate items
+    this.honorCount = document.querySelectorAll('#p-honors .list li').length; // Count honor items
+    this.metricCount = document.querySelectorAll('.metric').length; // Count metric items
+
+    // CALCULATE MAXIMUM XP: Sum of all possible XP sources
+    const baseXP = this.achievementDefs.reduce((total, ach) => total + (ach.xp || 0), 0); // Sum XP from achievement definitions
+    const dynamicXP = this.skillCount + this.certCount + this.honorCount + (this.metricCount * 2); // Add XP from dynamic items (skills=1xp, certs=1xp, honors=1xp, metrics=2xp each)
+    this.maxXP = baseXP + dynamicXP; // Total maximum XP available
+
+    // CALCULATE TOTAL ACHIEVEMENTS: All achievement sources combined
     this.totalAchievements = this.achievementDefs.length + this.skillCount + this.certCount + this.honorCount + this.metricCount + this.milestoneIds.length;
   },
 
