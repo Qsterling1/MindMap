@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/> <!-- Character encoding for the page -->
-<meta name="viewport" content="width=device-width, initial-scale=1"/> <!-- Makes page responsive on mobile devices -->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/> <!-- Makes page responsive on mobile devices -->
 <title>Resume — Accordion</title>
 <style>
   /* CSS VARIABLES - Define colors used throughout the page */
@@ -27,7 +27,11 @@
     background:#fff; /* White background for the page */
     color:var(--ink); /* Dark text color */
     font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; /* Font size 16px, line height 1.6, system fonts */
-    position:relative /* Allows absolute positioning of child elements */
+    position:relative; /* Allows absolute positioning of child elements */
+    -webkit-text-size-adjust:100%; /* Prevent auto text zoom on iOS */
+    -moz-text-size-adjust:100%; /* Prevent auto text zoom on Firefox mobile */
+    -ms-text-size-adjust:100%; /* Prevent auto text zoom on IE mobile */
+    text-size-adjust:100% /* Prevent auto text zoom */
   }
 
   /* MAIN CONTENT WRAPPER - Centers content and adds spacing */
@@ -1066,57 +1070,101 @@
 
   /* MOBILE / LARGE PHONES (768px and smaller) */
   @media (max-width: 768px) {
-    .wrap{margin-top:140px} /* Adjust top margin */
+    html, body{
+      overflow-x:hidden; /* Prevent horizontal scroll */
+      width:100%; /* Full width */
+      position:relative /* Contain content */
+    }
+    body{
+      font-size:14px; /* Smaller base font for mobile */
+      -webkit-text-size-adjust:100%; /* Prevent auto text zoom on iOS */
+      touch-action:manipulation /* Improve touch response */
+    }
+    .wrap{margin-top:100px;padding:0 12px;width:100%;overflow-x:hidden} /* Adjust top margin */
     /* Shrink top progress bar */
-    .progress-top{height:50px;padding:0 12px;gap:10px} /* Shorter, less padding, tighter gaps */
-    .progress-top-label{font-size:12px} /* Smaller label text */
-    .progress-top-bar{height:22px} /* Shorter bar */
-    .progress-top-text{font-size:11px} /* Smaller percentage */
-    .progress-top-xp{font-size:12px} /* Smaller XP text */
+    .progress-top{height:auto;min-height:50px;padding:8px 12px;gap:8px;flex-wrap:wrap} /* Shorter, less padding, tighter gaps, allow wrapping */
+    .progress-top-label{font-size:11px} /* Smaller label text */
+    .progress-top-bar{height:20px;min-width:120px} /* Shorter bar */
+    .progress-top-text{font-size:10px} /* Smaller percentage */
+    .progress-top-xp{font-size:11px} /* Smaller XP text */
 
     /* Shrink tabs */
-    .tabs{top:50px;padding:6px;gap:6px} /* Lower position, less padding, tighter gaps */
-    .tab{padding:6px 12px;font-size:13px;box-shadow:0 1px 4px rgba(0,0,0,.1)} /* Smaller buttons */
+    .tabs{top:auto;bottom:auto;position:relative;margin:10px 0;padding:8px;gap:6px;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch} /* Lower position, less padding, tighter gaps */
+    .tab{padding:8px 12px;font-size:12px;box-shadow:0 1px 4px rgba(0,0,0,.1);white-space:nowrap;min-width:auto} /* Smaller buttons */
 
     /* Move achievements to bottom on mobile */
     .achievement-panel{
-      position:fixed;bottom:auto;top:auto;right:12px;bottom:80px; /* Bottom right corner */
-      width:calc(100% - 24px);max-width:340px;max-height:200px; /* Almost full width, short height */
+      position:fixed;bottom:80px;top:auto;right:12px;left:12px; /* Bottom, full width with margins */
+      width:auto;max-width:none;max-height:180px; /* Full width, short height */
+      z-index:950 /* Keep below modals but above content */
     }
-    .achievement-panel.collapsed{max-height:48px} /* Smaller when collapsed */
-    .achievement-header{padding:10px 12px;font-size:13px} /* Smaller header */
-    #achievementList{grid-template-columns:1fr;gap:8px} /* Single column, tighter gaps */
-    .achievement-item{padding:10px;gap:10px} /* Less padding */
+    .achievement-panel.collapsed{max-height:44px} /* Smaller when collapsed */
+    .achievement-header{padding:10px 12px;font-size:12px} /* Smaller header */
+    #achievementList{grid-template-columns:1fr;gap:8px;max-height:100px;overflow-y:auto} /* Single column, tighter gaps */
+    .achievement-item{padding:8px;gap:8px;font-size:12px} /* Less padding */
 
     /* Adjust job cards for mobile */
-    .sub{padding:14px} /* Less padding */
-    .job-header{flex-direction:column;gap:10px} /* Stack company name and dates vertically */
-    .job-meta{text-align:left;align-items:flex-start} /* Dates align left instead of right */
+    .sub{padding:12px} /* Less padding */
+    .job-header{flex-direction:column;gap:8px} /* Stack company name and dates vertically */
+    .job-meta{text-align:left;align-items:flex-start;font-size:12px} /* Dates align left instead of right */
 
     /* Single column layouts on mobile */
     .skills-grid{grid-template-columns:1fr} /* Skills in single column */
     #p-certs .list{grid-template-columns:1fr} /* Certs in single column */
     #p-honors .list{grid-template-columns:1fr} /* Honors in single column */
+
+    /* Fix modals for mobile */
+    .completion-modal, .leaderboard-modal{
+      max-width:95%;
+      max-height:85vh;
+      padding:16px;
+      margin:0 10px
+    }
+
+    /* Make buttons more touch-friendly */
+    button, .tab, .cta-btn{
+      min-height:44px; /* iOS recommended touch target */
+      padding:12px 16px
+    }
   }
 
   /* SMALL PHONES (480px and smaller) */
   @media (max-width: 480px) {
-    .wrap{margin-top:130px;padding:0 10px} /* Less top margin, minimal side padding */
-    .progress-top{height:45px;padding:0 10px} /* Even shorter bar */
+    body{font-size:13px} /* Even smaller base font */
+    .wrap{margin-top:90px;padding:0 10px;width:100%} /* Less top margin, minimal side padding */
+    .progress-top{height:auto;min-height:45px;padding:6px 8px;gap:6px} /* Even shorter bar */
     .progress-top-label{display:none} /* Hide "Sections Progress:" label completely */
-    .tabs{gap:5px;padding:6px 8px} /* Very tight gaps */
-    .tab{padding:6px 10px;font-size:12px} /* Very small buttons */
+    .progress-top-bar{min-width:100px;height:18px} /* Smaller bar */
+    .tabs{gap:4px;padding:6px;margin:8px 0;overflow-x:auto} /* Very tight gaps */
+    .tab{padding:8px 12px;font-size:11px;min-height:40px} /* Very small buttons */
 
     /* Full width achievements */
-    .achievement-panel{max-width:100%;right:10px;left:10px;width:auto} /* Stretch across screen */
-    .settings-button,.leaderboard-button{width:44px;height:44px;font-size:20px} /* Smaller buttons */
-    .leaderboard-button{right:70px} /* Adjust position */
+    .achievement-panel{max-width:100%;right:8px;left:8px;width:auto;bottom:70px;max-height:150px} /* Stretch across screen */
+    .achievement-item{font-size:11px;padding:6px} /* Smaller items */
+    .settings-button,.leaderboard-button{width:44px;height:44px;font-size:18px;bottom:16px} /* Smaller buttons */
+    .leaderboard-button{right:60px} /* Adjust position */
 
     /* Smaller start screen elements */
-    .start-content{padding:32px 24px} /* Less padding */
-    .start-title{font-size:36px} /* Smaller title */
-    .start-subtitle{font-size:16px} /* Smaller subtitle */
-    .play-button{padding:16px 40px;font-size:20px} /* Smaller button */
+    .start-content{padding:24px 16px} /* Less padding */
+    .start-title{font-size:28px;line-height:1.2} /* Smaller title */
+    .start-subtitle{font-size:14px} /* Smaller subtitle */
+    .play-button{padding:14px 32px;font-size:18px;min-height:50px} /* Smaller button */
+
+    /* Ensure all interactive elements are touch-friendly */
+    a, button, .tab, input, select{min-height:40px;padding:10px 14px}
+
+    /* Fix accordion headers */
+    .acc-head{font-size:16px;padding:14px 12px}
+    .sub-head{font-size:15px;padding:12px 10px}
+
+    /* Modals full width on small screens */
+    .completion-modal, .leaderboard-modal{
+      width:calc(100% - 20px);
+      max-width:none;
+      padding:12px
+    }
+    .completion-title{font-size:24px}
+    .start-screen{padding:10px}
   }
 
   /* LANDSCAPE MODE on SHORT SCREENS (phones rotated sideways) */
