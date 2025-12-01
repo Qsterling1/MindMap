@@ -1,2702 +1,2968 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- ========================================
-     META TAGS - Basic page information
-     ======================================== -->
-<meta charset="utf-8"/> <!-- Character encoding: UTF-8 supports all languages and special characters -->
-
-<!-- VIEWPORT META TAG - Critical for mobile responsiveness -->
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
-<!-- Breakdown of viewport settings:
-     - width=device-width: Page width matches device screen width (prevents desktop layout on mobile)
-     - initial-scale=1: Page loads at 100% zoom (no automatic zoom in/out)
-     - maximum-scale=1: Prevents users from zooming in (keeps layout consistent)
-     - user-scalable=no: Disables pinch-to-zoom (prevents accidental zoom gestures) -->
-
-<title>Resume — Accordion</title> <!-- Browser tab title -->
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes"/>
+<title>Quentin Sterling — Interactive Resume</title>
 <style>
-  /* ========================================
-     CSS VARIABLES - Color palette used throughout the page
-     These are defined once and reused everywhere for consistency
-     ======================================== */
-  :root{
-    --gold:#d4af37; /* Gold (#d4af37): Used for buttons, accents, completion states, highlights */
-    --ink:#111; /* Ink (#111): Near-black color for main body text and headings */
-    --muted:#6b7280; /* Muted gray (#6b7280): Used for secondary text, labels, less important info */
-    --green:#10b981; /* Green (#10b981): Success states, positive indicators */
-    --green-dark:#059669; /* Dark green (#059669): Hover states for green elements */
-    --neon-pink:#ff3cac; /* Neon pink (#ff3cac): Vibrant accent for gamification effects, XP bursts */
-    --neon-blue:#4acfff; /* Neon blue (#4acfff): Primary neon color for progress bars, borders, glows */
-    --neon-purple:#7b5bff; /* Neon purple (#7b5bff): Secondary neon color, gradients, achievements */
-    --panel-bg:#111827; /* Panel background (#111827): Dark background for modal overlays and panels */
-  }
-
-  /* ========================================
-     GLOBAL RESETS - Remove browser defaults
-     Ensures consistent appearance across all browsers
-     ======================================== */
-  *{
-    box-sizing:border-box; /* Include padding/border in element's total width/height (easier sizing) */
-    margin:0; /* Remove all default margins set by browser */
-    padding:0 /* Remove all default padding set by browser */
-  }
-  html,body{
-    margin:0 /* Extra assurance: no margins on root elements */
-  }
-
-  /* ========================================
-     BODY STYLING - Base page appearance
-     ======================================== */
-  body{
-    background:#fff; /* White background for clean, professional look */
-    color:var(--ink); /* Use dark ink color for all text by default */
-    font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-    /* Font breakdown:
-       - 16px: Base font size (readable on all devices)
-       - 1.6: Line height (space between lines for readability)
-       - system-ui, etc: Use device's native fonts for fast loading and familiar appearance */
-    position:relative; /* Allows child elements to use absolute positioning relative to body */
-
-    /* PREVENT AUTO TEXT ZOOM - Critical for mobile */
-    -webkit-text-size-adjust:100%; /* iOS Safari: Don't auto-zoom text when device rotates */
-    -moz-text-size-adjust:100%; /* Firefox mobile: Keep text at intended size */
-    -ms-text-size-adjust:100%; /* IE mobile: Prevent text size adjustments */
-    text-size-adjust:100% /* Standard property: Maintain consistent text sizing */
-  }
-
-  /* ========================================
-     MAIN CONTENT WRAPPER - Centers content and adds spacing
-     ======================================== */
-  .wrap{
-    max-width:1024px; /* Maximum width: 1024px - content won't stretch wider on large screens */
-    margin:24px auto; /* Vertical: 24px top/bottom | Horizontal: auto centers the container */
-    padding:0 18px; /* Horizontal padding: 18px left/right (prevents content from touching screen edges) */
-    margin-top:140px /* Extra top margin: 140px - creates space to clear the fixed progress bar and tabs at top */
-  }
-
-  /* ========================================
-     PROGRESS BAR - HORIZONTAL TOP
-     The bar that shows overall progress at the top of the page
-     ======================================== */
-  .progress-top{
-    /* POSITIONING: Fixed to top of screen, always visible */
-    position:fixed; /* Stays at top even when user scrolls down the page */
-    top:0; /* Anchor to very top of screen (0px from top) */
-    left:0; /* Anchor to left edge of screen */
-    right:0; /* Anchor to right edge of screen (spans full width) */
-    z-index:1000; /* Stacking order: appears above page content (lower z-index), below modals (higher z-index) */
-
-    /* LAYOUT: Flexbox for horizontal arrangement */
-    display:flex; /* Use flexbox layout engine */
-    align-items:center; /* Center all child items vertically within the 60px height */
-    gap:15px; /* 15px space between label, progress bar, and XP text */
-    padding:0 20px; /* 20px padding on left and right sides (prevents edge touching) */
-
-    /* APPEARANCE */
-    height:60px; /* Fixed height: 60px tall */
-    background:#fff; /* Solid white background */
-    box-shadow:0 2px 10px rgba(0,0,0,0.1); /* Subtle drop shadow: 2px down, 10px blur, 10% black opacity */
-  }
-
-  /* LABEL: "Sections Progress:" text */
-  .progress-top-label{
-    font-weight:700; /* Bold font weight for emphasis */
-    font-size:14px; /* 14px font size */
-    white-space:nowrap; /* Prevent text from wrapping to multiple lines */
-    color:#6fc3ff; /* Light blue color */
-    letter-spacing:.4px; /* Add 0.4px space between each letter for readability */
-    text-transform:uppercase /* Convert text to ALL CAPS */
-  }
-
-  /* PROGRESS BAR CONTAINER: Gray background track */
-  .progress-top-bar{
-    flex:1; /* Flex-grow: 1 - takes up all remaining horizontal space after label and XP text */
-    height:28px; /* 28px tall (shorter than container for visual balance) */
-    background:#e5e7eb; /* Light gray background (#e5e7eb) - represents unfilled portion */
-    border-radius:999px; /* Extremely large border radius creates pill/capsule shape with fully rounded ends */
-    overflow:hidden; /* Clip child elements (progress fill) to rounded shape */
-    position:relative /* Allows absolute positioning of child elements (percentage text) */
-  }
-
-  /* PROGRESS FILL: Colored bar showing completion percentage */
-  .progress-top-fill{
-    height:100%; /* Fill full height of parent bar (28px) */
-    background:linear-gradient(90deg, var(--neon-purple), var(--neon-blue));
-    /* Gradient explanation:
-       - linear-gradient: Creates smooth color transition
-       - 90deg: Horizontal direction (left to right)
-       - var(--neon-purple) to var(--neon-blue): Purple on left fading to blue on right */
-    transition:width .5s ease, background .8s ease;
-    /* Smooth animations:
-       - width: Animates over 0.5 seconds when progress changes (smooth filling)
-       - background: Animates over 0.8 seconds when color changes (purple/blue → gold)
-       - ease: Starts slow, speeds up, ends slow (natural feeling) */
-    position:relative /* Allows positioning of percentage text inside */
-  }
-
-  /* COMPLETE STATE: Gold appearance when 100% progress reached */
-  .progress-top-fill.complete{
-    background:linear-gradient(90deg, var(--gold), #f6d979); /* Gold to light gold gradient */
-    animation:goldPulse 2s ease infinite /* Pulsing animation: 2 second cycle, repeats forever */
-  }
-
-  /* ANIMATION: Pulsing effect for completed bar */
-  @keyframes goldPulse{
-    0%,100%{opacity:1} /* Full opacity at start/end */
-    50%{opacity:.85} /* Slightly transparent in middle */
-  }
-
-  /* ANIMATION: Cycling color effect for neon borders */
-  @keyframes neonCycle{
-    0%{background-position:0% 50%} /* Start position */
-    50%{background-position:100% 50%} /* Middle position */
-    100%{background-position:0% 50%} /* Back to start */
-  }
-
-  /* ANIMATION: Shaking effect for achievement emojis */
-  @keyframes emojiShake{
-    0%,100%{transform:translate(0,0) rotate(0deg)} /* Normal position */
-    20%{transform:translate(2px,-1px) rotate(-4deg)} /* Shake right/up */
-    40%{transform:translate(-2px,1px) rotate(4deg)} /* Shake left/down */
-    60%{transform:translate(2px,-1px) rotate(-3deg)} /* Shake right/up */
-    80%{transform:translate(-1px,1px) rotate(3deg)} /* Shake left/down */
-  }
-
-  /* Percentage text displayed on progress bar */
-  .progress-top-text{
-    position:absolute; /* Position relative to progress bar */
-    top:50%; /* Center vertically */
-    left:50%; /* Center horizontally */
-    transform:translate(-50%,-50%); /* Adjust for true centering */
-    font-weight:700; /* Bold text */
-    font-size:13px; /* Text size */
-    color:#fff; /* White text */
-    text-shadow:0 1px 2px rgba(0,0,0,.3); /* Subtle shadow for readability */
-    z-index:2 /* Above the colored fill */
-  }
-
-  /* XP counter text on right side of progress bar */
-  .progress-top-xp{
-    font-weight:700; /* Bold text */
-    font-size:14px; /* Text size */
-    color:var(--gold); /* Gold color */
-    white-space:nowrap /* Prevent text wrapping */
-  }
-
-  /* ========================================
-     XP BAR - VERTICAL LEFT SIDEBAR
-     Vertical progress bar on the left side showing XP
-     ======================================== */
-  .progress-left{
-    position:fixed; /* Stays in place when scrolling */
-    left:18px; /* 18px from left edge of screen */
-    top:130px; /* 130px from top (below horizontal bar and tabs) */
-    width:58px; /* Width of the sidebar */
-    height:410px; /* Height of the sidebar */
-    background:rgba(7,10,20,.92); /* Dark background (92% opacity) */
-    border-radius:20px; /* Rounded corners */
-    box-shadow:0 18px 35px rgba(0,0,0,.45); /* Shadow for depth */
-    z-index:940; /* Layer below top bar but above content */
-    padding:14px 10px; /* Internal spacing */
-    display:flex; /* Use flexbox */
-    flex-direction:column; /* Stack items vertically */
-    align-items:center; /* Center items horizontally */
-    border:1px solid rgba(74,207,255,.2) /* Subtle blue border */
-  }
-
-  /* "XP" icon/text at top of vertical bar */
-  .progress-left-icon{
-    font-size:24px; /* Icon size */
-    margin-bottom:8px; /* Space below icon */
-    color:var(--neon-blue) /* Neon blue color */
-  }
-
-  /* The vertical bar container */
-  .progress-left-bar{
-    flex:1; /* Takes up remaining vertical space */
-    width:34px; /* Bar width */
-    background:rgba(23,31,51,.9); /* Dark background */
-    border-radius:999px; /* Fully rounded (pill shape) */
-    position:relative; /* For positioning child elements */
-    display:flex; /* Use flexbox */
-    flex-direction:column-reverse; /* Fill from bottom to top */
-    overflow:hidden; /* Hide overflow outside rounded corners */
-    border:1px solid rgba(74,207,255,.2) /* Subtle blue border */
-  }
-
-  /* The colored fill showing XP progress */
-  .progress-left-fill{
-    width:100%; /* Full width of bar */
-    background:linear-gradient(180deg, var(--neon-blue), var(--neon-pink)); /* Blue to pink gradient top to bottom */
-    transition:height .5s ease; /* Smooth height changes */
-    animation:neonCycle 8s ease infinite /* Color cycling animation */
-  }
-
-  /* XP amount text at bottom */
-  .progress-left-percent{
-    margin-top:8px; /* Space above text */
-    font-weight:700; /* Bold text */
-    font-size:11px; /* Small text size */
-    color:var(--neon-blue); /* Neon blue color */
-    letter-spacing:.4px; /* Space between letters */
-    text-transform:uppercase /* All caps text */
-  }
-
-  /* ========================================
-     ACHIEVEMENT TRACKER SIDEBAR - RIGHT SIDE
-     Shows achievements earned while exploring resume
-     ======================================== */
-  .achievement-panel{
-    position:fixed; /* Stays in place when scrolling */
-    right:32px; /* 32px from right edge of screen */
-    top:130px; /* 130px from top (below horizontal bar and tabs) */
-    width:320px; /* Width of achievements panel */
-    max-height:calc(100vh - 160px); /* Maximum height (full screen minus 160px) */
-    background:#fff; /* White background (light mode default) */
-    border-radius:24px; /* Large rounded corners */
-    padding:18px; /* Internal spacing */
-    box-shadow:0 18px 40px rgba(0,0,0,.2); /* Shadow for depth */
-    z-index:950; /* Layer below top bar but above content */
-    overflow:hidden; /* Hide content that overflows */
-    transition:transform .3s ease, max-height .3s ease; /* Smooth animations */
-    display:flex; /* Use flexbox */
-    flex-direction:column; /* Stack items vertically */
-    gap:16px; /* 16px space between child elements */
-    border:2px solid #e5e7eb; /* Light gray border */
-  }
-
-  /* When achievements panel is collapsed */
-  .achievement-panel.collapsed{
-    max-height:60px; /* Small height when collapsed */
-    overflow:hidden /* Hide achievement list */
-  }
-
-  /* Header bar with title and collapse button */
-  .achievement-header{
-    padding:12px 16px; /* Internal spacing */
-    border-radius:12px; /* Rounded corners */
-    background:#f3f4f6; /* Light gray background */
-    color:var(--ink); /* Dark text color */
-    font-weight:800; /* Very bold text */
-    font-size:15px; /* Text size */
-    display:flex; /* Use flexbox */
-    justify-content:space-between; /* Space between title and toggle */
-    align-items:center; /* Vertically center items */
-    cursor:pointer; /* Show clickable cursor */
-    user-select:none; /* Prevent text selection */
-    letter-spacing:.6px; /* Space between letters */
-    border:1px solid #e5e7eb; /* Light border */
-  }
-
-  /* Trophy emoji and text in header */
-  .achievement-header span:first-child{
-    display:flex; /* Use flexbox */
-    align-items:center; /* Center vertically */
-    gap:8px /* 8px space between emoji and text */
-  }
-
-  /* Collapse/expand arrow button */
-  .achievement-toggle{
-    font-size:18px; /* Arrow size */
-    transition:transform .3s ease; /* Smooth rotation */
-    color:var(--ink) /* Dark color */
-  }
-
-  /* Rotate arrow when panel is collapsed */
-  .achievement-panel.collapsed .achievement-toggle{
-    transform:rotate(90deg) /* Rotate 90 degrees */
-  }
-
-  /* Container for achievement items (scrollable area) */
-  .achievement-body{
-    flex:1; /* Takes up remaining space */
-    overflow-y:auto; /* Enable vertical scrolling */
-    padding:4px 6px 6px /* Small padding around items */
-  }
-
-  /* Custom scrollbar styling for webkit browsers (Chrome, Safari) */
-  .achievement-body::-webkit-scrollbar{
-    width:6px /* Scrollbar width */
-  }
-
-  /* Scrollbar thumb (the draggable part) */
-  .achievement-body::-webkit-scrollbar-thumb{
-    background:linear-gradient(180deg,var(--neon-blue),var(--neon-pink)); /* Blue to pink gradient */
-    border-radius:999px /* Fully rounded */
-  }
-
-  /* Scrollbar styling for Firefox */
-  .achievement-body{
-    scrollbar-width:thin; /* Thin scrollbar */
-    scrollbar-color:var(--neon-blue) transparent /* Blue thumb, transparent track */
-  }
-
-  /* Counter showing "X / 70 Unlocked" */
-  .achievement-counter{
-    font-weight:700; /* Bold text */
-    margin-bottom:12px; /* Space below counter */
-    color:var(--gold); /* Gold color */
-    font-size:15px; /* Text size */
-    text-transform:uppercase; /* All caps */
-    letter-spacing:.8px /* Space between letters */
-  }
-
-  /* Grid container for achievement items */
-  #achievementList{
-    display:grid; /* Use CSS grid */
-    grid-template-columns:repeat(2,minmax(0,1fr)); /* 2 equal columns */
-    gap:12px /* 12px space between items */
-  }
-
-  /* Individual achievement card */
-  .achievement-item{
-    display:flex; /* Use flexbox */
-    align-items:flex-start; /* Align items to top */
-    gap:12px; /* Space between icon and text */
-    padding:12px; /* Internal spacing */
-    background:#fafafa; /* Very light gray background */
-    border-radius:14px; /* Rounded corners */
-    box-shadow:0 2px 8px rgba(0,0,0,.1); /* Subtle shadow */
-    transition:transform .3s ease, box-shadow .3s ease; /* Smooth hover effects */
-    border:1px solid #e5e7eb; /* Light gray border */
-  }
-
-  /* Unlocked achievement style */
-  .achievement-item.unlocked{
-    background:#f0fdf4; /* Light green background */
-    box-shadow:0 4px 12px rgba(16,185,129,.15); /* Green-tinted shadow */
-    transform:translateY(-2px); /* Lift up slightly */
-    border-color:#10b981 /* Green border */
-  }
-
-  /* Locked achievement style (not yet earned) */
-  .achievement-item.locked{
-    opacity:.65 /* Semi-transparent to show it's locked */
-  }
-
-  /* Achievement emoji icon */
-  .achievement-icon{
-    font-size:20px; /* Icon size */
-    line-height:1 /* Remove extra line spacing */
-  }
-
-  /* Animated emoji for unlocked achievements */
-  .achievement-item.unlocked .achievement-icon{
-    animation:emojiShake 1.8s ease-in-out infinite /* Continuous shaking animation */
-  }
-
-  /* Container for achievement text */
-  .achievement-info{
-    flex:1 /* Takes up remaining space */
-  }
-
-  /* Achievement name/title */
-  .achievement-name{
-    font-weight:600; /* Semi-bold text */
-    font-size:13px; /* Text size */
-    color:var(--ink) /* Dark text color */
-  }
-
-  /* Achievement hint text (how to unlock) */
-  .achievement-hint{
-    font-size:11px; /* Small text size */
-    color:var(--muted); /* Gray color */
-    font-style:italic; /* Italic text */
-    margin-top:4px /* Space above hint */
-  }
-
-  /* XP value for achievement */
-  .achievement-xp{
-    font-size:11px; /* Small text size */
-    color:var(--gold); /* Gold color */
-    font-weight:700 /* Bold text */
-  }
-  /* ========================================
-     FLOATING XP NOTIFICATIONS
-     Numbers that fly up when you earn XP
-     ======================================== */
-  .xp-float{
-    position:fixed; /* Position relative to viewport */
-    font-weight:800; /* Very bold text */
-    font-size:20px; /* Large text size */
-    color:var(--gold); /* Gold color */
-    pointer-events:none; /* Don't block clicks */
-    z-index:9999; /* Always on top */
-    text-shadow:0 2px 4px rgba(0,0,0,.3); /* Shadow for readability */
-    animation:floatUp 1.5s ease forwards /* Float up animation */
-  }
-
-  /* ANIMATION: Float up and fade out */
-  @keyframes floatUp{
-    0%{
-      opacity:1; /* Fully visible at start */
-      transform:translateY(0) scale(1) /* Normal position and size */
-    }
-    100%{
-      opacity:0; /* Invisible at end */
-      transform:translateY(-100px) scale(1.3) /* Move up 100px and grow 30% */
-    }
-  }
-
-  /* ========================================
-     SPARKLE EFFECT
-     Small particles that burst out
-     ======================================== */
-  .sparkle{
-    position:absolute; /* Position relative to parent */
-    width:4px; /* Sparkle width */
-    height:4px; /* Sparkle height */
-    background:var(--gold); /* Gold color */
-    border-radius:50%; /* Make it circular */
-    pointer-events:none; /* Don't block clicks */
-    animation:sparkleAnim .8s ease forwards /* Sparkle animation */
-  }
-
-  /* ANIMATION: Sparkles scatter outward */
-  @keyframes sparkleAnim{
-    0%{
-      opacity:1; /* Fully visible at start */
-      transform:translate(0,0) scale(1) /* Starting position */
-    }
-    100%{
-      opacity:0; /* Invisible at end */
-      transform:translate(var(--tx),var(--ty)) scale(0) /* Move to random direction (set via CSS variables) and shrink */
-    }
-  }
-
-  /* ========================================
-     START SCREEN (Opening splash screen)
-     Shown before clicking "PLAY NOW"
-     ======================================== */
-  .start-screen{
-    position:fixed; /* Cover entire screen */
-    inset:0; /* Top, right, bottom, left all at 0 (full screen) */
-    background:#07080f; /* Very dark background */
-    z-index:10001; /* Above everything else */
-    display:flex; /* Use flexbox */
-    align-items:center; /* Center vertically */
-    justify-content:center; /* Center horizontally */
-    animation:fadeIn .5s ease; /* Fade in when appearing */
-    overflow:hidden /* Hide overflow */
-  }
-
-  /* Animated neon border around start screen */
-  .start-screen::before{
-    content:""; /* Required for pseudo-element */
-    position:absolute; /* Position relative to start screen */
-    inset:28px; /* 28px from all edges */
-    border-radius:32px; /* Rounded corners */
-    border:3px solid transparent; /* Transparent border (color comes from background) */
-    background:linear-gradient(120deg,var(--neon-blue),var(--neon-purple),var(--neon-pink)) border-box; /* Gradient border */
-    background-size:300% 300%; /* Large background for animation */
-    animation:neonCycle 8s ease infinite; /* Cycling color animation */
-    -webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0); /* Mask to show only border */
-    -webkit-mask-composite:xor; /* Show only border, not fill */
-    mask-composite:exclude; /* Firefox version */
-    pointer-events:none /* Don't block clicks */
-  }
-
-  /* Hide start screen when dismissed */
-  .start-screen.hidden{
-    display:none /* Completely hidden */
-  }
-
-  /* Content box in center of start screen */
-  .start-content{
-    position:relative; /* For z-index layering */
-    text-align:center; /* Center text */
-    padding:48px 56px; /* Large internal spacing */
-    background:rgba(7,10,20,.9); /* Dark semi-transparent background */
-    border-radius:24px; /* Rounded corners */
-    display:flex; /* Use flexbox */
-    flex-direction:column; /* Stack items vertically */
-    align-items:center; /* Center items horizontally */
-    gap:24px; /* Space between elements */
-    box-shadow:0 30px 60px rgba(0,0,0,.45); /* Large shadow for depth */
-  }
-
-  /* "QUENTIN STERLING" title */
-  .start-title{
-    font-size:52px; /* Large text */
-    font-weight:800; /* Very bold */
-    color:var(--gold); /* Gold color */
-    text-shadow:0 0 30px rgba(212,175,55,.7); /* Glowing effect */
-    letter-spacing:2px; /* Space between letters */
-    animation:goldPulse 2s ease infinite /* Pulsing glow animation */
-  }
-
-  /* "Interactive Resume Experience" subtitle */
-  .start-subtitle{
-    font-size:20px; /* Medium text size */
-    color:#cad2ff; /* Light purple color */
-    font-weight:400; /* Normal weight */
-    letter-spacing:1px /* Slight letter spacing */
-  }
-
-  /* Play button spacing */
-  .play-button{
-    margin-bottom:4px /* Small space below button */
-  }
-
-  /* Container for Settings/Leaderboard buttons */
-  .start-actions{
-    display:flex; /* Use flexbox */
-    gap:18px; /* Space between buttons */
-    flex-wrap:wrap; /* Wrap to new line if needed */
-    justify-content:center /* Center buttons */
-  }
-
-  /* Settings and Leaderboard buttons */
-  .start-secondary-btn{
-    padding:12px 20px; /* Internal button spacing */
-    border-radius:999px; /* Fully rounded (pill shape) */
-    font-weight:700; /* Bold text */
-    border:2px solid var(--neon-blue); /* Blue border */
-    color:var(--neon-blue); /* Blue text */
-    background:transparent; /* No background */
-    cursor:pointer; /* Show clickable cursor */
-    transition:all .3s ease; /* Smooth hover effects */
-    min-width:170px; /* Minimum button width */
-    text-transform:uppercase; /* All caps text */
-    letter-spacing:.6px /* Space between letters */
-  }
-
-  /* Hover effect for secondary buttons */
-  .start-secondary-btn:hover{
-    background:var(--neon-blue); /* Fill with blue */
-    color:#02121f; /* Dark text */
-    box-shadow:0 10px 24px rgba(74,207,255,.45); /* Blue glow */
-    transform:translateY(-3px) /* Lift up slightly */
-  }
-
-  /* Encouragement text below buttons */
-  .start-encouragement{
-    margin-top:4px; /* Space above text */
-    font-size:15px; /* Text size */
-    color:#9ce5ff; /* Light blue */
-    letter-spacing:.6px; /* Letter spacing */
-    text-transform:uppercase /* All caps */
-  }
-
-  .completion-dock{position:fixed;right:26px;bottom:26px;background:rgba(7,10,20,.92);border-radius:18px;box-shadow:0 18px 35px rgba(0,0,0,.55);padding:20px 22px;max-width:280px;display:none;flex-direction:column;gap:14px;z-index:960;border:1px solid rgba(74,207,255,.25)}
-  .completion-dock.show{display:flex;animation:fadeIn .4s ease}
-  .completion-dock-title{font-weight:800;font-size:16px;color:var(--neon-blue);text-transform:uppercase;letter-spacing:.6px}
-  .completion-dock-actions{display:flex;flex-direction:column;gap:8px}
-  .completion-dock button,.completion-dock a{padding:10px 14px;border-radius:999px;font-weight:600;text-align:center;text-decoration:none;border:2px solid var(--neon-blue);color:var(--neon-blue);background:transparent;transition:all .3s ease;text-transform:uppercase;letter-spacing:.5px}
-  .completion-dock button:hover,.completion-dock a:hover{background:var(--neon-blue);color:#02121f;transform:translateY(-2px);box-shadow:0 10px 22px rgba(74,207,255,.35)}
-  body.dark-mode .completion-dock{background:rgba(7,10,20,.92);color:#e5e7eb}
-  body.dark-mode .completion-dock button,body.dark-mode .completion-dock a{color:var(--neon-blue);border-color:var(--neon-blue)}
-  body.dark-mode .completion-dock button:hover,body.dark-mode .completion-dock a:hover{background:var(--neon-blue);color:#02121f}
-
-  .xp-burst{position:fixed;pointer-events:none;z-index:1100;opacity:0;animation:xpBurst .9s ease forwards}
-  .xp-burst > span{display:block;font-weight:800;color:var(--neon-pink);text-shadow:0 2px 6px rgba(0,0,0,.45);font-size:18px;transform-origin:center}
-  @keyframes xpBurst{0%{opacity:0;transform:scale(.6)}40%{opacity:1;transform:scale(1.05)}100%{opacity:0;transform:scale(1.4) translateY(-40px)}}
-  .play-button{
-    padding:20px 60px;font-size:24px;font-weight:800;background:var(--gold);
-    color:#000;border:3px solid var(--gold);border-radius:12px;cursor:pointer;
-    transition:all .3s ease;text-transform:uppercase;letter-spacing:2px;
-    box-shadow:0 8px 20px rgba(212,175,55,.4)}
-  .play-button:hover{
-    background:#000;color:var(--gold);transform:scale(1.05);
-    box-shadow:0 12px 30px rgba(212,175,55,.6)}
-
-  /* COMPLETION MODAL */
-  .completion-modal{position:fixed;inset:0;background:rgba(7,10,20,.86);z-index:15000;display:none;align-items:center;justify-content:center;padding:20px;animation:fadeIn .5s ease}
-  .completion-modal.show{display:flex}
-  .completion-content{
-    background:rgba(7,10,20,.95);border-radius:28px;max-width:680px;width:100%;max-height:90vh;overflow-y:auto;
-    padding:48px 56px;position:relative;border:3px solid transparent;box-shadow:0 30px 80px rgba(0,0,0,.6)
-  }
-  .completion-content::before{content:"";position:absolute;inset:0;border-radius:28px;border:3px solid transparent;
-    background:linear-gradient(120deg,var(--neon-blue),var(--neon-purple),var(--neon-pink)) border-box;
-    background-size:260% 260%;animation:neonCycle 10s ease infinite;
-    -webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
-    -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
-  .completion-content > *{position:relative}
-  .completion-title{font-size:34px;font-weight:800;text-align:center;color:#fef6ff;margin-bottom:28px;letter-spacing:1.2px;text-transform:uppercase;text-shadow:0 0 25px rgba(123,91,255,.55)}
-  .completion-stats{background:rgba(12,16,30,.9);padding:24px;border-radius:18px;margin-bottom:30px;border:1px solid rgba(74,207,255,.18);display:grid;gap:14px}
-  .stat-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0}
-  .stat-label{font-weight:600;display:flex;align-items:center;gap:8px;color:#9ca7ff;letter-spacing:.4px;text-transform:uppercase;font-size:13px}
-  .stat-value{font-weight:800;color:#fef6ff;font-size:16px}
-  .completion-message{text-align:center;font-size:15px;line-height:1.7;margin-bottom:28px;padding:18px;border-radius:16px;background:rgba(123,91,255,.12);color:#d5d8ff;border:1px solid rgba(123,91,255,.35)}
-  .completion-divider{height:2px;background:linear-gradient(90deg,transparent,var(--neon-purple),var(--neon-pink),transparent);margin:32px 0}
-  .completion-section-title{font-size:18px;font-weight:800;color:#a7b4ff;text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px}
-  .completion-primary{display:flex;flex-direction:column;gap:14px;margin-bottom:16px}
-  .completion-secondary{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:12px}
-  .completion-footer{margin-top:24px;display:flex;flex-direction:column;gap:12px}
-  .completion-footer-actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
-  .cta-btn{padding:14px 20px;border-radius:999px;font-weight:700;text-decoration:none;transition:all .3s ease;border:2px solid transparent;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:10px;text-transform:uppercase;letter-spacing:.6px;justify-content:center}
-  .cta-btn-primary{background:linear-gradient(120deg,var(--neon-pink),var(--neon-purple));color:#05060f;border:none;box-shadow:0 16px 32px rgba(255,60,172,.35)}
-  .cta-btn-primary:hover{filter:brightness(1.08);transform:translateY(-3px)}
-  .cta-btn-secondary{background:transparent;color:var(--neon-blue);border:2px solid var(--neon-blue);box-shadow:0 12px 24px rgba(74,207,255,.25)}
-  .cta-btn-secondary:hover{background:var(--neon-blue);color:#02121f;transform:translateY(-3px)}
-  .cta-btn-ghost{background:transparent;color:#f5f5f5;border:2px solid rgba(255,255,255,.25)}
-  .cta-btn-ghost:hover{border-color:rgba(74,207,255,.6);color:var(--neon-blue);transform:translateY(-2px)}
-  .next-levels{background:rgba(11,15,28,.92);padding:24px;border-radius:18px;border:1px solid rgba(74,207,255,.18);display:flex;flex-direction:column;gap:12px}
-  .level-item{display:flex;align-items:center;gap:16px;padding:14px;background:rgba(18,24,38,.85);border-radius:14px;border:1px solid rgba(74,207,255,.12)}
-  .level-item.locked{opacity:.85}
-  .level-number{width:42px;height:42px;border-radius:50%;background:linear-gradient(140deg,var(--neon-blue),var(--neon-purple));color:#05060f;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:16px}
-  .level-info{flex:1}
-  .level-name{font-weight:700;font-size:14px;color:#e5e7ff;text-transform:uppercase;letter-spacing:.6px}
-  .level-desc{font-size:12px;color:#94a3ff}
-  /* SETTINGS BUTTON & PANEL */
-  .settings-button{
-    position:fixed;bottom:20px;right:20px;width:50px;height:50px;border-radius:50%;
-    background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;
-    justify-content:center;font-size:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);
-    z-index:998;transition:all .3s ease}
-  .settings-button:hover{transform:scale(1.1) rotate(90deg);box-shadow:0 6px 20px rgba(212,175,55,.4)}
-  .settings-panel{
-    position:fixed;bottom:80px;right:20px;background:#fff;border-radius:12px;
-    padding:20px;box-shadow:0 8px 30px rgba(0,0,0,.2);z-index:13000;min-width:200px;
-    display:none}
-  .settings-panel.show{display:block;animation:fadeIn .3s ease}
-  .setting-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;
-    border-bottom:1px solid #e5e7eb}
-  .setting-item:last-child{border-bottom:none}
-  .setting-label{font-weight:600;font-size:14px}
-  .toggle-switch{
-    width:50px;height:26px;background:#ccc;border-radius:13px;position:relative;
-    cursor:pointer;transition:background .3s ease}
-  .toggle-switch.on{background:var(--gold)}
-  .toggle-slider{
-    width:22px;height:22px;background:#fff;border-radius:50%;position:absolute;
-    top:2px;left:2px;transition:left .3s ease;box-shadow:0 2px 4px rgba(0,0,0,.2)}
-  .toggle-switch.on .toggle-slider{left:26px}
-
-  /* LEADERBOARD BUTTON */
-  .leaderboard-button{
-    position:fixed;bottom:20px;right:80px;width:50px;height:50px;border-radius:50%;
-    background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;
-    justify-content:center;font-size:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);
-    z-index:998;transition:all .3s ease}
-  .leaderboard-button:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(212,175,55,.4)}
-
-  /* LEADERBOARD MODAL */
-  .leaderboard-modal{
-    position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:14000;
-    display:none;align-items:center;justify-content:center;padding:20px}
-  .leaderboard-modal.show{display:flex;animation:fadeIn .3s ease}
-  .leaderboard-content{
-    position:relative;background:rgba(7,10,20,.94);border-radius:24px;max-width:520px;width:100%;max-height:80vh;
-    overflow-y:auto;padding:36px 40px;border:2px solid transparent;box-shadow:0 20px 50px rgba(0,0,0,.55)}
-  .leaderboard-content::before{content:"";position:absolute;inset:0;border-radius:24px;border:2px solid transparent;
-    background:linear-gradient(120deg,var(--neon-blue),var(--neon-purple),var(--neon-pink)) border-box;
-    background-size:250% 250%;animation:neonCycle 10s ease infinite;
-    -webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
-    -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
-  .leaderboard-content > *{position:relative}
-  .leaderboard-title{
-    font-size:24px;font-weight:800;text-align:center;color:var(--gold);
-    margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:10px}
-  .leaderboard-cta{margin-bottom:16px;text-align:center;font-size:13px;color:var(--muted);font-weight:600;letter-spacing:.4px}
-  body.dark-mode .leaderboard-cta{color:#9ca3af}
-  .leaderboard-list{list-style:none;margin:0;padding:0} // TEXT NOTE: leaderboard copy & layout
-  .leaderboard-item{
-    display:flex;justify-content:space-between;align-items:center;padding:14px 16px;margin-bottom:10px;
-    background:rgba(12,16,30,.9);border-radius:14px;border:1px solid rgba(74,207,255,.16);box-shadow:0 12px 24px rgba(0,0,0,.35)}
-  .leaderboard-item.current{border-color:var(--neon-pink);background:rgba(45,32,72,.9)}
-  .leaderboard-rank{font-weight:800;font-size:18px;color:var(--neon-pink);width:48px}
-  .leaderboard-name{flex:1;font-weight:600;color:#f5f7ff}
-  .leaderboard-score{font-weight:800;color:var(--neon-blue)}
-
-  .leaderboard-details{flex:1;display:flex;flex-direction:column;gap:4px}
-  .leaderboard-meta{font-size:11px;color:var(--muted)}
-  .leaderboard-entry{background:#f9fafb;padding:16px;border-radius:8px;border:1px solid #e5e7eb;margin:20px 0}
-  .leaderboard-entry-controls{display:flex;gap:10px;flex-wrap:wrap}
-  .leaderboard-entry input{flex:1;min-width:180px;padding:10px;border:2px solid #e5e7eb;border-radius:6px;font-size:14px}
-  .leaderboard-feedback{margin-top:10px;font-size:12px;color:var(--muted)}
-  .leaderboard-feedback.success{color:var(--green)}
-  .leaderboard-feedback.error{color:#b91c1c}
-  body.dark-mode .leaderboard-entry{background:#2a2a2a;border-color:#3a3a3a}
-  body.dark-mode .leaderboard-entry input{background:#1f1f1f;color:#e5e7eb;border-color:#3a3a3a}
-  body.dark-mode .leaderboard-meta{color:#9ca3af}
-  body.dark-mode .leaderboard-feedback{color:#9ca3af}
-  body.dark-mode .leaderboard-feedback.error{color:#f87171}
-  body.dark-mode .leaderboard-feedback.success{color:var(--green)}
-
-  /* ========================================
-     DARK MODE OVERRIDES
-     Applied when dark mode toggle is activated
-     These override the default light theme styles
-     ======================================== */
-  body.dark-mode{
-    background:#1a1a1a; /* Dark background for entire page */
-    color:#e5e7eb /* Light text color */
-  }
-  body.dark-mode .wrap{
-    color:#e5e7eb /* Light text in main content area */
-  }
-  body.dark-mode .section .h{
-    color:#e5e7eb /* Light text for section headers */
-  }
-  body.dark-mode .tab{
-    background:#2a2a2a; /* Dark background for tab buttons */
-    color:#e5e7eb; /* Light text */
-    border-color:#3a3a3a /* Darker border */
-  }
-  body.dark-mode .sub{
-    background:#2a2a2a /* Dark background for job/school cards */
-  }
-  body.dark-mode .sub:hover{
-    background:#333 /* Slightly lighter on hover */
-  }
-  body.dark-mode .progress-top{
-    background:#2a2a2a /* Dark background for top progress bar */
-  }
-  body.dark-mode .progress-left{
-    background:rgba(7,10,20,.92) /* Very dark for vertical XP bar */
-  }
-  body.dark-mode .achievement-panel{
-    background:#2a2a2a; /* Dark background for achievements */
-    border-color:#3a3a3a /* Darker border */
-  }
-  body.dark-mode .achievement-header{
-    background:#1f1f1f; /* Darker background for header */
-    color:#e5e7eb; /* Light text */
-    border-color:#3a3a3a /* Darker border */
-  }
-  body.dark-mode .achievement-toggle{
-    color:#e5e7eb /* Light color for collapse arrow */
-  }
-  body.dark-mode .achievement-counter{
-    color:var(--gold) /* Keep gold color for counter */
-  }
-  body.dark-mode .achievement-item{
-    background:#1f1f1f; /* Dark background for achievement cards */
-    border-color:#3a3a3a /* Darker border */
-  }
-  body.dark-mode .achievement-item.unlocked{
-    background:#1a3a2a; /* Dark green background for unlocked achievements */
-    border-color:#10b981 /* Green border */
-  }
-  body.dark-mode .achievement-name{
-    color:#e5e7eb /* Light text for achievement names */
-  }
-  body.dark-mode .achievement-hint{
-    color:#9ca3af /* Gray text for hints */
-  }
-  body.dark-mode .settings-panel{
-    background:#2a2a2a; /* Dark background for settings */
-    color:#e5e7eb /* Light text */
-  }
-  body.dark-mode .leaderboard-content{
-    background:rgba(7,10,20,.94); /* Very dark for leaderboard */
-    color:#e5e7eb /* Light text */
-  }
-  body.dark-mode .leaderboard-item{
-    background:rgba(22,28,45,.9); /* Dark blue background for entries */
-    border-color:rgba(74,207,255,.18) /* Subtle blue border */
-  }
-  body.dark-mode .completion-content{
-    background:rgba(7,10,20,.95); /* Very dark for completion modal */
-    color:#e5e7eb /* Light text */
-  }
-
-  /* ========================================
-     NAVIGATION TABS (Professional Summary, Experience, etc.)
-     Individual buttons below the top progress bar
-     ======================================== */
-  .tabs{
-    display:flex; /* Use flexbox for button layout */
-    flex-wrap:wrap; /* Wrap buttons to new line if needed */
-    gap:10px; /* 10px space between buttons */
-    justify-content:center; /* Center buttons horizontally */
-    margin:6px 0 32px; /* Top/bottom margins */
-    position:fixed; /* Stay in place when scrolling */
-    top:60px; /* 60px from top (below progress bar) */
-    left:50%; /* Start at horizontal center */
-    transform:translateX(-50%); /* Shift left by half width to truly center */
-    background:transparent; /* No background (changed from full-width bar) */
-    padding:12px 20px; /* Internal spacing */
-    z-index:999; /* Layer above content */
-    max-width:fit-content /* Only as wide as needed for buttons */
-  }
-
-  /* Individual tab button */
-  .tab{
-    appearance:none; /* Remove default button styling */
-    cursor:pointer; /* Show clickable cursor */
-    border:2px solid #e5e7eb; /* Light gray border */
-    background:#fff; /* White background */
-    color:var(--ink); /* Dark text */
-    padding:10px 18px; /* Internal button spacing */
-    border-radius:12px; /* Rounded corners (change to 999px for pill shape) */
-    font-weight:700; /* Bold text */
-    transition:all .4s ease; /* Smooth hover effects */
-    box-shadow:0 2px 8px rgba(0,0,0,.08); /* Subtle shadow */
-  }
-
-  /* Tab hover effect */
-  .tab:hover{
-    border-color:var(--gold); /* Gold border on hover */
-    color:#000; /* Black text */
-    transform:scale(1.03); /* Grow slightly */
-    box-shadow:0 4px 12px rgba(212,175,55,.3) /* Gold glow */
-  }
-
-  /* Tab when clicked (active state) */
-  .tab.clicked{
-    background:var(--gold); /* Gold background */
-    color:#000; /* Black text */
-    border-color:var(--gold); /* Gold border */
-    animation:tabClick .6s ease; /* Click animation */
-  }
-
-  /* ANIMATION: Tab click effect */
-  @keyframes tabClick{
-    0%{transform:scale(1);background:var(--gold)} /* Start normal size */
-    50%{transform:scale(1.08);background:var(--gold)} /* Grow to 108% */
-    100%{transform:scale(1);background:#fff;border-color:var(--gold)} /* Return to normal, white background */
-  }
-
-  /* ========================================
-     SECTION HEADERS (Professional Summary, Experience, Education, etc.)
-     Clickable headers that expand/collapse resume sections
-     ======================================== */
-  .section{
-    margin:28px 0 /* Vertical spacing between sections */
-  }
-
-  /* Main section header button */
-  .h{
-    display:flex; /* Use flexbox */
-    align-items:center; /* Center items vertically */
-    gap:10px; /* 10px space between caret and text */
-    width:100%; /* Full width */
-    text-align:left; /* Align text left */
-    padding:16px 0; /* Vertical padding only */
-    border:none; /* No border */
-    background:transparent; /* No background */
-    font-weight:800; /* Very bold text */
-    font-size:22px; /* Large text size */
-    cursor:pointer; /* Show clickable cursor */
-    transition:all .5s ease; /* Smooth animations */
-  }
-
-  /* Header hover effect */
-  .h:hover{
-    transform:translateX(10px); /* Shift right 10px */
-    color:var(--gold) /* Change to gold color */
-  }
-
-  /* Caret/arrow icon next to header text */
-  .h .caret{
-    width:18px; /* Caret width */
-    height:18px; /* Caret height */
-    display:inline-grid; /* Grid for centering */
-    place-items:center; /* Center content */
-    color:#94a3b8; /* Gray color */
-    transition:all .4s ease /* Smooth rotation */
-  }
-
-  /* Caret hover effect */
-  .h:hover .caret{
-    color:var(--gold); /* Gold color */
-    transform:rotate(90deg) /* Rotate 90 degrees */
-  }
-
-  /* Special animation when section is being centered */
-  .h.centering{
-    animation:slideCenter 1.8s ease forwards; /* Slide to center animation */
-  }
-
-  /* ANIMATION: Slide header to center of screen */
-  @keyframes slideCenter{
-    0%{
-      transform:translateX(0); /* Start at normal position */
-      color:var(--ink) /* Dark color */
-    }
-    50%{
-      transform:translateX(calc(50vw - 50%)); /* Move to center (50% of viewport - 50% of element) */
-      color:var(--gold); /* Gold color */
-      text-shadow:0 0 25px rgba(212,175,55,.8) /* Glowing effect */
-    }
-    100%{
-      transform:translateX(calc(50vw - 50%)); /* Stay at center */
-      color:var(--gold); /* Gold color */
-      text-shadow:0 0 25px rgba(212,175,55,.8) /* Glowing effect */
-    }
-  }
-
-  /* Content panel under each section header (hidden by default) */
-  .panel{
-    display:none; /* Hidden by default */
-    padding:0 0 18px 0 /* Bottom padding only */
-  }
-
-  /* Panel when expanded/visible */
-  .panel.show{
-    display:block; /* Make visible */
-    animation:fadeIn .6s ease /* Fade in animation */
-  }
-
-  /* ANIMATION: Fade in and slide down */
-  @keyframes fadeIn{
-    from{
-      opacity:0; /* Start invisible */
-      transform:translateY(-12px) /* Start 12px above */
-    }
-    to{
-      opacity:1; /* End fully visible */
-      transform:none /* End at normal position */
-    }
-  }
-
-  /* Meta text (dates, locations, etc.) */
-  .meta{
-    color:var(--muted); /* Gray color */
-    font-style:italic; /* Italic text */
-    font-size:14px /* Small text size */
-  }
-
-  /* ========================================
-     JOB/SCHOOL CARDS
-     Individual experience or education entries
-     ======================================== */
-  .sub{
-    margin:20px 0; /* Vertical spacing between cards */
-    padding:18px; /* Internal spacing */
-    background:#fafafa; /* Very light gray background */
-    border-radius:8px; /* Rounded corners */
-    transition:all .4s ease; /* Smooth hover effects */
-  }
-
-  /* Card hover effect */
-  .sub:hover{
-    background:#f0f0f0; /* Slightly darker gray */
-    transform:translateX(6px) /* Shift right 6px */
-  }
-
-  /* Sub-header for each job/school (clickable to expand details) */
-  .sub .sub-h{
-    width:100%; /* Full width */
-    text-align:left; /* Align text left */
-    background:transparent; /* No background */
-    border:0; /* No border */
-    padding:0; /* No padding */
-    cursor:pointer; /* Show clickable cursor */
-    display:flex; /* Use flexbox */
-    align-items:flex-start; /* Align to top */
-    gap:10px; /* Space between caret and content */
-    font-weight:700; /* Bold text */
-    font-size:17px; /* Text size */
-  }
-
-  /* Small caret for job/school cards */
-  .sub .sub-h .caret{
-    width:14px; /* Caret width */
-    height:14px; /* Caret height */
-    color:#94a3b8; /* Gray color */
-    transition:all .4s ease; /* Smooth rotation */
-    margin-top:4px /* Slight downward adjustment */
-  }
-
-  /* Caret hover on job/school cards */
-  .sub .sub-h:hover .caret{
-    color:var(--gold); /* Gold color */
-    transform:rotate(90deg) /* Rotate 90 degrees */
-  }
-
-  /* Header layout for job cards (company name + dates) */
-  .job-header{
-    display:flex; /* Use flexbox */
-    justify-content:space-between; /* Space between company and dates */
-    flex:1; /* Take up remaining space */
-    gap:20px /* Minimum 20px gap */
-  }
-
-  /* Left side: company and position */
-  .job-title{
-    display:flex; /* Use flexbox */
-    flex-direction:column; /* Stack vertically */
-    gap:4px /* Small space between company and position */
-  }
-
-  /* Company/school name */
-  .company-name{
-    font-size:18px; /* Text size */
-    color:var(--ink) /* Dark text */
-  }
-
-  /* Position/degree name */
-  .position-name{
-    font-size:16px; /* Slightly smaller text */
-    font-weight:600; /* Semi-bold */
-    color:var(--muted) /* Gray color */
-  }
-
-  /* Right side: dates and location */
-  .job-meta{
-    display:flex; /* Use flexbox */
-    flex-direction:column; /* Stack vertically */
-    gap:4px; /* Small vertical spacing */
-    text-align:right; /* Align text right */
-    align-items:flex-end /* Align items to right */
-  }
-
-  /* Job/school details paragraph (hidden by default) */
-  .sub .sub-p{
-    display:none; /* Hidden by default */
-    margin-top:12px /* Space above when shown */
-  }
-
-  /* Show details paragraph when expanded */
-  .sub .sub-p.show{
-    display:block /* Make visible */
-  }
-
-  /* Staggered list reveal */
-  .list{margin:10px 0 6px 20px;padding:0;list-style:disc}
-  .list li{opacity:0;transform:translateY(8px);margin:8px 0;transition:all .5s ease}
-  .list li.reveal{animation:revealItem .6s ease forwards}
-  .list li.hide{animation:hideItem .4s ease forwards}
-  @keyframes revealItem{to{opacity:1;transform:none}}
-  @keyframes hideItem{from{opacity:1;transform:none} to{opacity:0;transform:translateY(-8px)}}
-
-  /* Metric highlight on hover */
-  .metric{font-weight:800;color:var(--ink);transition:all .3s ease}
-  .list li:hover .metric{color:var(--gold);text-shadow:0 0 8px rgba(212,175,55,.6)}
-
-  /* Skills grid */
-  .skills-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px 40px;margin:20px 0}
-  .skill-item{
-    padding:10px 0;font-weight:500;color:var(--ink);
-    transition:all .4s ease;opacity:0;transform:translateY(8px);
-  }
-  .skill-item.reveal{animation:revealItem .6s ease forwards}
-  .skill-item.hide{animation:hideItem .4s ease forwards}
-  .skill-item:hover{color:var(--gold);transform:translateX(8px) translateY(0)}
-
-  /* Lists in certs/honors */
-  #p-certs .list, #p-honors .list{list-style:none;margin-left:0}
-  #p-certs .list li, #p-honors .list li{
-    padding:8px 0;transition:all .4s ease;
-  }
-  #p-certs .list li:hover, #p-honors .list li:hover{color:var(--gold);transform:translateX(8px)}
-
-  /* Two-column layouts */
-  #p-certs .list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 30px}
-  #p-honors .list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 30px}
-
-  /* ========================================
-     RESPONSIVE DESIGN - MEDIA QUERIES
-     Adjusts layout for different screen sizes:
-     - 1400px: Large desktops
-     - 1200px: Medium desktops / laptops
-     - 1024px: Tablets / small laptops
-     - 768px: Mobile / large phones
-     - 480px: Small phones
-     - Landscape: Phones rotated sideways
-     ======================================== */
-
-  /* LARGE DESKTOPS (1400px and smaller) */
-  @media (max-width: 1400px) {
-    .achievement-panel{right:20px;width:280px} /* Narrower achievements, closer to edge */
-    .progress-left{left:12px} /* XP bar closer to left edge */
-  }
-
-  /* MEDIUM DESKTOPS / LAPTOPS (1200px and smaller) */
-  @media (max-width: 1200px) {
-    .achievement-panel{width:260px;top:120px} /* Even narrower, slightly lower */
-    #achievementList{grid-template-columns:1fr} /* Single column for achievements */
-  }
-
-  /* TABLETS / SMALL LAPTOPS (1024px and smaller) */
-  @media (max-width: 1024px) {
-    .wrap{margin-top:160px;padding:0 12px} /* More top space, less side padding */
-    .progress-left{display:none} /* Hide vertical XP bar on tablets */
-    .achievement-panel{
-      right:12px;width:240px;top:110px;max-height:calc(100vh - 140px); /* Smaller, repositioned */
-    }
-    .tabs{padding:8px 12px;gap:8px} /* Smaller tab container */
-    .tab{padding:8px 14px;font-size:14px} /* Smaller tab buttons, smaller text */
-  }
-
-  /* ========================================
-     MOBILE / LARGE PHONES (768px and smaller)
-     CRITICAL RESPONSIVE BREAKPOINT for mobile devices
-     These styles fix the zooming and layout issues on phones
-     ======================================== */
-  @media (max-width: 768px) {
-    /* FIX OVERFLOW AND ZOOM ISSUES - Prevents page from being too wide or zoomed in */
-    html, body{
-      overflow-x:hidden; /* Prevent horizontal scrolling (cuts off content that extends past screen width) */
-      width:100%; /* Force full width - don't let content expand wider than screen */
-      position:relative /* Establish positioning context for fixed elements */
-    }
-    body{
-      font-size:14px; /* Reduce base font from 16px to 14px for better mobile fit */
-      -webkit-text-size-adjust:100%; /* CRITICAL: Prevents iOS Safari from auto-zooming text when device rotates */
-      touch-action:manipulation /* Removes 300ms click delay on mobile, improves touch responsiveness */
-    }
-
-    /* MAIN CONTENT WRAPPER - Adjust spacing for mobile */
-    .wrap{
-      margin-top:100px; /* Reduce from 140px - less space needed since top bar is shorter */
-      padding:0 12px; /* Reduce side padding from 18px to 12px */
-      width:100%; /* Ensure full width */
-      overflow-x:hidden /* Prevent horizontal scroll in content area */
-    }
-
-    /* PROGRESS BAR - Make smaller and allow wrapping on narrow screens */
-    .progress-top{
-      height:auto; /* Remove fixed 60px height */
-      min-height:50px; /* Ensure at least 50px tall */
-      padding:8px 12px; /* Reduce padding (was 0 20px) */
-      gap:8px; /* Tighten gap between elements (was 15px) */
-      flex-wrap:wrap /* Allow items to wrap to new line if screen too narrow */
-    }
-    .progress-top-label{font-size:11px} /* Shrink label from 14px to 11px */
-    .progress-top-bar{height:20px;min-width:120px} /* Shorter bar (was 28px), ensure minimum width */
-    .progress-top-text{font-size:10px} /* Smaller percentage text (was 13px) */
-    .progress-top-xp{font-size:11px} /* Smaller XP text (was 14px) */
-
-    /* NAVIGATION TABS - CRITICAL FIX: Change from fixed to relative positioning */
-    .tabs{
-      top:auto; /* Remove fixed top position */
-      bottom:auto; /* Remove fixed bottom position */
-      position:relative; /* IMPORTANT: Change from fixed to relative - prevents overlap issues on mobile */
-      margin:10px 0; /* Add vertical margin for spacing */
-      padding:8px; /* Reduce padding */
-      gap:6px; /* Tighter gap between tabs */
-      width:100%; /* Full width */
-      overflow-x:auto; /* Allow horizontal scrolling if too many tabs */
-      -webkit-overflow-scrolling:touch /* Smooth momentum scrolling on iOS */
-    }
-    .tab{
-      padding:8px 12px; /* Adjust button padding */
-      font-size:12px; /* Smaller text */
-      box-shadow:0 1px 4px rgba(0,0,0,.1); /* Subtle shadow */
-      white-space:nowrap; /* Prevent tab text from wrapping */
-      min-width:auto /* Remove minimum width constraint */
-    }
-
-    /* ACHIEVEMENT PANEL - Move to bottom on mobile */
-    .achievement-panel{
-      position:fixed; /* Keep fixed positioning */
-      bottom:80px; /* Position 80px from bottom (above settings buttons) */
-      top:auto; /* Remove top positioning */
-      right:12px; /* 12px from right edge */
-      left:12px; /* 12px from left edge (creates full-width with margins) */
-      width:auto; /* Auto width based on left/right positioning */
-      max-width:none; /* Remove desktop max-width constraint */
-      max-height:180px; /* Short height so it doesn't cover content */
-      z-index:950 /* Below modals (1000+) but above page content */
-    }
-    .achievement-panel.collapsed{max-height:44px} /* When collapsed, very short */
-    .achievement-header{padding:10px 12px;font-size:12px} /* Smaller header */
-    #achievementList{
-      grid-template-columns:1fr; /* Single column (was 2 columns on desktop) */
-      gap:8px; /* Tighter gap */
-      max-height:100px; /* Limit height */
-      overflow-y:auto /* Scroll if too many achievements */
-    }
-    .achievement-item{padding:8px;gap:8px;font-size:12px} /* Smaller achievement items */
-
-    /* JOB CARDS - Stack elements vertically */
-    .sub{padding:12px} /* Reduce padding */
-    .job-header{
-      flex-direction:column; /* Stack items vertically (was horizontal row) */
-      gap:8px /* Space between stacked items */
-    }
-    .job-meta{
-      text-align:left; /* Align dates to left (was right on desktop) */
-      align-items:flex-start; /* Align to start */
-      font-size:12px /* Smaller text */
-    }
-
-    /* GRID LAYOUTS - Single column on mobile */
-    .skills-grid{grid-template-columns:1fr} /* One column (was multi-column on desktop) */
-    #p-certs .list{grid-template-columns:1fr} /* Certifications: single column */
-    #p-honors .list{grid-template-columns:1fr} /* Honors: single column */
-
-    /* MODALS - Make responsive */
-    .completion-modal, .leaderboard-modal{
-      max-width:95%; /* Almost full width (95% of screen) */
-      max-height:85vh; /* Maximum 85% of viewport height */
-      padding:16px; /* Moderate padding */
-      margin:0 10px /* Small side margins */
-    }
-
-    /* TOUCH TARGETS - Ensure all interactive elements are easy to tap */
-    button, .tab, .cta-btn{
-      min-height:44px; /* iOS Human Interface Guidelines: minimum 44x44px touch target */
-      padding:12px 16px /* Adequate padding for comfortable tapping */
-    }
-  }
-
-  /* ========================================
-     SMALL PHONES (480px and smaller)
-     Extra aggressive sizing for older/smaller phones (iPhone SE, etc.)
-     ======================================== */
-  @media (max-width: 480px) {
-    /* FURTHER SIZE REDUCTIONS */
-    body{font-size:13px} /* Reduce base font from 14px to 13px */
-    .wrap{
-      margin-top:90px; /* Further reduce top margin (was 100px) */
-      padding:0 10px; /* Minimal side padding (was 12px) */
-      width:100% /* Full width */
-    }
-
-    /* PROGRESS BAR - Even more compact */
-    .progress-top{
-      height:auto; /* Flexible height */
-      min-height:45px; /* Minimum 45px (was 50px) */
-      padding:6px 8px; /* Tight padding */
-      gap:6px /* Minimal gaps */
-    }
-    .progress-top-label{display:none} /* HIDE label completely to save space on tiny screens */
-    .progress-top-bar{
-      min-width:100px; /* Smaller minimum width (was 120px) */
-      height:18px /* Thinner bar (was 20px) */
-    }
-
-    /* TABS - More compact */
-    .tabs{
-      gap:4px; /* Very tight gaps (was 6px) */
-      padding:6px; /* Minimal padding */
-      margin:8px 0; /* Vertical margin */
-      overflow-x:auto /* Allow horizontal scroll */
-    }
-    .tab{
-      padding:8px 12px; /* Compact padding */
-      font-size:11px; /* Small text (was 12px) */
-      min-height:40px /* Slightly smaller touch target (still usable) */
-    }
-
-    /* ACHIEVEMENT PANEL - Maximize width on small screens */
-    .achievement-panel{
-      max-width:100%; /* Allow full width */
-      right:8px; /* Smaller margins (was 12px) */
-      left:8px; /* Smaller margins (was 12px) */
-      width:auto; /* Auto width */
-      bottom:70px; /* Position above buttons */
-      max-height:150px /* Shorter height (was 180px) */
-    }
-    .achievement-item{
-      font-size:11px; /* Smaller text */
-      padding:6px /* Tight padding */
-    }
-
-    /* FLOATING BUTTONS - Compact positioning */
-    .settings-button,.leaderboard-button{
-      width:44px; /* 44x44px touch target */
-      height:44px;
-      font-size:18px; /* Smaller icon (was 20px) */
-      bottom:16px /* Position at bottom */
-    }
-    .leaderboard-button{right:60px} /* Position next to settings button */
-
-    /* START SCREEN - Smaller welcome screen */
-    .start-content{padding:24px 16px} /* Reduced padding */
-    .start-title{
-      font-size:28px; /* Smaller title (was 52px on desktop) */
-      line-height:1.2 /* Tighter line height */
-    }
-    .start-subtitle{font-size:14px} /* Smaller subtitle */
-    .play-button{
-      padding:14px 32px; /* Compact padding */
-      font-size:18px; /* Smaller text */
-      min-height:50px /* Ensure tappable */
-    }
-
-    /* UNIVERSAL TOUCH TARGETS - Ensure everything is tappable */
-    a, button, .tab, input, select{
-      min-height:40px; /* Minimum 40px height (44px preferred but 40px acceptable) */
-      padding:10px 14px /* Adequate padding */
-    }
-
-    /* ACCORDION HEADERS - Readable but compact */
-    .acc-head{
-      font-size:16px; /* Main section headers */
-      padding:14px 12px /* Tappable padding */
-    }
-    .sub-head{
-      font-size:15px; /* Sub-section headers */
-      padding:12px 10px /* Slightly less padding */
-    }
-
-    /* MODALS - Full width on small screens */
-    .completion-modal, .leaderboard-modal{
-      width:calc(100% - 20px); /* Full width minus 20px total margin */
-      max-width:none; /* Remove max-width constraint */
-      padding:12px /* Compact padding */
-    }
-    .completion-title{font-size:24px} /* Smaller modal title */
-    .start-screen{padding:10px} /* Minimal padding */
-  }
-
-  /* LANDSCAPE MODE on SHORT SCREENS (phones rotated sideways) */
-  @media (max-height: 600px) and (orientation: landscape) {
-    .wrap{
-      margin-top:110px /* Less top margin when horizontal */
-    }
-    .progress-top{
-      height:40px /* Shorter bar */
-    }
-    .tabs{
-      top:40px; /* Adjust for shorter progress bar */
-      padding:6px 10px /* Less padding */
-    }
-    .achievement-panel{
-      max-height:150px; /* Very short in landscape */
-      top:90px /* Adjust position */
-    }
-  }
+:root{
+--gold:#d4af37;
+--ink:#111;
+--muted:#6b7280;
+--green:#10b981;
+--green-dark:#059669;
+--neon-pink:#ff3cac;
+--neon-blue:#4acfff;
+--neon-purple:#7b5bff;
+--panel-bg:#111827;
+}
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+}
+
+html,body{
+margin:0;
+-webkit-font-smoothing:antialiased;
+-moz-osx-font-smoothing:grayscale;
+}
+
+body{
+background:#fff;
+color:var(--ink);
+font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+position:relative;
+-webkit-text-size-adjust:100%;
+-moz-text-size-adjust:100%;
+text-size-adjust:100%;
+}
+
+.wrap{
+max-width:1024px;
+margin:24px auto;
+padding:0 18px;
+margin-top:140px;
+}
+
+.progress-top{
+position:fixed;
+top:0;
+left:0;
+right:0;
+z-index:1000;
+display:flex;
+align-items:center;
+gap:15px;
+padding:0 20px;
+height:60px;
+background:#fff;
+box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.progress-top-label{
+font-weight:700;
+font-size:14px;
+white-space:nowrap;
+color:#6fc3ff;
+letter-spacing:.4px;
+text-transform:uppercase;
+}
+
+.progress-top-bar{
+flex:1;
+height:28px;
+background:#e5e7eb;
+border-radius:999px;
+overflow:hidden;
+position:relative;
+}
+
+.progress-top-fill{
+height:100%;
+background:linear-gradient(90deg, var(--neon-purple), var(--neon-blue));
+transition:width .5s ease, background .8s ease;
+position:relative;
+}
+
+.progress-top-fill.complete{
+background:linear-gradient(90deg, var(--gold), #f6d979);
+animation:goldPulse 2s ease infinite;
+}
+
+@keyframes goldPulse{
+0%,100%{opacity:1}
+50%{opacity:.85}
+}
+
+@keyframes neonCycle{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+@keyframes emojiShake{
+0%,100%{transform:translate(0,0) rotate(0deg)}
+20%{transform:translate(2px,-1px) rotate(-4deg)}
+40%{transform:translate(-2px,1px) rotate(4deg)}
+60%{transform:translate(2px,-1px) rotate(-3deg)}
+80%{transform:translate(-1px,1px) rotate(3deg)}
+}
+
+.progress-top-text{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+font-weight:700;
+font-size:13px;
+color:#fff;
+text-shadow:0 1px 2px rgba(0,0,0,.3);
+z-index:2;
+}
+
+.progress-top-xp{
+font-weight:700;
+font-size:14px;
+color:var(--gold);
+white-space:nowrap;
+}
+
+.progress-left{
+position:fixed;
+left:18px;
+top:130px;
+width:58px;
+height:410px;
+background:rgba(7,10,20,.92);
+border-radius:20px;
+box-shadow:0 18px 35px rgba(0,0,0,.45);
+z-index:940;
+padding:14px 10px;
+display:flex;
+flex-direction:column;
+align-items:center;
+border:1px solid rgba(74,207,255,.2);
+}
+
+.progress-left-icon{
+font-size:24px;
+margin-bottom:8px;
+color:var(--neon-blue);
+}
+
+.progress-left-bar{
+flex:1;
+width:34px;
+background:rgba(23,31,51,.9);
+border-radius:999px;
+position:relative;
+display:flex;
+flex-direction:column-reverse;
+overflow:hidden;
+border:1px solid rgba(74,207,255,.2);
+}
+
+.progress-left-fill{
+width:100%;
+background:linear-gradient(180deg, var(--neon-blue), var(--neon-pink));
+transition:height .5s ease;
+background-size:200% 200%;
+animation:neonCycle 8s ease infinite;
+}
+
+.progress-left-percent{
+margin-top:8px;
+font-weight:700;
+font-size:11px;
+color:var(--neon-blue);
+letter-spacing:.4px;
+text-transform:uppercase;
+}
+
+.achievement-panel{
+position:fixed;
+right:32px;
+top:130px;
+width:320px;
+max-height:calc(100vh - 160px);
+background:#fff;
+border-radius:24px;
+padding:18px;
+box-shadow:0 18px 40px rgba(0,0,0,.2);
+z-index:950;
+overflow:hidden;
+transition:transform .3s ease, max-height .3s ease;
+display:flex;
+flex-direction:column;
+gap:16px;
+border:2px solid #e5e7eb;
+}
+
+.achievement-panel.collapsed{
+max-height:60px;
+overflow:hidden;
+}
+
+.achievement-header{
+padding:12px 16px;
+border-radius:12px;
+background:#f3f4f6;
+color:var(--ink);
+font-weight:800;
+font-size:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+cursor:pointer;
+user-select:none;
+letter-spacing:.6px;
+border:1px solid #e5e7eb;
+}
+
+.achievement-header span:first-child{
+display:flex;
+align-items:center;
+gap:8px;
+}
+
+.achievement-toggle{
+font-size:18px;
+transition:transform .3s ease;
+color:var(--ink);
+}
+
+.achievement-panel.collapsed .achievement-toggle{
+transform:rotate(90deg);
+}
+
+.achievement-body{
+flex:1;
+overflow-y:auto;
+padding:4px 6px 6px;
+}
+
+.achievement-body::-webkit-scrollbar{
+width:6px;
+}
+
+.achievement-body::-webkit-scrollbar-thumb{
+background:linear-gradient(180deg,var(--neon-blue),var(--neon-pink));
+border-radius:999px;
+}
+
+.achievement-body{
+scrollbar-width:thin;
+scrollbar-color:var(--neon-blue) transparent;
+}
+
+.achievement-counter{
+font-weight:700;
+margin-bottom:12px;
+color:var(--gold);
+font-size:15px;
+text-transform:uppercase;
+letter-spacing:.8px;
+}
+
+#achievementList{
+display:grid;
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:10px;
+}
+
+.achievement-item{
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:6px;
+padding:10px 8px;
+background:#fafafa;
+border-radius:12px;
+box-shadow:0 2px 8px rgba(0,0,0,.1);
+transition:transform .3s ease, box-shadow .3s ease;
+border:1px solid #e5e7eb;
+text-align:center;
+}
+
+.achievement-item.unlocked{
+background:#f0fdf4;
+box-shadow:0 4px 12px rgba(16,185,129,.15);
+transform:translateY(-2px);
+border-color:#10b981;
+}
+
+.achievement-item.locked{
+opacity:.65;
+}
+
+.achievement-icon{
+font-size:24px;
+line-height:1;
+}
+
+.achievement-item.unlocked .achievement-icon{
+animation:emojiShake 1.8s ease-in-out infinite;
+}
+
+.achievement-info{
+width:100%;
+}
+
+.achievement-name{
+font-weight:600;
+font-size:11px;
+color:var(--ink);
+line-height:1.3;
+word-wrap:break-word;
+}
+
+.achievement-hint{
+font-size:10px;
+color:var(--muted);
+font-style:italic;
+margin-top:2px;
+line-height:1.2;
+}
+
+.achievement-xp{
+font-size:10px;
+color:var(--gold);
+font-weight:700;
+}
+
+.xp-float{
+position:fixed;
+font-weight:800;
+font-size:20px;
+color:var(--gold);
+pointer-events:none;
+z-index:9999;
+text-shadow:0 2px 4px rgba(0,0,0,.3);
+animation:floatUp 1.5s ease forwards;
+}
+
+@keyframes floatUp{
+0%{
+opacity:1;
+transform:translateY(0) scale(1);
+}
+100%{
+opacity:0;
+transform:translateY(-100px) scale(1.3);
+}
+}
+
+.sparkle{
+position:absolute;
+width:4px;
+height:4px;
+background:var(--gold);
+border-radius:50%;
+pointer-events:none;
+animation:sparkleAnim .8s ease forwards;
+}
+
+@keyframes sparkleAnim{
+0%{
+opacity:1;
+transform:translate(0,0) scale(1);
+}
+100%{
+opacity:0;
+transform:translate(var(--tx),var(--ty)) scale(0);
+}
+}
+
+.start-screen{
+position:fixed;
+inset:0;
+background:#07080f;
+z-index:10001;
+display:flex;
+align-items:center;
+justify-content:center;
+animation:fadeIn .5s ease;
+overflow:hidden;
+}
+
+.start-screen::before{
+content:"";
+position:absolute;
+inset:28px;
+border-radius:32px;
+border:3px solid transparent;
+background:linear-gradient(120deg,var(--neon-blue),var(--neon-purple),var(--neon-pink)) border-box;
+background-size:300% 300%;
+animation:neonCycle 8s ease infinite;
+-webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
+-webkit-mask-composite:xor;
+mask-composite:exclude;
+pointer-events:none;
+}
+
+.start-screen.hidden{
+display:none;
+}
+
+.start-content{
+position:relative;
+text-align:center;
+padding:48px 56px;
+background:rgba(7,10,20,.9);
+border-radius:24px;
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:24px;
+box-shadow:0 30px 60px rgba(0,0,0,.45);
+}
+
+.start-title{
+font-size:52px;
+font-weight:800;
+color:var(--gold);
+text-shadow:0 0 30px rgba(212,175,55,.7);
+letter-spacing:2px;
+animation:goldPulse 2s ease infinite;
+}
+
+.start-subtitle{
+font-size:20px;
+color:#cad2ff;
+font-weight:400;
+letter-spacing:1px;
+}
+
+.play-button{
+margin-bottom:4px;
+padding:20px 60px;
+font-size:24px;
+font-weight:800;
+background:var(--gold);
+color:#000;
+border:3px solid var(--gold);
+border-radius:12px;
+cursor:pointer;
+transition:all .3s ease;
+text-transform:uppercase;
+letter-spacing:2px;
+box-shadow:0 8px 20px rgba(212,175,55,.4);
+}
+
+.play-button:hover{
+background:#000;
+color:var(--gold);
+transform:scale(1.05);
+box-shadow:0 12px 30px rgba(212,175,55,.6);
+}
+
+.start-actions{
+display:flex;
+gap:18px;
+flex-wrap:wrap;
+justify-content:center;
+}
+
+.start-secondary-btn{
+padding:12px 20px;
+border-radius:999px;
+font-weight:700;
+border:2px solid var(--neon-blue);
+color:var(--neon-blue);
+background:transparent;
+cursor:pointer;
+transition:all .3s ease;
+min-width:170px;
+text-transform:uppercase;
+letter-spacing:.6px;
+}
+
+.start-secondary-btn:hover{
+background:var(--neon-blue);
+color:#02121f;
+box-shadow:0 10px 24px rgba(74,207,255,.45);
+transform:translateY(-3px);
+}
+
+.start-encouragement{
+margin-top:4px;
+font-size:15px;
+color:#9ce5ff;
+letter-spacing:.6px;
+text-transform:uppercase;
+}
+
+.completion-dock{
+position:fixed;
+right:16px;
+bottom:16px;
+background:rgba(7,10,20,.95);
+border-radius:18px;
+box-shadow:0 18px 35px rgba(0,0,0,.6);
+padding:16px 18px;
+max-width:260px;
+display:none;
+flex-direction:column;
+gap:10px;
+z-index:960;
+border:1px solid rgba(74,207,255,.3);
+}
+
+.completion-dock.show{
+display:flex;
+animation:fadeIn .4s ease;
+}
+
+.completion-dock-title{
+font-weight:800;
+font-size:14px;
+color:var(--neon-blue);
+text-transform:uppercase;
+letter-spacing:.5px;
+}
+
+.completion-dock-actions{
+display:flex;
+flex-direction:column;
+gap:6px;
+}
+
+.completion-dock button,.completion-dock a{
+padding:8px 12px;
+border-radius:999px;
+font-weight:600;
+text-align:center;
+text-decoration:none;
+border:2px solid var(--neon-blue);
+color:var(--neon-blue);
+background:transparent;
+transition:all .3s ease;
+text-transform:uppercase;
+letter-spacing:.4px;
+font-size:12px;
+}
+
+.completion-dock button:hover,.completion-dock a:hover{
+background:var(--neon-blue);
+color:#02121f;
+transform:translateY(-2px);
+box-shadow:0 10px 22px rgba(74,207,255,.35);
+}
+
+.xp-burst{
+position:fixed;
+pointer-events:none;
+z-index:1100;
+opacity:0;
+animation:xpBurst .9s ease forwards;
+}
+
+.xp-burst > span{
+display:block;
+font-weight:800;
+color:var(--neon-pink);
+text-shadow:0 2px 6px rgba(0,0,0,.45);
+font-size:18px;
+transform-origin:center;
+}
+
+@keyframes xpBurst{
+0%{opacity:0;transform:scale(.6)}
+40%{opacity:1;transform:scale(1.05)}
+100%{opacity:0;transform:scale(1.4) translateY(-40px)}
+}
+
+.completion-modal{
+position:fixed;
+inset:0;
+background:rgba(7,10,20,.86);
+z-index:15000;
+display:none;
+align-items:center;
+justify-content:center;
+padding:20px;
+animation:fadeIn .5s ease;
+}
+
+.completion-modal.show{
+display:flex;
+}
+
+.completion-content{
+background:rgba(7,10,20,.95);
+border-radius:28px;
+max-width:680px;
+width:100%;
+max-height:90vh;
+overflow-y:auto;
+padding:40px 48px;
+position:relative;
+border:3px solid transparent;
+box-shadow:0 30px 80px rgba(0,0,0,.6);
+}
+
+.completion-content::before{
+content:"";
+position:absolute;
+inset:0;
+border-radius:28px;
+border:3px solid transparent;
+background:linear-gradient(120deg,var(--neon-blue),var(--neon-purple),var(--neon-pink)) border-box;
+background-size:260% 260%;
+animation:neonCycle 10s ease infinite;
+-webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
+-webkit-mask-composite:xor;
+mask-composite:exclude;
+pointer-events:none;
+}
+
+.completion-content > *{
+position:relative;
+}
+
+.completion-title{
+font-size:28px;
+font-weight:800;
+text-align:center;
+color:#fef6ff;
+margin-bottom:24px;
+letter-spacing:1px;
+text-transform:uppercase;
+text-shadow:0 0 25px rgba(123,91,255,.55);
+}
+
+.completion-stats{
+background:rgba(12,16,30,.9);
+padding:20px;
+border-radius:16px;
+margin-bottom:24px;
+border:1px solid rgba(74,207,255,.18);
+display:grid;
+gap:12px;
+}
+
+.stat-row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:4px 0;
+}
+
+.stat-label{
+font-weight:600;
+display:flex;
+align-items:center;
+gap:8px;
+color:#9ca7ff;
+letter-spacing:.3px;
+text-transform:uppercase;
+font-size:12px;
+}
+
+.stat-value{
+font-weight:800;
+color:#fef6ff;
+font-size:15px;
+}
+
+.completion-message{
+text-align:center;
+font-size:14px;
+line-height:1.6;
+margin-bottom:24px;
+padding:16px;
+border-radius:14px;
+background:rgba(123,91,255,.12);
+color:#d5d8ff;
+border:1px solid rgba(123,91,255,.35);
+}
+
+.completion-divider{
+height:2px;
+background:linear-gradient(90deg,transparent,var(--neon-purple),var(--neon-pink),transparent);
+margin:24px 0;
+}
+
+.completion-section-title{
+font-size:16px;
+font-weight:800;
+color:#a7b4ff;
+text-transform:uppercase;
+letter-spacing:.5px;
+margin-bottom:12px;
+}
+
+.completion-primary{
+display:flex;
+flex-direction:column;
+gap:12px;
+margin-bottom:12px;
+}
+
+.completion-secondary{
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+justify-content:center;
+margin-bottom:12px;
+}
+
+.completion-footer{
+margin-top:20px;
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.completion-footer-actions{
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+justify-content:center;
+}
+
+.cta-btn{
+padding:12px 18px;
+border-radius:999px;
+font-weight:700;
+text-decoration:none;
+transition:all .3s ease;
+border:2px solid transparent;
+font-size:13px;
+cursor:pointer;
+display:inline-flex;
+align-items:center;
+gap:8px;
+text-transform:uppercase;
+letter-spacing:.5px;
+justify-content:center;
+}
+
+.cta-btn-primary{
+background:linear-gradient(120deg,var(--neon-pink),var(--neon-purple));
+color:#05060f;
+border:none;
+box-shadow:0 16px 32px rgba(255,60,172,.35);
+}
+
+.cta-btn-primary:hover{
+filter:brightness(1.08);
+transform:translateY(-3px);
+}
+
+.cta-btn-secondary{
+background:transparent;
+color:var(--neon-blue);
+border:2px solid var(--neon-blue);
+box-shadow:0 12px 24px rgba(74,207,255,.25);
+}
+
+.cta-btn-secondary:hover{
+background:var(--neon-blue);
+color:#02121f;
+transform:translateY(-3px);
+}
+
+.cta-btn-ghost{
+background:transparent;
+color:#f5f5f5;
+border:2px solid rgba(255,255,255,.25);
+}
+
+.cta-btn-ghost:hover{
+border-color:rgba(74,207,255,.6);
+color:var(--neon-blue);
+transform:translateY(-2px);
+}
+
+.next-levels{
+background:rgba(11,15,28,.92);
+padding:20px;
+border-radius:16px;
+border:1px solid rgba(74,207,255,.18);
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.level-item{
+display:flex;
+align-items:center;
+gap:14px;
+padding:12px;
+background:rgba(18,24,38,.85);
+border-radius:12px;
+border:1px solid rgba(74,207,255,.12);
+}
+
+.level-item.locked{
+opacity:.85;
+}
+
+.level-number{
+width:38px;
+height:38px;
+border-radius:50%;
+background:linear-gradient(140deg,var(--neon-blue),var(--neon-purple));
+color:#05060f;
+font-weight:800;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:15px;
+flex-shrink:0;
+}
+
+.level-info{
+flex:1;
+}
+
+.level-name{
+font-weight:700;
+font-size:13px;
+color:#e5e7ff;
+text-transform:uppercase;
+letter-spacing:.5px;
+}
+
+.level-desc{
+font-size:11px;
+color:#94a3ff;
+}
+
+.settings-button{
+position:fixed;
+bottom:20px;
+right:20px;
+width:50px;
+height:50px;
+border-radius:50%;
+background:var(--gold);
+border:none;
+cursor:pointer;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:24px;
+box-shadow:0 4px 12px rgba(0,0,0,.2);
+z-index:998;
+transition:all .3s ease;
+}
+
+.settings-button:hover{
+transform:scale(1.1) rotate(90deg);
+box-shadow:0 6px 20px rgba(212,175,55,.4);
+}
+
+.settings-panel{
+position:fixed;
+bottom:80px;
+right:20px;
+background:#fff;
+border-radius:12px;
+padding:20px;
+box-shadow:0 8px 30px rgba(0,0,0,.2);
+z-index:13000;
+min-width:200px;
+display:none;
+}
+
+.settings-panel.show{
+display:block;
+animation:fadeIn .3s ease;
+}
+
+.setting-item{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:10px 0;
+border-bottom:1px solid #e5e7eb;
+}
+
+.setting-item:last-child{
+border-bottom:none;
+}
+
+.setting-label{
+font-weight:600;
+font-size:14px;
+}
+
+.toggle-switch{
+width:50px;
+height:26px;
+background:#ccc;
+border-radius:13px;
+position:relative;
+cursor:pointer;
+transition:background .3s ease;
+}
+
+.toggle-switch.on{
+background:var(--gold);
+}
+
+.toggle-slider{
+width:22px;
+height:22px;
+background:#fff;
+border-radius:50%;
+position:absolute;
+top:2px;
+left:2px;
+transition:left .3s ease;
+box-shadow:0 2px 4px rgba(0,0,0,.2);
+}
+
+.toggle-switch.on .toggle-slider{
+left:26px;
+}
+
+.leaderboard-button{
+position:fixed;
+bottom:20px;
+right:80px;
+width:50px;
+height:50px;
+border-radius:50%;
+background:var(--gold);
+border:none;
+cursor:pointer;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:24px;
+box-shadow:0 4px 12px rgba(0,0,0,.2);
+z-index:998;
+transition:all .3s ease;
+}
+
+.leaderboard-button:hover{
+transform:scale(1.1);
+box-shadow:0 6px 20px rgba(212,175,55,.4);
+}
+
+.leaderboard-modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.85);
+z-index:14000;
+display:none;
+align-items:center;
+justify-content:center;
+padding:20px;
+}
+
+.leaderboard-modal.show{
+display:flex;
+animation:fadeIn .3s ease;
+}
+
+.leaderboard-content{
+position:relative;
+background:rgba(7,10,20,.94);
+border-radius:24px;
+max-width:520px;
+width:100%;
+max-height:80vh;
+overflow-y:auto;
+padding:36px 40px;
+border:2px solid transparent;
+box-shadow:0 20px 50px rgba(0,0,0,.55);
+}
+
+.leaderboard-content::before{
+content:"";
+position:absolute;
+inset:0;
+border-radius:24px;
+border:2px solid transparent;
+background:linear-gradient(120deg,var(--neon-blue),var(--neon-purple),var(--neon-pink)) border-box;
+background-size:250% 250%;
+animation:neonCycle 10s ease infinite;
+-webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
+-webkit-mask-composite:xor;
+mask-composite:exclude;
+pointer-events:none;
+}
+
+.leaderboard-content > *{
+position:relative;
+}
+
+.leaderboard-title{
+font-size:24px;
+font-weight:800;
+text-align:center;
+color:var(--gold);
+margin-bottom:20px;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+}
+
+.leaderboard-cta{
+margin-bottom:16px;
+text-align:center;
+font-size:13px;
+color:var(--muted);
+font-weight:600;
+letter-spacing:.4px;
+}
+
+.leaderboard-list{
+list-style:none;
+margin:0;
+padding:0;
+}
+
+.leaderboard-item{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:14px 16px;
+margin-bottom:10px;
+background:rgba(12,16,30,.9);
+border-radius:14px;
+border:1px solid rgba(74,207,255,.16);
+box-shadow:0 12px 24px rgba(0,0,0,.35);
+}
+
+.leaderboard-item.current{
+border-color:var(--neon-pink);
+background:rgba(45,32,72,.9);
+}
+
+.leaderboard-rank{
+font-weight:800;
+font-size:18px;
+color:var(--neon-pink);
+width:48px;
+}
+
+.leaderboard-name{
+flex:1;
+font-weight:600;
+color:#f5f7ff;
+}
+
+.leaderboard-score{
+font-weight:800;
+color:var(--neon-blue);
+}
+
+.leaderboard-details{
+flex:1;
+display:flex;
+flex-direction:column;
+gap:4px;
+}
+
+.leaderboard-meta{
+font-size:11px;
+color:var(--muted);
+}
+
+.leaderboard-entry{
+background:#f9fafb;
+padding:16px;
+border-radius:8px;
+border:1px solid #e5e7eb;
+margin:20px 0;
+}
+
+.leaderboard-entry-controls{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+.leaderboard-entry input{
+flex:1;
+min-width:180px;
+padding:10px;
+border:2px solid #e5e7eb;
+border-radius:6px;
+font-size:14px;
+}
+
+.leaderboard-feedback{
+margin-top:10px;
+font-size:12px;
+color:var(--muted);
+}
+
+.leaderboard-feedback.success{
+color:var(--green);
+}
+
+.leaderboard-feedback.error{
+color:#b91c1c;
+}
+
+.finish-button{
+position:fixed;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
+padding:14px 32px;
+background:var(--gold);
+color:#000;
+border:3px solid var(--gold);
+border-radius:999px;
+font-weight:800;
+font-size:16px;
+text-transform:uppercase;
+letter-spacing:1px;
+cursor:pointer;
+box-shadow:0 8px 24px rgba(212,175,55,.5);
+z-index:1001;
+transition:all .3s ease;
+display:none;
+}
+
+.finish-button.show{
+display:block;
+animation:fadeIn .5s ease;
+}
+
+.finish-button:hover{
+transform:translateX(-50%) translateY(-3px);
+box-shadow:0 12px 32px rgba(212,175,55,.7);
+}
+
+body.dark-mode{
+background:#1a1a1a;
+color:#e5e7eb;
+}
+
+body.dark-mode .wrap{
+color:#e5e7eb;
+}
+
+body.dark-mode .section .h{
+color:#e5e7eb;
+}
+
+body.dark-mode .tab{
+background:#2a2a2a;
+color:#e5e7eb;
+border-color:#3a3a3a;
+}
+
+body.dark-mode .sub{
+background:#2a2a2a;
+}
+
+body.dark-mode .sub:hover{
+background:#333;
+}
+
+body.dark-mode .progress-top{
+background:#2a2a2a;
+}
+
+body.dark-mode .progress-left{
+background:rgba(7,10,20,.92);
+}
+
+body.dark-mode .achievement-panel{
+background:#2a2a2a;
+border-color:#3a3a3a;
+}
+
+body.dark-mode .achievement-header{
+background:#1f1f1f;
+color:#e5e7eb;
+border-color:#3a3a3a;
+}
+
+body.dark-mode .achievement-toggle{
+color:#e5e7eb;
+}
+
+body.dark-mode .achievement-counter{
+color:var(--gold);
+}
+
+body.dark-mode .achievement-item{
+background:#1f1f1f;
+border-color:#3a3a3a;
+}
+
+body.dark-mode .achievement-item.unlocked{
+background:#1a3a2a;
+border-color:#10b981;
+}
+
+body.dark-mode .achievement-name{
+color:#e5e7eb;
+}
+
+body.dark-mode .achievement-hint{
+color:#9ca3af;
+}
+
+body.dark-mode .settings-panel{
+background:#2a2a2a;
+color:#e5e7eb;
+}
+
+body.dark-mode .leaderboard-content{
+background:rgba(7,10,20,.94);
+color:#e5e7eb;
+}
+
+body.dark-mode .leaderboard-item{
+background:rgba(22,28,45,.9);
+border-color:rgba(74,207,255,.18);
+}
+
+body.dark-mode .completion-content{
+background:rgba(7,10,20,.95);
+color:#e5e7eb;
+}
+
+body.dark-mode .completion-dock{
+background:rgba(7,10,20,.92);
+color:#e5e7eb;
+}
+
+body.dark-mode .completion-dock button,body.dark-mode .completion-dock a{
+color:var(--neon-blue);
+border-color:var(--neon-blue);
+}
+
+body.dark-mode .completion-dock button:hover,body.dark-mode .completion-dock a:hover{
+background:var(--neon-blue);
+color:#02121f;
+}
+
+body.dark-mode .leaderboard-cta{
+color:#9ca3af;
+}
+
+body.dark-mode .leaderboard-entry{
+background:#2a2a2a;
+border-color:#3a3a3a;
+}
+
+body.dark-mode .leaderboard-entry input{
+background:#1f1f1f;
+color:#e5e7eb;
+border-color:#3a3a3a;
+}
+
+body.dark-mode .leaderboard-meta{
+color:#9ca3af;
+}
+
+body.dark-mode .leaderboard-feedback{
+color:#9ca3af;
+}
+
+body.dark-mode .leaderboard-feedback.error{
+color:#f87171;
+}
+
+body.dark-mode .leaderboard-feedback.success{
+color:var(--green);
+}
+
+.tabs{
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+justify-content:center;
+margin:6px 0 32px;
+position:fixed;
+top:60px;
+left:50%;
+transform:translateX(-50%);
+background:transparent;
+padding:12px 20px;
+z-index:999;
+max-width:fit-content;
+}
+
+.tab{
+appearance:none;
+cursor:pointer;
+border:2px solid #e5e7eb;
+background:#fff;
+color:var(--ink);
+padding:10px 18px;
+border-radius:12px;
+font-weight:700;
+transition:all .4s ease;
+box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+.tab:hover{
+border-color:var(--gold);
+color:#000;
+transform:scale(1.03);
+box-shadow:0 4px 12px rgba(212,175,55,.3);
+}
+
+.tab.clicked{
+background:var(--gold);
+color:#000;
+border-color:var(--gold);
+animation:tabClick .6s ease;
+}
+
+@keyframes tabClick{
+0%{transform:scale(1);background:var(--gold)}
+50%{transform:scale(1.08);background:var(--gold)}
+100%{transform:scale(1);background:#fff;border-color:var(--gold)}
+}
+
+.section{
+margin:28px 0;
+}
+
+.h{
+display:flex;
+align-items:center;
+gap:10px;
+width:100%;
+text-align:left;
+padding:16px 0;
+border:none;
+background:transparent;
+font-weight:800;
+font-size:22px;
+cursor:pointer;
+transition:all .5s ease;
+color:var(--ink);
+}
+
+.h:hover{
+transform:translateX(10px);
+color:var(--gold);
+}
+
+.h .caret{
+width:18px;
+height:18px;
+display:inline-grid;
+place-items:center;
+color:#94a3b8;
+transition:all .4s ease;
+}
+
+.h:hover .caret{
+color:var(--gold);
+transform:rotate(90deg);
+}
+
+.h.centering{
+animation:slideCenter 1.8s ease forwards;
+}
+
+@keyframes slideCenter{
+0%{
+transform:translateX(0);
+color:var(--ink);
+}
+50%{
+transform:translateX(calc(50vw - 50%));
+color:var(--gold);
+text-shadow:0 0 25px rgba(212,175,55,.8);
+}
+100%{
+transform:translateX(calc(50vw - 50%));
+color:var(--gold);
+text-shadow:0 0 25px rgba(212,175,55,.8);
+}
+}
+
+.panel{
+display:none;
+padding:0 0 18px 0;
+}
+
+.panel.show{
+display:block;
+animation:fadeIn .6s ease;
+}
+
+@keyframes fadeIn{
+from{
+opacity:0;
+transform:translateY(-12px);
+}
+to{
+opacity:1;
+transform:none;
+}
+}
+
+.meta{
+color:var(--muted);
+font-style:italic;
+font-size:14px;
+}
+
+.sub{
+margin:20px 0;
+padding:18px;
+background:#fafafa;
+border-radius:8px;
+transition:all .4s ease;
+}
+
+.sub:hover{
+background:#f0f0f0;
+transform:translateX(6px);
+}
+
+.sub .sub-h{
+width:100%;
+text-align:left;
+background:transparent;
+border:0;
+padding:0;
+cursor:pointer;
+display:flex;
+align-items:flex-start;
+gap:10px;
+font-weight:700;
+font-size:17px;
+}
+
+.sub .sub-h .caret{
+width:14px;
+height:14px;
+color:#94a3b8;
+transition:all .4s ease;
+margin-top:4px;
+flex-shrink:0;
+}
+
+.sub .sub-h:hover .caret{
+color:var(--gold);
+transform:rotate(90deg);
+}
+
+.job-header{
+display:flex;
+justify-content:space-between;
+flex:1;
+gap:20px;
+}
+
+.job-title{
+display:flex;
+flex-direction:column;
+gap:4px;
+}
+
+.company-name{
+font-size:18px;
+color:var(--ink);
+}
+
+.position-name{
+font-size:16px;
+font-weight:600;
+color:var(--muted);
+}
+
+.job-meta{
+display:flex;
+flex-direction:column;
+gap:4px;
+text-align:right;
+align-items:flex-end;
+}
+
+.sub .sub-p{
+display:none;
+margin-top:12px;
+}
+
+.sub .sub-p.show{
+display:block;
+}
+
+.list{
+margin:10px 0 6px 20px;
+padding:0;
+list-style:disc;
+}
+
+.list li{
+opacity:1;
+margin:8px 0;
+transition:all .4s ease;
+color:var(--ink);
+}
+
+.list li:hover{
+color:var(--gold);
+}
+
+.metric{
+font-weight:800;
+color:var(--ink);
+transition:all .3s ease;
+}
+
+.list li:hover .metric{
+color:var(--gold);
+text-shadow:0 0 8px rgba(212,175,55,.6);
+}
+
+.skills-grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:20px 40px;
+margin:20px 0;
+}
+
+.skill-item{
+padding:10px 0;
+font-weight:500;
+color:var(--ink);
+transition:all .4s ease;
+opacity:1;
+}
+
+.skill-item:hover{
+color:var(--gold);
+transform:translateX(8px);
+}
+
+#p-certs .list, #p-honors .list{
+list-style:none;
+margin-left:0;
+}
+
+#p-certs .list li, #p-honors .list li{
+padding:8px 0;
+transition:all .4s ease;
+opacity:1;
+color:var(--ink);
+}
+
+#p-certs .list li:hover, #p-honors .list li:hover{
+color:var(--gold);
+transform:translateX(8px);
+}
+
+#p-certs .list{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:10px 30px;
+}
+
+#p-honors .list{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:10px 30px;
+}
+
+@media (max-width: 1400px) {
+.achievement-panel{right:20px;width:280px}
+.progress-left{left:12px}
+}
+
+@media (max-width: 1200px) {
+.achievement-panel{width:260px;top:120px}
+#achievementList{grid-template-columns:1fr}
+}
+
+@media (max-width: 1024px) {
+.wrap{margin-top:160px;padding:0 12px}
+.progress-left{display:none}
+.achievement-panel{
+right:12px;width:240px;top:110px;max-height:calc(100vh - 140px);
+}
+.tabs{padding:8px 12px;gap:8px}
+.tab{padding:8px 14px;font-size:14px}
+}
+
+@media (max-width: 768px) {
+html, body{
+overflow-x:hidden;
+width:100%;
+position:relative;
+}
+
+body{
+font-size:14px;
+-webkit-text-size-adjust:100%;
+touch-action:manipulation;
+}
+
+.wrap{
+margin-top:100px;
+padding:0 12px;
+width:100%;
+overflow-x:hidden;
+padding-bottom:80px;
+}
+
+.progress-top{
+height:auto;
+min-height:50px;
+padding:8px 12px;
+gap:8px;
+flex-wrap:wrap;
+}
+
+.progress-top-label{font-size:11px}
+.progress-top-bar{height:20px;min-width:120px}
+.progress-top-text{font-size:10px}
+.progress-top-xp{font-size:11px}
+
+.tabs{
+top:auto;
+bottom:auto;
+position:relative;
+margin:10px 0;
+padding:8px;
+gap:6px;
+width:100%;
+overflow-x:auto;
+-webkit-overflow-scrolling:touch;
+transform:none;
+left:auto;
+}
+
+.tab{
+padding:8px 12px;
+font-size:12px;
+box-shadow:0 1px 4px rgba(0,0,0,.1);
+white-space:nowrap;
+min-width:auto;
+}
+
+.achievement-panel{
+position:fixed;
+bottom:90px;
+top:auto;
+right:12px;
+left:12px;
+width:auto;
+max-width:none;
+max-height:200px;
+z-index:950;
+}
+
+.achievement-panel.collapsed{max-height:44px}
+.achievement-header{padding:10px 12px;font-size:12px}
+
+#achievementList{
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:8px;
+max-height:120px;
+overflow-y:auto;
+}
+
+.achievement-item{
+padding:8px 6px;
+gap:4px;
+font-size:11px;
+}
+
+.achievement-icon{
+font-size:20px;
+}
+
+.achievement-name{
+font-size:10px;
+}
+
+.achievement-hint{
+font-size:9px;
+}
+
+.sub{padding:12px}
+
+.job-header{
+flex-direction:column;
+gap:8px;
+}
+
+.job-meta{
+text-align:left;
+align-items:flex-start;
+font-size:12px;
+}
+
+.skills-grid{grid-template-columns:1fr}
+#p-certs .list{grid-template-columns:1fr}
+#p-honors .list{grid-template-columns:1fr}
+
+.completion-modal, .leaderboard-modal{
+max-width:95%;
+max-height:85vh;
+padding:16px;
+margin:0 10px;
+}
+
+.completion-dock{
+right:12px;
+bottom:12px;
+max-width:220px;
+padding:12px 14px;
+}
+
+.settings-button,.leaderboard-button{
+bottom:16px;
+}
+
+.leaderboard-button{
+right:76px;
+}
+
+.finish-button{
+bottom:16px;
+padding:12px 24px;
+font-size:14px;
+}
+
+button, .tab, .cta-btn{
+min-height:44px;
+padding:12px 16px;
+}
+}
+
+@media (max-width: 480px) {
+body{font-size:13px}
+
+.wrap{
+margin-top:90px;
+padding:0 10px;
+width:100%;
+padding-bottom:80px;
+}
+
+.progress-top{
+height:auto;
+min-height:45px;
+padding:6px 8px;
+gap:6px;
+}
+
+.progress-top-label{display:none}
+
+.progress-top-bar{
+min-width:100px;
+height:18px;
+}
+
+.tabs{
+gap:4px;
+padding:6px;
+margin:8px 0;
+overflow-x:auto;
+}
+
+.tab{
+padding:8px 12px;
+font-size:11px;
+min-height:40px;
+}
+
+.achievement-panel{
+max-width:100%;
+right:8px;
+left:8px;
+width:auto;
+bottom:80px;
+max-height:180px;
+}
+
+#achievementList{
+grid-template-columns:1fr;
+}
+
+.achievement-item{
+font-size:11px;
+padding:6px;
+}
+
+.settings-button,.leaderboard-button{
+width:44px;
+height:44px;
+font-size:18px;
+bottom:12px;
+}
+
+.leaderboard-button{right:56px}
+
+.start-content{padding:24px 16px}
+
+.start-title{
+font-size:28px;
+line-height:1.2;
+}
+
+.start-subtitle{font-size:14px}
+
+.play-button{
+padding:14px 32px;
+font-size:18px;
+min-height:50px;
+}
+
+.completion-dock{
+max-width:200px;
+padding:10px 12px;
+right:8px;
+bottom:8px;
+}
+
+a, button, .tab, input, select{
+min-height:40px;
+padding:10px 14px;
+}
+
+.h{
+font-size:16px;
+padding:14px 12px;
+}
+
+.sub .sub-h{
+font-size:15px;
+}
+
+.completion-modal, .leaderboard-modal{
+width:calc(100% - 20px);
+max-width:none;
+padding:12px;
+}
+
+.completion-content{
+padding:24px 20px;
+}
+
+.completion-title{font-size:20px}
+.start-screen{padding:10px}
+
+.finish-button{
+bottom:12px;
+padding:10px 20px;
+font-size:12px;
+}
+}
+
+@media (max-height: 600px) and (orientation: landscape) {
+.wrap{
+margin-top:110px;
+}
+
+.progress-top{
+height:40px;
+}
+
+.tabs{
+top:40px;
+padding:6px 10px;
+}
+
+.achievement-panel{
+max-height:150px;
+top:90px;
+}
+}
 </style>
 </head>
 <body>
 
-<!-- TEXT NOTE: Start screen copy lives here for quick edits -->
-<!-- START SCREEN -->
 <div class="start-screen" id="startScreen">
-  <div class="start-content">
-    <div class="start-title">QUENTIN STERLING</div>
-    <div class="start-subtitle">Interactive Resume Experience</div>
-    <button class="play-button" onclick="startGame()">PLAY NOW</button>
-    <!-- TEXT NOTE: Secondary actions beneath PLAY NOW -->
-    <div class="start-actions">
-      <button type="button" class="start-secondary-btn" onclick="openSettingsPanel()">Settings</button>
-      <button type="button" class="start-secondary-btn" onclick="openLeaderboardModal()">Leaderboard</button>
-    </div>
-    <div class="start-encouragement"></div> <!-- TEXT NOTE: tweak motivation line here -->
-  </div>
+<div class="start-content">
+<div class="start-title">QUENTIN STERLING</div>
+<div class="start-subtitle">Interactive Resume Experience</div>
+<button class="play-button" onclick="startGame()">PLAY NOW</button>
+<div class="start-actions">
+<button type="button" class="start-secondary-btn" onclick="openSettingsPanel()">Settings</button>
+<button type="button" class="start-secondary-btn" onclick="openLeaderboardModal()">Leaderboard</button>
+</div>
+<div class="start-encouragement"></div>
+</div>
 </div>
 
-<!-- HORIZONTAL PROGRESS BAR -->
 <div class="progress-top">
-  <div class="progress-top-label">Sections Progress:</div>
-  <div class="progress-top-bar">
-    <div class="progress-top-fill" id="progressTopFill" style="width:0%">
-      <div class="progress-top-text"><span id="progressTopPercent">0%</span></div>
-    </div>
-  </div>
-  <div class="progress-top-xp" id="progressTopXP">Sections 0 / 6</div>
+<div class="progress-top-label">Sections Progress:</div>
+<div class="progress-top-bar">
+<div class="progress-top-fill" id="progressTopFill" style="width:0%">
+<div class="progress-top-text"><span id="progressTopPercent">0%</span></div>
+</div>
+</div>
+<div class="progress-top-xp" id="progressTopXP">Sections 0 / 6</div>
 </div>
 
-<!-- VERTICAL PROGRESS BAR -->
 <div class="progress-left">
-  <div class="progress-left-icon">XP</div>
-  <div class="progress-left-bar">
-    <div class="progress-left-fill" id="progressLeftFill" style="height:0%"></div>
-  </div>
-  <div class="progress-left-percent" id="progressLeftPercent">0 XP</div>
+<div class="progress-left-icon">XP</div>
+<div class="progress-left-bar">
+<div class="progress-left-fill" id="progressLeftFill" style="height:0%"></div>
+</div>
+<div class="progress-left-percent" id="progressLeftPercent">0 XP</div>
 </div>
 
-<!-- ACHIEVEMENT TRACKER -->
 <div class="achievement-panel" id="achievementPanel">
-  <div class="achievement-header" onclick="toggleAchievementPanel()">
-    <span>🏆 ACHIEVEMENTS</span>
-    <span class="achievement-toggle">◀</span>
-  </div>
-  <div class="achievement-body">
-    <div class="achievement-counter" id="achievementCounter">0 / 70 Unlocked</div>
-    <div id="achievementList"></div>
-  </div>
+<div class="achievement-header" onclick="toggleAchievementPanel()">
+<span>🏆 ACHIEVEMENTS</span>
+<span class="achievement-toggle">◀</span>
+</div>
+<div class="achievement-body">
+<div class="achievement-counter" id="achievementCounter">0 / 75 Unlocked</div>
+<div id="achievementList"></div>
+</div>
 </div>
 
-<!-- SETTINGS BUTTON -->
-  <button class="settings-button" id="settingsButton" onclick="toggleSettings()">&#9881;</button>
+<button class="settings-button" id="settingsButton" onclick="toggleSettings()">&#9881;</button>
 
-<!-- SETTINGS PANEL -->
 <div class="settings-panel" id="settingsPanel">
-  <div class="setting-item">
-    <span class="setting-label">Sound</span>
-    <div class="toggle-switch" id="soundToggle" onclick="toggleSound()">
-      <div class="toggle-slider"></div>
-    </div>
-  </div>
-  <div class="setting-item">
-    <span class="setting-label">Dark Mode</span>
-    <div class="toggle-switch" id="darkModeToggle" onclick="toggleDarkMode()">
-      <div class="toggle-slider"></div>
-    </div>
-  </div>
+<div class="setting-item">
+<span class="setting-label">Sound</span>
+<div class="toggle-switch" id="soundToggle" onclick="toggleSound()">
+<div class="toggle-slider"></div>
+</div>
+</div>
+<div class="setting-item">
+<span class="setting-label">Dark Mode</span>
+<div class="toggle-switch" id="darkModeToggle" onclick="toggleDarkMode()">
+<div class="toggle-slider"></div>
+</div>
+</div>
 </div>
 
-<!-- LEADERBOARD BUTTON -->
-  <button class="leaderboard-button" id="leaderboardButton" onclick="toggleLeaderboard()">&#127942;</button>
+<button class="leaderboard-button" id="leaderboardButton" onclick="toggleLeaderboard()">&#127942;</button>
 
-<!-- LEADERBOARD MODAL -->
+<button class="finish-button" id="finishButton" onclick="showCompletionModal()">🎉 FINISH & SEE RESULTS</button>
+
 <div class="leaderboard-modal" id="leaderboardModal">
-  <div class="leaderboard-content">
-    <div class="leaderboard-title">Top Scores</div>
-    <p class="leaderboard-cta">Can you beat your last score?</p>
-    <ul class="leaderboard-list" id="leaderboardList"></ul>
-    <div style="text-align:center;margin-top:20px">
-      <button class="cta-btn cta-btn-secondary" onclick="toggleLeaderboard()">Close</button>
-    </div>
-  </div>
+<div class="leaderboard-content">
+<div class="leaderboard-title">Top Scores</div>
+<p class="leaderboard-cta">Can you beat your last score?</p>
+<ul class="leaderboard-list" id="leaderboardList"></ul>
+<div style="text-align:center;margin-top:20px">
+<button class="cta-btn cta-btn-secondary" onclick="toggleLeaderboard()">Close</button>
+</div>
+</div>
 </div>
 
-<!-- TEXT NOTE: Completion modal messaging + CTAs -->
-<!-- COMPLETION MODAL -->
 <div class="completion-modal" id="completionModal">
-  <div class="completion-content">
-    <div class="completion-title">LEVEL 1 COMPLETE: RESUME MASTERY</div>
+<div class="completion-content">
+<div class="completion-title">🎉 RESUME MASTERY COMPLETE! 🎉</div>
 
-    <div class="completion-stats">
-      <div class="stat-row">
-        <span class="stat-label">?? Experience Points</span>
-        <span class="stat-value" id="finalXP">0 XP</span>
-      </div>
-      <div class="stat-row">
-        <span class="stat-label">?? Achievements Unlocked</span>
-        <span class="stat-value" id="finalAchievements">0 / 70</span>
-      </div>
-      <div class="stat-row">
-        <span class="stat-label">? Exploration Time</span>
-        <span class="stat-value" id="finalTime">0m 0s</span>
-      </div>
-      <div class="stat-row">
-        <span class="stat-label">?? Rank</span>
-        <span class="stat-value" id="finalRank">NOVICE</span>
-      </div>
-    </div>
-
-    <div class="completion-message">
-      You've discovered <span id="completionPercent">0%</span> of my professional journey. Some secrets may remain hidden...
-    </div>
-
-    <div class="completion-primary">
-      <a href="https://www.thesterlingsgroup.com/schedule-a-conversation" target="_blank" class="cta-btn cta-btn-primary">Let's Talk</a>
-      <a href="https://www.thesterlingsgroup.com/portfolio" target="_blank" class="cta-btn cta-btn-primary">Portfolio</a>
-      <a href="https://www.linkedin.com/in/qsterling1/" target="_blank" class="cta-btn cta-btn-primary">LinkedIn</a>
-    </div>
-
-    <div class="completion-secondary">
-      <a href="QuentinSterling_2025.pdf" download class="cta-btn cta-btn-secondary">Download PDF Resume</a>
-    </div>
-
-    <!-- TEXT NOTE: Leaderboard form copy + prompts -->
-    <div class="leaderboard-entry">
-      <label for="leaderboardNameInput" style="display:block;font-weight:700;margin-bottom:10px;">Add yourself to the leaderboard</label>
-      <div class="leaderboard-entry-controls">
-        <input type="text" id="leaderboardNameInput" placeholder="Your name or initials" maxlength="40"/>
-        <button type="button" class="cta-btn cta-btn-primary" onclick="submitLeaderboardScore()">Submit Score</button>
-        <button type="button" class="cta-btn cta-btn-secondary" onclick="removeMyLeaderboardScore()">Remove My Score</button>
-      </div>
-      <div class="leaderboard-feedback" id="leaderboardFeedback"></div>
-    </div>
-
-    <div class="completion-footer">
-      <button class="cta-btn cta-btn-ghost" onclick="minimizeCompletionModal()">Back to Resume</button>
-      <div class="completion-footer-actions">
-        <button type="button" class="cta-btn cta-btn-secondary" onclick="openLeaderboardModal()">View Leaderboard</button>
-        <button type="button" class="cta-btn cta-btn-secondary" onclick="playAgain()">Play Again</button>
-      </div>
-    </div>
-
-    <div class="completion-divider"></div>
-    <div class="completion-section-title">Next Levels</div>
-    <div class="next-levels">
-      <div class="level-item locked">
-        <div class="level-number">2</div>
-        <div class="level-info">
-          <div class="level-name">First Contact</div>
-          <div class="level-desc">Reach out for interview or conversation</div>
-        </div>
-      </div>
-      <div class="level-item locked">
-        <div class="level-number">3</div>
-        <div class="level-info">
-          <div class="level-name">Meet Quentin Sterling</div>
-          <div class="level-desc">Have an interview or discussion</div>
-        </div>
-      </div>
-      <div class="level-item locked">
-        <div class="level-number">4</div>
-        <div class="level-info">
-          <div class="level-name">Collaboration Begins</div>
-          <div class="level-desc">Start working together</div>
-        </div>
-      </div>
-      <div class="level-item locked">
-        <div class="level-number">5</div>
-        <div class="level-info">
-          <div class="level-name">Boss Fight - Project Success</div>
-          <div class="level-desc">Complete a successful project together</div>
-        </div>
-      </div>
-      <div class="level-item locked">
-        <div class="level-number">?</div>
-        <div class="level-info">
-          <div class="level-name">Boss Fight - Legendary Testimonial</div>
-          <div class="level-desc">Celebrate the win with a glowing review</div>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="completion-stats">
+<div class="stat-row">
+<span class="stat-label">⚡ XP Earned</span>
+<span class="stat-value" id="finalXP">0 XP</span>
 </div>
-<!-- COMPLETION DOCK (minimized contact panel for post-run access) -->
+<div class="stat-row">
+<span class="stat-label">🏆 Achievements</span>
+<span class="stat-value" id="finalAchievements">0 / 75</span>
+</div>
+<div class="stat-row">
+<span class="stat-label">⏱ Time</span>
+<span class="stat-value" id="finalTime">0m 0s</span>
+</div>
+<div class="stat-row">
+<span class="stat-label">👑 Rank</span>
+<span class="stat-value" id="finalRank">NOVICE</span>
+</div>
+</div>
+
+<div class="completion-message">
+You've discovered <span id="completionPercent">0%</span> of my professional journey. Ready to connect?
+</div>
+
+<div class="completion-primary">
+<a href="https://www.thesterlingsgroup.com/schedule-a-conversation" target="_blank" class="cta-btn cta-btn-primary">💬 Let's Talk</a>
+<a href="https://www.thesterlingsgroup.com/portfolio" target="_blank" class="cta-btn cta-btn-primary">📁 Portfolio</a>
+<a href="https://www.linkedin.com/in/qsterling1/" target="_blank" class="cta-btn cta-btn-primary">💼 LinkedIn</a>
+</div>
+
+<div class="completion-secondary">
+<a href="QuentinSterling_11_2025.pdf" download class="cta-btn cta-btn-secondary">📄 Download Resume</a>
+</div>
+
+<div class="leaderboard-entry">
+<label for="leaderboardNameInput" style="display:block;font-weight:700;margin-bottom:10px;color:#e5e7eb;">Join the Leaderboard</label>
+<div class="leaderboard-entry-controls">
+<input type="text" id="leaderboardNameInput" placeholder="Your name or initials" maxlength="40"/>
+<button type="button" class="cta-btn cta-btn-primary" onclick="submitLeaderboardScore()">Submit Score</button>
+</div>
+<div class="leaderboard-feedback" id="leaderboardFeedback"></div>
+</div>
+
+<div class="completion-footer">
+<button class="cta-btn cta-btn-ghost" onclick="minimizeCompletionModal()">Back to Resume</button>
+<div class="completion-footer-actions">
+<button type="button" class="cta-btn cta-btn-secondary" onclick="openLeaderboardModal()">View Leaderboard</button>
+<button type="button" class="cta-btn cta-btn-secondary" onclick="playAgain()">Play Again</button>
+</div>
+</div>
+
+<div class="completion-divider"></div>
+<div class="completion-section-title">What's Next?</div>
+<div class="next-levels">
+<div class="level-item locked">
+<div class="level-number">2</div>
+<div class="level-info">
+<div class="level-name">First Contact</div>
+<div class="level-desc">Reach out for a conversation</div>
+</div>
+</div>
+<div class="level-item locked">
+<div class="level-number">3</div>
+<div class="level-info">
+<div class="level-name">Meet Quentin</div>
+<div class="level-desc">Have an interview or discussion</div>
+</div>
+</div>
+<div class="level-item locked">
+<div class="level-number">4</div>
+<div class="level-info">
+<div class="level-name">Collaboration</div>
+<div class="level-desc">Start working together</div>
+</div>
+</div>
+<div class="level-item locked">
+<div class="level-number">5</div>
+<div class="level-info">
+<div class="level-name">Project Success</div>
+<div class="level-desc">Complete a successful project</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
 <div class="completion-dock" id="completionDock">
-  <div class="completion-dock-title">Let's keep the momentum going.</div>
-  <div class="completion-dock-actions">
-    <a href="https://www.thesterlingsgroup.com/schedule-a-conversation" target="_blank">Let's Talk</a>
-    <a href="https://www.thesterlingsgroup.com/portfolio" target="_blank">Portfolio</a>
-    <a href="QuentinSterling_2025.pdf" download>Download PDF Resume</a>
-    <button type="button" onclick="openLeaderboardModal()">Leaderboard</button>
-    <button type="button" onclick="maximizeCompletionModal()">Expand Celebration</button>
-  </div>
+<div class="completion-dock-title">Great work! 🎉</div>
+<div class="completion-dock-actions">
+<a href="https://www.thesterlingsgroup.com/schedule-a-conversation" target="_blank">Let's Talk</a>
+<a href="https://www.thesterlingsgroup.com/portfolio" target="_blank">Portfolio</a>
+<a href="QuentinSterling_11_2025.pdf" download>Download Resume</a>
+<button type="button" onclick="maximizeCompletionModal()">See Full Results</button>
+</div>
 </div>
 
 <div class="wrap">
 
-  <!-- TEXT NOTE: Tab labels for resume sections -->
-  <!-- centered tabs -->
-  <nav class="tabs" aria-label="Sections">
-    <button class="tab" data-target="summary">Professional Summary</button>
-    <button class="tab" data-target="experience">Experience</button>
-    <button class="tab" data-target="education">Education</button>
-    <button class="tab" data-target="skills">Skills</button>
-    <button class="tab" data-target="certs">Professional Certificates</button>
-    <button class="tab" data-target="honors">Honors & Achievements</button>
-  </nav>
+<nav class="tabs" aria-label="Sections">
+<button class="tab" data-target="summary">Professional Summary</button>
+<button class="tab" data-target="experience">Experience</button>
+<button class="tab" data-target="education">Education</button>
+<button class="tab" data-target="skills">Skills</button>
+<button class="tab" data-target="certs">Professional Certificates</button>
+<button class="tab" data-target="honors">Honors & Achievements</button>
+</nav>
 
-  <!-- SUMMARY -->
-  <section id="summary" class="section">
-    <button class="h" aria-expanded="false"><span class="caret">▸</span> Professional Summary</button>
-    <div id="p-summary" class="panel">
-      <p>
-        Proven leader in launching and scaling global brands and games across the U.S. and Asia. Experienced in go-to-market,
-        publishing, and user acquisition with a strong focus on results, cross-cultural execution, and Agile delivery.
-      </p>
-    </div>
-  </section>
+<section id="summary" class="section">
+<button class="h" aria-expanded="false"><span class="caret">▸</span> Professional Summary</button>
+<div id="p-summary" class="panel">
+<p>
+Proven leader in launching and scaling global brands and games across the U.S. and Asia. Experienced in go-to-market,
+publishing, and user acquisition with a strong focus on results, cross-cultural execution, and Agile delivery.
+</p>
+</div>
+</section>
 
-  <!-- EXPERIENCE -->
-  <section id="experience" class="section">
-    <button class="h" aria-expanded="false"><span class="caret">▸</span> Experience</button>
-    <div id="p-experience" class="panel">
+<section id="experience" class="section">
+<button class="h" aria-expanded="false"><span class="caret">▸</span> Experience</button>
+<div id="p-experience" class="panel">
 
-      <div class="sub">
-        <button class="sub-h" aria-expanded="false">
-          <span class="caret">▸</span>
-          <div class="job-header">
-            <div class="job-title">
-              <span class="company-name">Sterling Q Consulting</span>
-              <span class="position-name">Principal Consultant</span>
-            </div>
-            <div class="job-meta">
-              <span class="meta">Los Angeles, CA / Chongqing, China</span>
-              <span class="meta">2018–Present</span>
-            </div>
-          </div>
-        </button>
-        <div class="sub-p">
-          <ul class="list">
-            <li>Implemented systems across operations, marketing, and product development that optimized delivery.</li>
-            <li>Streamlined early-stage ideas into launched products by designing scalable and executable frameworks.</li>
-            <li>Analyzed, optimized and developed business models that increased revenues by <span class="metric">200%</span>.</li>
-            <li>Guided product dev teams from concept to launch with roadmaps, creative strategies and design.</li>
-            <li>Managed global projects across industries, keeping cross-functional teams on schedule and ensuring results.</li>
-          </ul>
-        </div>
-      </div>
+<div class="sub" data-job="handshake">
+<button class="sub-h" aria-expanded="false">
+<span class="caret">▸</span>
+<div class="job-header">
+<div class="job-title">
+<span class="company-name">Handshake</span>
+<span class="position-name">AI Trainer – Design Expert</span>
+</div>
+<div class="job-meta">
+<span class="meta">Remote (Los Angeles, CA)</span>
+<span class="meta">Oct 2025 – Present · Contract</span>
+</div>
+</div>
+</button>
+<div class="sub-p">
+<ul class="list">
+<li>Developed and evaluated domain-specific prompts to assess the performance of large language models (LLMs) in design</li>
+<li>Analyzed LLM outputs for scientific accuracy, clarity, and depth in specialized subfields</li>
+<li>Contributed to improving AI understanding of complex biological topics through expert review and feedback</li>
+<li>Conducted independent research to support prompt development and evaluation tasks</li>
+</ul>
+</div>
+</div>
 
-      <div class="sub">
-        <button class="sub-h" aria-expanded="false">
-          <span class="caret">▸</span>
-          <div class="job-header">
-            <div class="job-title">
-              <span class="company-name">Elex Tech</span>
-              <span class="position-name">Brand Manager (Lead Brand Creative)</span>
-            </div>
-            <div class="job-meta">
-              <span class="meta">Beijing, China</span>
-              <span class="meta">2020–2022</span>
-            </div>
-          </div>
-        </button>
-        <div class="sub-p">
-          <ul class="list">
-            <li>Published <em>The Walking Dead: Survivors</em> mobile game; reached <span class="metric">1,000,000 downloads</span> in the first six months.</li>
-            <li>Designed social strategy; built <span class="metric">1,000,000+ followers</span>, becoming the largest TWD community online.</li>
-            <li>Negotiated platform deals that generated over <span class="metric">1 billion views</span> on TikTok.</li>
-            <li>Built ad pipelines and supervised UA launches that improved retention and new installs with <span class="metric">10,000 DAUs</span>.</li>
-            <li>Directed content strategy that led to several impactful social media campaigns.</li>
-            <li>Achieved <span class="metric">100% UGC increase</span> by turning user research insights into actionable game features and improvements.</li>
-          </ul>
-        </div>
-      </div>
+<div class="sub" data-job="sterling">
+<button class="sub-h" aria-expanded="false">
+<span class="caret">▸</span>
+<div class="job-header">
+<div class="job-title">
+<span class="company-name">Sterling Q Consulting</span>
+<span class="position-name">Principal Consultant</span>
+</div>
+<div class="job-meta">
+<span class="meta">Los Angeles, CA / Chongqing, China</span>
+<span class="meta">2018 – Present</span>
+</div>
+</div>
+</button>
+<div class="sub-p">
+<ul class="list">
+<li>Implemented systems across operations, marketing, and product development that optimized delivery.</li>
+<li>Streamlined early-stage ideas into launched products by designing scalable and executable frameworks.</li>
+<li>Analyzed, optimized and developed business models that increased revenues by <span class="metric">200%</span>.</li>
+<li>Guided product dev teams from concept to launch with roadmaps, creative strategies and design.</li>
+<li>Managed global projects across industries, keeping cross-functional teams on schedule and ensuring results.</li>
+</ul>
+</div>
+</div>
 
-      <div class="sub">
-        <button class="sub-h" aria-expanded="false">
-          <span class="caret">▸</span>
-          <div class="job-header">
-            <div class="job-title">
-              <span class="company-name">Pathea Games</span>
-              <span class="position-name">Senior Brand Manager</span>
-            </div>
-            <div class="job-meta">
-              <span class="meta">Chongqing, China</span>
-              <span class="meta">2019–2020</span>
-            </div>
-          </div>
-        </button>
-        <div class="sub-p">
-          <ul class="list">
-            <li>Improved <em>My Time at Portia</em> by <span class="metric">200%</span>, from <span class="metric">650K to 2,000,000+</span> Steam units, and <span class="metric">10,000,000+</span> on all platforms.</li>
-            <li>Designed, launched, and managed Kickstarter campaign that reached <span class="metric">$100,000 goal</span> in less than 24 hours.</li>
-            <li>Exceeded Kickstarter goal by <span class="metric">400%</span> and achieved a <span class="metric">$534,000 total</span> in under 30 days.</li>
-            <li>Received Chinese government Cultural Export Award, elevating studio as China's number one indie developer.</li>
-            <li>Negotiated with and managed all platforms, including Nintendo, Xbox, PlayStation, Humble Bundle and more!</li>
-            <li>Took the company from emerging indie studio to internationally recognized with commercially successful titles.</li>
-          </ul>
-        </div>
-      </div>
+<div class="sub" data-job="elex">
+<button class="sub-h" aria-expanded="false">
+<span class="caret">▸</span>
+<div class="job-header">
+<div class="job-title">
+<span class="company-name">Elex Tech</span>
+<span class="position-name">Brand Manager (Lead Brand Creative)</span>
+</div>
+<div class="job-meta">
+<span class="meta">Beijing, China</span>
+<span class="meta">2020 – 2022</span>
+</div>
+</div>
+</button>
+<div class="sub-p">
+<ul class="list">
+<li>Published <em>The Walking Dead: Survivors</em> mobile game; reached <span class="metric">1,000,000 downloads</span> in the first six months.</li>
+<li>Designed social strategy; built <span class="metric">1,000,000+ followers</span>, becoming the largest TWD community online.</li>
+<li>Negotiated platform deals that generated over <span class="metric">1 billion views</span> on TikTok.</li>
+<li>Built ad pipelines and supervised UA launches that improved retention and new installs with <span class="metric">10,000 DAUs</span>.</li>
+<li>Directed content strategy that led to several impactful social media campaigns.</li>
+<li>Achieved <span class="metric">100% UGC increase</span> by turning user research insights into actionable game features and improvements.</li>
+</ul>
+</div>
+</div>
 
-      <div class="sub">
-        <button class="sub-h" aria-expanded="false">
-          <span class="caret">▸</span>
-          <div class="job-header">
-            <div class="job-title">
-              <span class="company-name">Jiang Xiao Bai Brand Management Company</span>
-              <span class="position-name">Global Brand Manager</span>
-            </div>
-            <div class="job-meta">
-              <span class="meta">Chongqing, China</span>
-              <span class="meta">2017–2019</span>
-            </div>
-          </div>
-        </button>
-        <div class="sub-p">
-          <ul class="list">
-            <li>Drove growth from no global sales to over <span class="metric">30M CNY</span> in revenue and collaborated with international partners.</li>
-            <li>Increased the brand by building its international presence from <span class="metric">0 to 8 countries</span> plus the United States.</li>
-            <li>Designed and delivered GTM entry plans that ensured localization and smooth execution worldwide.</li>
-          </ul>
-        </div>
-      </div>
+<div class="sub" data-job="pathea">
+<button class="sub-h" aria-expanded="false">
+<span class="caret">▸</span>
+<div class="job-header">
+<div class="job-title">
+<span class="company-name">Pathea Games</span>
+<span class="position-name">Senior Brand Manager</span>
+</div>
+<div class="job-meta">
+<span class="meta">Chongqing, China</span>
+<span class="meta">2019 – 2020</span>
+</div>
+</div>
+</button>
+<div class="sub-p">
+<ul class="list">
+<li>Improved <em>My Time at Portia</em> by <span class="metric">200%</span>, from <span class="metric">650K to 2,000,000+</span> Steam units, and <span class="metric">10,000,000+</span> on all platforms.</li>
+<li>Designed, launched, and managed Kickstarter campaign that reached <span class="metric">$100,000 goal</span> in less than 24 hours.</li>
+<li>Exceeded Kickstarter goal by <span class="metric">400%</span> and achieved a <span class="metric">$534,000 total</span> in under 30 days.</li>
+<li>Received Chinese government Cultural Export Award, elevating studio as China's number one indie developer.</li>
+<li>Negotiated with and managed all platforms, including Nintendo, Xbox, PlayStation, Humble Bundle and more!</li>
+<li>Took the company from emerging indie studio to internationally recognized with commercially successful titles.</li>
+</ul>
+</div>
+</div>
 
-    </div>
-  </section>
+<div class="sub" data-job="jiangxiaobai">
+<button class="sub-h" aria-expanded="false">
+<span class="caret">▸</span>
+<div class="job-header">
+<div class="job-title">
+<span class="company-name">Jiang Xiao Bai Brand Management Company</span>
+<span class="position-name">Global Brand Manager</span>
+</div>
+<div class="job-meta">
+<span class="meta">Chongqing, China</span>
+<span class="meta">2017 – 2019</span>
+</div>
+</div>
+</button>
+<div class="sub-p">
+<ul class="list">
+<li>Drove growth from no global sales to over <span class="metric">30M CNY</span> in revenue and collaborated with international partners.</li>
+<li>Increased the brand by building its international presence from <span class="metric">0 to 8 countries</span> plus the United States.</li>
+<li>Designed and delivered GTM entry plans that ensured localization and smooth execution worldwide.</li>
+</ul>
+</div>
+</div>
 
-  <!-- EDUCATION -->
-  <section id="education" class="section">
-    <button class="h" aria-expanded="false"><span class="caret">▸</span> Education</button>
-    <div id="p-education" class="panel">
+</div>
+</section>
 
-      <div class="sub">
-        <button class="sub-h" aria-expanded="false"><span class="caret">▸</span> Arizona State University</button>
-        <div class="sub-p">
-          <p><strong>B.S., Graphic Info Tech (Full-Stack Development)</strong> — 2024–Present <span class="meta">Tempe, AZ (Online)</span></p>
-        </div>
-      </div>
+<section id="education" class="section">
+<button class="h" aria-expanded="false"><span class="caret">▸</span> Education</button>
+<div id="p-education" class="panel">
 
-      <div class="sub">
-        <button class="sub-h" aria-expanded="false"><span class="caret">▸</span> Chongqing University</button>
-        <div class="sub-p">
-          <p><strong>M.A., Master of International Business</strong> — 2018 <span class="meta">Chongqing, China</span></p>
-        </div>
-      </div>
+<div class="sub" data-edu="asu">
+<button class="sub-h" aria-expanded="false"><span class="caret">▸</span> Arizona State University</button>
+<div class="sub-p">
+<p><strong>B.S., Graphic Info Tech (Full-Stack Development)</strong> — 2024 – Present <span class="meta">Tempe, AZ (Online)</span></p>
+</div>
+</div>
 
-      <div class="sub">
-        <button class="sub-h" aria-expanded="false"><span class="caret">▸</span> Fairmont State University</button>
-        <div class="sub-p">
-          <p><strong>B.A., Communications | B.S., Psychology</strong> — 2010 <span class="meta">Fairmont, WV</span></p>
-        </div>
-      </div>
+<div class="sub" data-edu="chongqing">
+<button class="sub-h" aria-expanded="false"><span class="caret">▸</span> Chongqing University</button>
+<div class="sub-p">
+<p><strong>M.A., Master of International Business</strong> — 2018 <span class="meta">Chongqing, China</span></p>
+</div>
+</div>
 
-    </div>
-  </section>
+<div class="sub" data-edu="fairmont">
+<button class="sub-h" aria-expanded="false"><span class="caret">▸</span> Fairmont State University</button>
+<div class="sub-p">
+<p><strong>B.A., Communications | B.S., Psychology</strong> — 2010 <span class="meta">Fairmont, WV</span></p>
+</div>
+</div>
 
-  <!-- SKILLS -->
-  <section id="skills" class="section">
-    <button class="h" aria-expanded="false"><span class="caret">▸</span> Skills</button>
-    <div id="p-skills" class="panel">
-      <div class="skills-grid">
-        <div class="skill-item">AI Prompt Engineering (ChatGPT, Claude, Gemini)</div>
-        <div class="skill-item">Project & Team Leadership</div>
-        <div class="skill-item">Project Management (Agile - Git, Jira)</div>
-        <div class="skill-item">Strategic Planning</div>
-        <div class="skill-item">Adobe (PS, XD, PR, AI, ID, Figma)</div>
-        <div class="skill-item">Stakeholder Reporting</div>
-        <div class="skill-item">C#, Python, HTML (Basic)</div>
-        <div class="skill-item">Process Optimization</div>
-        <div class="skill-item">Microsoft Excel</div>
-        <div class="skill-item">Cross-Functional Teamwork</div>
-        <div class="skill-item">Unity (basic)</div>
-        <div class="skill-item">Data-Driven Decision-Making</div>
-        <div class="skill-item">Unreal Engine (basic)</div>
-        <div class="skill-item">Change Management</div>
-        <div class="skill-item">Visual Studio Code</div>
-        <div class="skill-item">Analytical Reasoning</div>
-        <div class="skill-item">Process Documentation & Reporting</div>
-        <div class="skill-item">Creative Development</div>
-        <div class="skill-item">Mandarin Chinese (Basic Proficiency)</div>
-      </div>
-    </div>
-  </section>
+</div>
+</section>
 
-  <!-- CERTIFICATIONS -->
-  <section id="certs" class="section">
-    <button class="h" aria-expanded="false"><span class="caret">▸</span> Professional Certificates</button>
-    <div id="p-certs" class="panel">
-      <ul class="list">
-        <li>UX Design – Google</li>
-        <li>Google Analytics/SEO – Google</li>
-        <li>Agile PM – Atlassian</li>
-        <li>Agile Foundations – IIBA</li>
-        <li>Intro HTML, CSS, & JavaScript – IBM</li>
-        <li>Intro Software Engineering – IBM</li>
-        <li>Game Design – Cal Arts</li>
-        <li>Graphic Design – Cal Arts</li>
-        <li>Metaliteracy – SUNY</li>
-        <li>TEFL 120 Hours – iTTT</li>
-      </ul>
-    </div>
-  </section>
+<section id="skills" class="section">
+<button class="h" aria-expanded="false"><span class="caret">▸</span> Skills</button>
+<div id="p-skills" class="panel">
+<div class="skills-grid">
+<div class="skill-item">AI Prompt Engineering (ChatGPT, Claude, Gemini)</div>
+<div class="skill-item">Project & Team Leadership</div>
+<div class="skill-item">Project Management (Agile - Git, Jira)</div>
+<div class="skill-item">Strategic Planning</div>
+<div class="skill-item">Adobe (PS, XD, PR, AI, ID, Figma)</div>
+<div class="skill-item">Stakeholder Reporting</div>
+<div class="skill-item">C#, Python, HTML (Basic)</div>
+<div class="skill-item">Process Optimization</div>
+<div class="skill-item">Microsoft Excel</div>
+<div class="skill-item">Cross-Functional Teamwork</div>
+<div class="skill-item">Unity (basic)</div>
+<div class="skill-item">Data-Driven Decision-Making</div>
+<div class="skill-item">Unreal Engine (basic)</div>
+<div class="skill-item">Change Management</div>
+<div class="skill-item">Visual Studio Code</div>
+<div class="skill-item">Analytical Reasoning</div>
+<div class="skill-item">Process Documentation & Reporting</div>
+<div class="skill-item">Creative Development</div>
+<div class="skill-item">Mandarin Chinese (Basic Proficiency)</div>
+</div>
+</div>
+</section>
 
-  <!-- HONORS -->
-  <section id="honors" class="section">
-    <button class="h" aria-expanded="false"><span class="caret">▸</span> Honors & Achievements</button>
-    <div id="p-honors" class="panel">
-      <ul class="list">
-        <li>ASU Deans List 2024</li>
-        <li>Jiang Xiao Bai Top Employee 2019</li>
-        <li>UMF Man of the Year Southwest China 2018</li>
-        <li>Pathea Games Single Day Steam Sales Record</li>
-        <li>US Citizen Warden US Consulate Chengdu 2018–present</li>
-        <li>William White Athletic Scholarship</li>
-        <li>4 Year College Football Letter Winner 3 Year Starter</li>
-        <li>Black Heritage Council of Marion OH Award Winner</li>
-        <li>Student Psychology Association</li>
-        <li>Disaster Committee American Red Cross</li>
-        <li>International Student Organization</li>
-        <li>Student Athlete Advisory Committee</li>
-        <li>Volunteer American Red Cross Boys and Girls Club</li>
-        <li>Volunteer Special Olympics</li>
-        <li>Volunteer United Way Salvation Army</li>
-        <li>Volunteer Columbus Literacy Council</li>
-        <li>Volunteer Jinhae Church South Korea</li>
-      </ul>
-    </div>
-  </section>
+<section id="certs" class="section">
+<button class="h" aria-expanded="false"><span class="caret">▸</span> Professional Certificates</button>
+<div id="p-certs" class="panel">
+<ul class="list">
+<li>UX Design – Google</li>
+<li>Google Analytics/SEO – Google</li>
+<li>Agile PM – Atlassian</li>
+<li>Agile Foundations – IIBA</li>
+<li>Intro HTML, CSS, & JavaScript – IBM</li>
+<li>Intro Software Engineering – IBM</li>
+<li>Game Design – Cal Arts</li>
+<li>Graphic Design – Cal Arts</li>
+<li>Metaliteracy – SUNY</li>
+<li>TEFL 120 Hours – iTTT</li>
+</ul>
+</div>
+</section>
+
+<section id="honors" class="section">
+<button class="h" aria-expanded="false"><span class="caret">▸</span> Honors & Achievements</button>
+<div id="p-honors" class="panel">
+<ul class="list">
+<li>ASU Deans List 2024</li>
+<li>Jiang Xiao Bai Top Employee 2019</li>
+<li>UMF Man of the Year Southwest China 2018</li>
+<li>Pathea Games Single Day Steam Sales Record</li>
+<li>US Citizen Warden US Consulate Chengdu 2018–present</li>
+<li>William White Athletic Scholarship</li>
+<li>4 Year College Football Letter Winner 3 Year Starter</li>
+<li>Black Heritage Council of Marion OH Award Winner</li>
+<li>Student Psychology Association</li>
+<li>Disaster Committee American Red Cross</li>
+<li>International Student Organization</li>
+<li>Student Athlete Advisory Committee</li>
+<li>Volunteer American Red Cross Boys and Girls Club</li>
+<li>Volunteer Special Olympics</li>
+<li>Volunteer United Way Salvation Army</li>
+<li>Volunteer Columbus Literacy Council</li>
+<li>Volunteer Jinhae Church South Korea</li>
+</ul>
+</div>
+</section>
 
 </div>
 
 <script>
-/* ========================================
-   JAVASCRIPT - GAMIFICATION SYSTEM
-   This script adds interactive game elements to the resume:
-   - XP points for exploring sections
-   - Achievements for completing tasks
-   - Progress tracking
-   - Leaderboard functionality
-   ======================================== */
-
-// MAIN GAME OBJECT - Stores all game state and methods
 const GAME = {
-  // XP TRACKING
-  xp: 0, // Current XP points earned (starts at 0)
-  maxXP: 500, // Maximum possible XP (calculated dynamically based on page content)
-
-  // ACHIEVEMENTS
-  achievements: [], // Array of achievement IDs that have been unlocked (e.g., ['section_summary', 'job_sterling'])
-
-  // SECTION TRACKING
-  sectionsOpened: new Set(), // Set of section IDs opened (Set prevents duplicates)
-  sectionIds: ['summary','experience','education','skills','certs','honors'], // All main section IDs
-
-  // MILESTONE TRACKING
-  milestoneIds: ['milestone_25','milestone_50','milestone_75','milestone_100'], // Progress milestone IDs (25%, 50%, 75%, 100%)
-
-  // DYNAMIC COUNTS - Counted on page load
-  skillCount: 0, // Total number of skill items (counted from .skill-item elements)
-  certCount: 0, // Total number of certificates (counted from #p-certs .list li)
-  honorCount: 0, // Total number of honors (counted from #p-honors .list li)
-  metricCount: 0, // Total number of metrics (counted from .metric elements)
-  totalAchievements: 0, // Total possible achievements (calculated from all sources)
-
-  // SESSION STATE
-  sectionCompletionShown: false, // Has the completion modal been shown yet? (prevents duplicate)
-  currentRunId: null, // Unique ID for this gameplay session (e.g., 'run_1234567890_12345')
-  lastSavedScoreId: null, // ID of last score saved to leaderboard (prevents duplicate saves)
-  leaderboardKey: 'resumeLeaderboard_v2', // LocalStorage key for leaderboard data
-
-  // TIME TRACKING
-  startTime: Date.now(), // Timestamp when page loaded (milliseconds since 1970)
-
-  // AUDIO SETTINGS
-  soundEnabled: false, // Is sound on or off? (toggleable by user)
-  audioCtx: null, // Web Audio API context (for playing sound effects)
-
-  // EASTER EGG TRACKING
-  konamiSequence: [], // Stores recent keystrokes to detect Konami code (up, up, down, down, etc.)
-  nameClickCount: 0, // How many times has user clicked the name? (triggers easter egg at 5)
-
-  // Achievement definitions
-  achievementDefs: [ // TEXT NOTE: Update achievement names & hints here
-    // Main sections
-    {id: 'section_summary', name: 'Read Professional Summary', xp: 10, icon: '📄', hint: 'Open the summary section'},
-    {id: 'section_experience', name: 'Explored Experience', xp: 10, icon: '💼', hint: 'Open the experience section'},
-    {id: 'section_education', name: 'Checked Education', xp: 10, icon: '🎓', hint: 'Open the education section'},
-    {id: 'section_skills', name: 'Reviewed Skills', xp: 10, icon: '⚡', hint: 'Open the skills section'},
-    {id: 'section_certs', name: 'Viewed Certificates', xp: 10, icon: '📜', hint: 'Open the certificates section'},
-    {id: 'section_honors', name: 'Discovered Honors', xp: 10, icon: '🏅', hint: 'Open the honors section'},
-
-    // Jobs
-    {id: 'job_sterling', name: 'Sterling Q Deep Dive', xp: 5, icon: '🔍', hint: 'Expand Sterling Q Consulting'},
-    {id: 'job_elex', name: 'Elex Tech Explorer', xp: 5, icon: '🔍', hint: 'Expand Elex Tech'},
-    {id: 'job_pathea', name: 'Pathea Games Investigator', xp: 5, icon: '🔍', hint: 'Expand Pathea Games'},
-    {id: 'job_jiangxiaobai', name: 'Jiang Xiao Bai Researcher', xp: 5, icon: '🔍', hint: 'Expand Jiang Xiao Bai'},
-
-    // Education
-    {id: 'edu_asu', name: 'ASU Scholar', xp: 5, icon: '🎓', hint: 'Expand Arizona State University'},
-    {id: 'edu_chongqing', name: 'Chongqing Graduate', xp: 5, icon: '🎓', hint: 'Expand Chongqing University'},
-    {id: 'edu_fairmont', name: 'Fairmont Alumni', xp: 5, icon: '🎓', hint: 'Expand Fairmont State University'},
-
-    // Completion bonuses
-    {id: 'bonus_all_jobs', name: 'Career Completionist', xp: 15, icon: '🌟', hint: 'View all 4 work experiences'},
-    {id: 'bonus_all_edu', name: 'Academic Achiever', xp: 15, icon: '🌟', hint: 'View all 3 educational institutions'},
-    {id: 'bonus_all_skills', name: 'Skill Collector', xp: 15, icon: '🌟', hint: 'Hover over all 19 skills'},
-    {id: 'bonus_all_certs', name: 'Certification Hunter', xp: 15, icon: '🌟', hint: 'View all 10 certificates'},
-    {id: 'bonus_all_honors', name: 'Honor Roll', xp: 15, icon: '🌟', hint: 'View all 17 honors'},
-
-    // Individual items (created dynamically)
-    // Skills: 19 items x 1 XP = 19 XP
-    // Certs: 10 items x 1 XP = 10 XP
-    // Honors: 17 items x 1 XP = 17 XP
-    // Metrics: ~15 items x 2 XP = 30 XP
-
-    // Easter eggs
-    {id: 'secret_konami', name: 'Konami Master', xp: 25, icon: '🎮', hint: 'Try the classic sequence...'},
-    {id: 'secret_metrics', name: 'Detail Obsessed', xp: 20, icon: '🔬', hint: 'Numbers tell stories - hover over them all'},
-    {id: 'secret_name', name: 'Name Recognition', xp: 15, icon: '👤', hint: 'My name is important - click it 5 times'},
-    {id: 'secret_patient', name: 'Patient Explorer', xp: 20, icon: '⏱️', hint: 'Good things take time (5+ minutes)'},
-    {id: 'secret_completionist', name: 'True Completionist', xp: 30, icon: '💯', hint: 'Leave no stone unturned - open everything'},
-    {id: 'completed_resume', name: 'Resume Mastery Complete', xp: 0, icon: '*', hint: 'Explore every section to finish the experience'},
-  ],
-
-  /* ========================================
-     INITIALIZATION METHOD
-     Called when page loads - sets up the entire game system
-     ======================================== */
-  init() {
-    this.resetSession(); // Clear any previous game data, start fresh
-    this.cacheDynamicCounts(); // Count skills, certs, honors on the page
-    this.restorePreferences(); // Load user settings (dark mode, sound) from localStorage
-    this.setupEventListeners(); // Attach click/hover handlers to page elements
-    this.renderAchievements(); // Display achievement list in panel
-    this.updateUI(); // Update progress bars, XP display
-    this.startTimers(); // Begin timing for time-based achievements
-  },
-
-  /* RESET SESSION - Clear all game progress, start new run */
-  resetSession() {
-    this.xp = 0; // Reset XP to zero
-    this.achievements = []; // Clear all unlocked achievements
-    this.sectionsOpened = new Set(); // Clear section tracking
-    this.konamiSequence = []; // Reset konami code sequence
-    this.nameClickCount = 0; // Reset name clicks
-    this.sectionCompletionShown = false; // Allow completion modal to show again
-    this.startTime = Date.now(); // Record new start time
-    this.currentRunId = 'run_' + Date.now() + '_' + Math.floor(Math.random() * 100000); // Generate unique run ID
-    localStorage.removeItem('resumeGameProgress'); // Remove saved progress from localStorage
-    localStorage.removeItem('resumeLeaderboard'); // Remove old leaderboard (v1)
-  },
-
-  /* COUNT DYNAMIC ELEMENTS - Calculate how many skills, certs, honors exist on page */
-  cacheDynamicCounts() {
-    // COUNT: How many of each element type exists?
-    this.skillCount = document.querySelectorAll('.skill-item').length; // Count skill items
-    this.certCount = document.querySelectorAll('#p-certs .list li').length; // Count certificate items
-    this.honorCount = document.querySelectorAll('#p-honors .list li').length; // Count honor items
-    this.metricCount = document.querySelectorAll('.metric').length; // Count metric items
-
-    // CALCULATE MAXIMUM XP: Sum of all possible XP sources
-    const baseXP = this.achievementDefs.reduce((total, ach) => total + (ach.xp || 0), 0); // Sum XP from achievement definitions
-    const dynamicXP = this.skillCount + this.certCount + this.honorCount + (this.metricCount * 2); // Add XP from dynamic items (skills=1xp, certs=1xp, honors=1xp, metrics=2xp each)
-    this.maxXP = baseXP + dynamicXP; // Total maximum XP available
-
-    // CALCULATE TOTAL ACHIEVEMENTS: All achievement sources combined
-    this.totalAchievements = this.achievementDefs.length + this.skillCount + this.certCount + this.honorCount + this.metricCount + this.milestoneIds.length;
-  },
-
-  restorePreferences() {
-    const darkMode = localStorage.getItem('resumeDarkMode');
-    if (darkMode === 'true') {
-      document.body.classList.add('dark-mode');
-      const darkToggle = document.getElementById('darkModeToggle');
-      if (darkToggle) {
-        darkToggle.classList.add('on');
-      }
-    }
-
-    const soundPref = localStorage.getItem('resumeSound');
-    if (soundPref) {
-      this.soundEnabled = soundPref === 'on';
-      const soundToggle = document.getElementById('soundToggle');
-      if (soundToggle) {
-        soundToggle.classList.toggle('on', this.soundEnabled);
-      }
-    }
-  },
-  markSectionOpened(sectionId) {
-    if (!sectionId || !this.sectionIds.includes(sectionId)) return;
-    if (!this.sectionsOpened.has(sectionId)) {
-      this.sectionsOpened.add(sectionId);
-      this.updateUI();
-      if (this.sectionsOpened.size === this.sectionIds.length) {
-        this.onSectionsComplete();
-      }
-    }
-  },
-  getLeaderboard() {
-    try {
-      return JSON.parse(localStorage.getItem(this.leaderboardKey) || '[]');
-    } catch (err) {
-      console.warn('Unable to parse leaderboard data', err);
-      return [];
-    }
-  },
-
-  saveLeaderboard(entries) {
-    localStorage.setItem(this.leaderboardKey, JSON.stringify(entries.slice(0, 25)));
-  },
-
-  submitLeaderboardEntry(name) {
-    if (this.lastSavedScoreId === this.currentRunId) {
-      return {status: 'duplicate'};
-    }
-
-    const cleanName = (name || '').trim() || 'Anonymous';
-    const entry = {
-      runId: this.currentRunId,
-      name: cleanName.slice(0, 40),
-      score: this.xp,
-      sections: this.sectionsOpened.size,
-      timestamp: Date.now()
-    };
-
-    const entries = this.getLeaderboard();
-    entries.push(entry);
-    entries.sort((a, b) => {
-      if (b.score !== a.score) return b.score - a.score;
-      if (b.sections !== a.sections) return b.sections - a.sections;
-      return a.timestamp - b.timestamp;
-    });
-    this.saveLeaderboard(entries);
-    this.lastSavedScoreId = entry.runId;
-    return {status: 'saved', entry};
-  },
-
-  onSectionsComplete() {
-    if (this.sectionCompletionShown) return;
-    this.sectionCompletionShown = true;
-    if (!this.achievements.includes('completed_resume')) {
-      this.achievements.push('completed_resume');
-    }
-    this.showCompletionModal();
-  },
-
-  restartRun() {
-    this.resetSession();
-    this.renderAchievements();
-    this.updateUI();
-    this.hideCompletionDock();
-    const modal = document.getElementById('completionModal');
-    if (modal) modal.classList.remove('show');
-    const nameInput = document.getElementById('leaderboardNameInput');
-    if (nameInput) nameInput.value = '';
-    const feedback = document.getElementById('leaderboardFeedback');
-    if (feedback) {
-      feedback.textContent = '';
-      feedback.classList.remove('success', 'error');
-    }
-    const startScreen = document.getElementById('startScreen');
-    if (startScreen) {
-      startScreen.classList.remove('hidden');
-      const playButton = startScreen.querySelector('.play-button');
-      if (playButton) playButton.focus();
-    }
-  },
-
-  ensureAudioContext() {
-    if (this.audioCtx || !(window.AudioContext || window.webkitAudioContext)) return;
-    const Ctx = window.AudioContext || window.webkitAudioContext;
-    this.audioCtx = new Ctx();
-  },
-
-  showAchievementBurst(achievementId, amount) {
-    if (amount < 5) return;
-    const defs = this.achievementDefs.find(a => a.id === achievementId);
-    const title = defs ? defs.name : 'Achievement Unlocked';
-    const burst = document.createElement('div');
-    burst.className = 'xp-burst';
-    const centerX = window.innerWidth / 2;
-    const topY = 140;
-    burst.style.left = `${centerX - 120}px`;
-    burst.style.top = `${topY}px`;
-    burst.innerHTML = `<span>${title} +${amount} XP</span>`;
-    document.body.appendChild(burst);
-    const xpBar = document.getElementById('progressLeftFill');
-    if (xpBar) {
-      this.createSparkles(xpBar);
-    }
-    setTimeout(() => burst.remove(), 900);
-  },
-
-  showCompletionDock() {
-    const dock = document.getElementById('completionDock');
-    if (dock) dock.classList.add('show');
-  },
-
-  hideCompletionDock() {
-    const dock = document.getElementById('completionDock');
-    if (dock) dock.classList.remove('show');
-  },
-
-  removeLeaderboardEntry() {
-    if (!this.lastSavedScoreId) return { status: 'missing' };
-    const entries = this.getLeaderboard().filter(entry => entry.runId !== this.lastSavedScoreId);
-    this.saveLeaderboard(entries);
-    const removedId = this.lastSavedScoreId;
-    this.lastSavedScoreId = null;
-    return { status: 'removed', runId: removedId };
-  },
-
-  addXP(amount, achievementId) {
-    if (achievementId && this.achievements.includes(achievementId)) {
-      return; // Already unlocked
-    }
-
-    if (achievementId) {
-      this.achievements.push(achievementId);
-      this.showAchievementBurst(achievementId, amount);
-    }
-
-    this.xp += amount;
-    if (this.xp > this.maxXP) this.xp = this.maxXP;
-
-    this.updateUI();
-    this.playSound('xp');
-
-    // Check for 100% completion via XP
-    if (this.xp >= this.maxXP && this.sectionsOpened.size === this.sectionIds.length && !this.sectionCompletionShown) {
-      setTimeout(() => this.showCompletionModal(), 600);
-    }
-  },
-
-  updateUI() {
-    const sectionPercent = Math.round((this.sectionsOpened.size / this.sectionIds.length) * 100) || 0;
-    const xpPercent = Math.round((this.xp / this.maxXP) * 100);
-    const sectionsComplete = sectionPercent >= 100;
-    const xpComplete = xpPercent >= 100;
-
-    const topFill = document.getElementById('progressTopFill');
-    if (topFill) {
-      topFill.style.width = sectionPercent + '%';
-      topFill.classList.toggle('complete', sectionsComplete);
-      const topText = document.getElementById('progressTopPercent');
-      if (topText) topText.textContent = sectionPercent + '%';
-      const topCount = document.getElementById('progressTopXP');
-      if (topCount) topCount.textContent = `Sections ${this.sectionsOpened.size} / ${this.sectionIds.length}`;
-    }
-
-    const leftFill = document.getElementById('progressLeftFill');
-    if (leftFill) {
-      leftFill.style.height = xpPercent + '%';
-      leftFill.classList.toggle('complete', xpComplete);
-      const leftText = document.getElementById('progressLeftPercent');
-      if (leftText) leftText.textContent = `${this.xp} XP (${xpPercent}%)`;
-    }
-
-    const totalAchievements = this.totalAchievements || this.achievementDefs.length;
-    document.getElementById('achievementCounter').textContent =
-      this.achievements.length + ' / ' + totalAchievements + ' Unlocked';
-
-    this.renderAchievements();
-
-    if ([25, 50, 75, 100].includes(xpPercent) && !this.achievements.includes('milestone_' + xpPercent)) {
-      this.achievements.push('milestone_' + xpPercent);
-      this.createSparkles(leftFill || topFill || document.body);
-      this.playSound('milestone');
-    }
-  },
-
-  showXPFloat(text, x, y) {
-    const float = document.createElement('div');
-    float.className = 'xp-float';
-    float.textContent = text;
-    float.style.left = x + 'px';
-    float.style.top = y + 'px';
-    document.body.appendChild(float);
-    setTimeout(() => float.remove(), 1500);
-  },
-
-  createSparkles(element) {
-    const rect = element.getBoundingClientRect();
-    for (let i = 0; i < 12; i++) {
-      const sparkle = document.createElement('div');
-      sparkle.className = 'sparkle';
-      const angle = (Math.PI * 2 * i) / 12;
-      const distance = 40 + Math.random() * 20;
-      sparkle.style.cssText = `
-        left: ${rect.left + rect.width / 2}px;
-        top: ${rect.top + rect.height / 2}px;
-        --tx: ${Math.cos(angle) * distance}px;
-        --ty: ${Math.sin(angle) * distance}px;
-      `;
-      document.body.appendChild(sparkle);
-      setTimeout(() => sparkle.remove(), 800);
-    }
-  },
-
-  setupEventListeners() {
-    // Track sections opened
-    const tabs = document.querySelectorAll('.tab');
-    const sections = document.querySelectorAll('.section');
-
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const target = tab.dataset.target;
-        this.markSectionOpened(target);
-        const sectionAchievement = 'section_' + target;
-        if (!this.achievements.includes(sectionAchievement)) {
-          const rect = tab.getBoundingClientRect();
-          this.showXPFloat('+10 XP', rect.left + rect.width / 2, rect.top);
-          this.addXP(10, sectionAchievement);
-        }
-      });
-    });
-
-    sections.forEach(section => {
-      const header = section.querySelector('.h');
-      header.addEventListener('click', () => {
-        this.markSectionOpened(section.id);
-        const sectionAchievement = 'section_' + section.id;
-        if (!this.achievements.includes(sectionAchievement)) {
-          const rect = header.getBoundingClientRect();
-          this.showXPFloat('+10 XP', rect.left + rect.width / 2, rect.top);
-          this.addXP(10, sectionAchievement);
-        }
-      });
-    });
-
-    // Track job/edu expansions
-    const jobMapping = {
-      'Sterling Q Consulting': 'job_sterling',
-      'Elex Tech': 'job_elex',
-      'Pathea Games': 'job_pathea',
-      'Jiang Xiao Bai': 'job_jiangxiaobai',
-      'Arizona State University': 'edu_asu',
-      'Chongqing University': 'edu_chongqing',
-      'Fairmont State University': 'edu_fairmont'
-    };
-
-    document.querySelectorAll('.sub-h').forEach(subH => {
-      subH.addEventListener('click', () => {
-        const text = subH.textContent;
-        for (const [key, id] of Object.entries(jobMapping)) {
-          if (text.includes(key) && !this.achievements.includes(id)) {
-            const rect = subH.getBoundingClientRect();
-            this.showXPFloat('+5 XP', rect.left + rect.width / 2, rect.top);
-            this.addXP(5, id);
-            break;
-          }
-        }
-      });
-    });
-
-    // Track skill hovers
-    document.querySelectorAll('.skill-item').forEach((skill, idx) => {
-      skill.addEventListener('mouseenter', () => {
-        const id = 'skill_' + idx;
-        if (!this.achievements.includes(id)) {
-          const rect = skill.getBoundingClientRect();
-          this.showXPFloat('+1 XP', rect.left + rect.width / 2, rect.top);
-          this.addXP(1, id);
-        }
-      });
-    });
-
-    // Track cert/honor hovers
-    document.querySelectorAll('#p-certs .list li').forEach((cert, idx) => {
-      cert.addEventListener('mouseenter', () => {
-        const id = 'cert_' + idx;
-        if (!this.achievements.includes(id)) {
-          const rect = cert.getBoundingClientRect();
-          this.showXPFloat('+1 XP', rect.left + rect.width / 2, rect.top);
-          this.addXP(1, id);
-        }
-      });
-    });
-
-    document.querySelectorAll('#p-honors .list li').forEach((honor, idx) => {
-      honor.addEventListener('mouseenter', () => {
-        const id = 'honor_' + idx;
-        if (!this.achievements.includes(id)) {
-          const rect = honor.getBoundingClientRect();
-          this.showXPFloat('+1 XP', rect.left + rect.width / 2, rect.top);
-          this.addXP(1, id);
-        }
-      });
-    });
-
-    // Track metric hovers
-    document.querySelectorAll('.metric').forEach((metric, idx) => {
-      metric.addEventListener('mouseenter', () => {
-        const id = 'metric_' + idx;
-        if (!this.achievements.includes(id)) {
-          const rect = metric.getBoundingClientRect();
-          this.showXPFloat('+2 XP', rect.left + rect.width / 2, rect.top);
-          this.addXP(2, id);
-        }
-      });
-    });
-
-    // Easter egg: Name clicks
-    document.querySelectorAll('.company-name, .h').forEach(el => {
-      el.addEventListener('click', () => {
-        if (el.textContent.includes('Sterling')) {
-          this.nameClickCount++;
-          if (this.nameClickCount >= 5 && !this.achievements.includes('secret_name')) {
-            this.showXPFloat('SECRET UNLOCKED: Name Recognition! +15 XP', window.innerWidth / 2, 200);
-            this.addXP(15, 'secret_name');
-            this.playSound('secret');
-          }
-        }
-      });
-    });
-  },
-
-  startTimers() {
-    // Check for patient explorer achievement
-    setInterval(() => {
-      const elapsed = Date.now() - this.startTime;
-      if (elapsed > 300000 && !this.achievements.includes('secret_patient')) {
-        this.showXPFloat('SECRET UNLOCKED: Patient Explorer! +20 XP', window.innerWidth / 2, 200);
-        this.addXP(20, 'secret_patient');
-        this.playSound('secret');
-      }
-    }, 60000);
-  },
-
-  playSound(type) {
-    if (!this.soundEnabled) return;
-    this.ensureAudioContext();
-    if (!this.audioCtx) return;
-
-    const ctx = this.audioCtx;
-    if (ctx.state === 'suspended') {
-      ctx.resume();
-    }
-
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-
-    const profiles = {
-      xp: {frequency: 660, duration: 0.12},
-      milestone: {frequency: 880, duration: 0.22},
-      secret: {frequency: 990, duration: 0.3},
-      complete: {frequency: 523.25, duration: 0.4}
-    };
-
-    const profile = profiles[type] || profiles.xp;
-    osc.frequency.setValueAtTime(profile.frequency, ctx.currentTime);
-    osc.type = type === 'secret' ? 'triangle' : 'sine';
-
-    gain.gain.setValueAtTime(0.001, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + 0.01);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + profile.duration);
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + profile.duration);
-  },
-
-  renderAchievements() {
-    const list = document.getElementById('achievementList');
-    list.innerHTML = '';
-
-    this.achievementDefs.forEach(ach => {
-      const unlocked = this.achievements.includes(ach.id);
-      const div = document.createElement('div');
-      div.className = 'achievement-item ' + (unlocked ? 'unlocked' : 'locked');
-      div.innerHTML = `
-        <div class="achievement-icon">${unlocked ? ach.icon : '🔒'}</div>
-        <div class="achievement-info">
-          <div class="achievement-name">${ach.name}</div>
-          ${!unlocked ? `<div class="achievement-hint">${ach.hint}</div>` : ''}
-        </div>
-        <div class="achievement-xp">+${ach.xp} XP</div>
-      `;
-      list.appendChild(div);
-    });
-  },
-
-  showCompletionModal() {
-    const modal = document.getElementById('completionModal');
-    if (!modal) return;
-
-    if (!this.sectionCompletionShown) {
-      this.sectionCompletionShown = true;
-    }
-    if (!this.achievements.includes('completed_resume')) {
-      this.achievements.push('completed_resume');
-    }
-
-    this.hideCompletionDock();
-    this.updateUI();
-
-    const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
-    const minutes = Math.floor(elapsed / 60);
-    const seconds = elapsed % 60;
-    const sectionPercent = Math.round((this.sectionsOpened.size / this.sectionIds.length) * 100) || 0;
-    const xpPercent = Math.round((this.xp / this.maxXP) * 100);
-
-    document.getElementById('finalXP').textContent = this.xp + ' / ' + this.maxXP + ' XP';
-    document.getElementById('finalAchievements').textContent = this.achievements.length + ' / ' + this.totalAchievements;
-    document.getElementById('finalTime').textContent = minutes + 'm ' + seconds + 's';
-    document.getElementById('completionPercent').textContent = sectionPercent + '%';
-
-    let rank = 'NOVICE EXPLORER';
-    if (xpPercent >= 95) rank = 'LEGENDARY COMPLETIONIST';
-    else if (xpPercent >= 85) rank = 'EXPERT INVESTIGATOR';
-    else if (xpPercent >= 70) rank = 'SKILLED RESEARCHER';
-    else if (xpPercent >= 50) rank = 'DEDICATED VIEWER';
-    document.getElementById('finalRank').textContent = rank;
-
-    modal.classList.add('show');
-    this.playSound('complete');
-    this.createSparkles(modal);
-  }
+xp: 0,
+maxXP: 550,
+achievements: [],
+sectionsOpened: new Set(),
+sectionIds: ['summary','experience','education','skills','certs','honors'],
+milestoneIds: ['milestone_25','milestone_50','milestone_75','milestone_100'],
+skillCount: 0,
+certCount: 0,
+honorCount: 0,
+metricCount: 0,
+totalAchievements: 0,
+sectionCompletionShown: false,
+currentRunId: null,
+lastSavedScoreId: null,
+leaderboardKey: 'resumeLeaderboard_v2',
+startTime: Date.now(),
+soundEnabled: false,
+audioCtx: null,
+konamiSequence: [],
+nameClickCount: 0,
+
+achievementDefs: [
+{id: 'section_summary', name: 'Summary Read', xp: 10, icon: '📄', hint: 'Open summary'},
+{id: 'section_experience', name: 'Experience', xp: 10, icon: '💼', hint: 'Open experience'},
+{id: 'section_education', name: 'Education', xp: 10, icon: '🎓', hint: 'Open education'},
+{id: 'section_skills', name: 'Skills', xp: 10, icon: '⚡', hint: 'Open skills'},
+{id: 'section_certs', name: 'Certificates', xp: 10, icon: '📜', hint: 'Open certificates'},
+{id: 'section_honors', name: 'Honors', xp: 10, icon: '🏅', hint: 'Open honors'},
+
+{id: 'job_handshake', name: 'AI Trainer', xp: 5, icon: '🔍', hint: 'Expand Handshake'},
+{id: 'job_sterling', name: 'Sterling Q', xp: 5, icon: '🔍', hint: 'Expand Sterling Q'},
+{id: 'job_elex', name: 'Elex Tech', xp: 5, icon: '🔍', hint: 'Expand Elex Tech'},
+{id: 'job_pathea', name: 'Pathea Games', xp: 5, icon: '🔍', hint: 'Expand Pathea'},
+{id: 'job_jiangxiaobai', name: 'Jiang Xiao Bai', xp: 5, icon: '🔍', hint: 'Expand JXB'},
+
+{id: 'edu_asu', name: 'ASU', xp: 5, icon: '🎓', hint: 'Expand ASU'},
+{id: 'edu_chongqing', name: 'Chongqing U', xp: 5, icon: '🎓', hint: 'Expand Chongqing'},
+{id: 'edu_fairmont', name: 'Fairmont', xp: 5, icon: '🎓', hint: 'Expand Fairmont'},
+
+{id: 'bonus_all_jobs', name: 'All Jobs', xp: 15, icon: '🌟', hint: 'View all 5 jobs'},
+{id: 'bonus_all_edu', name: 'All Schools', xp: 15, icon: '🌟', hint: 'View all 3 schools'},
+{id: 'bonus_all_skills', name: 'All Skills', xp: 15, icon: '🌟', hint: 'Hover all 19 skills'},
+{id: 'bonus_all_certs', name: 'All Certs', xp: 15, icon: '🌟', hint: 'View all 10 certs'},
+{id: 'bonus_all_honors', name: 'All Honors', xp: 15, icon: '🌟', hint: 'View all 17 honors'},
+
+{id: 'secret_konami', name: 'Konami Code', xp: 25, icon: '🎮', hint: 'Try the classic...'},
+{id: 'secret_metrics', name: 'Detail Focused', xp: 20, icon: '🔬', hint: 'Hover all numbers'},
+{id: 'secret_name', name: 'Name Click', xp: 15, icon: '👤', hint: 'Click name 5x'},
+{id: 'secret_patient', name: 'Patient', xp: 20, icon: '⏱️', hint: 'Explore 5+ min'},
+{id: 'secret_completionist', name: 'Completionist', xp: 30, icon: '💯', hint: 'Open everything'},
+{id: 'completed_resume', name: 'Complete', xp: 0, icon: '✨', hint: 'Explore all sections'},
+],
+
+init() {
+this.resetSession();
+this.cacheDynamicCounts();
+this.restorePreferences();
+this.setupEventListeners();
+this.renderAchievements();
+this.updateUI();
+this.startTimers();
+},
+
+resetSession() {
+this.xp = 0;
+this.achievements = [];
+this.sectionsOpened = new Set();
+this.konamiSequence = [];
+this.nameClickCount = 0;
+this.sectionCompletionShown = false;
+this.startTime = Date.now();
+this.currentRunId = 'run_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+localStorage.removeItem('resumeGameProgress');
+localStorage.removeItem('resumeLeaderboard');
+},
+
+cacheDynamicCounts() {
+this.skillCount = document.querySelectorAll('.skill-item').length;
+this.certCount = document.querySelectorAll('#p-certs .list li').length;
+this.honorCount = document.querySelectorAll('#p-honors .list li').length;
+this.metricCount = document.querySelectorAll('.metric').length;
+
+const baseXP = this.achievementDefs.reduce((total, ach) => total + (ach.xp || 0), 0);
+const dynamicXP = this.skillCount + this.certCount + this.honorCount + (this.metricCount * 2);
+this.maxXP = baseXP + dynamicXP;
+
+this.totalAchievements = this.achievementDefs.length + this.skillCount + this.certCount + this.honorCount + this.metricCount + this.milestoneIds.length;
+},
+
+restorePreferences() {
+const darkMode = localStorage.getItem('resumeDarkMode');
+if (darkMode === 'true') {
+document.body.classList.add('dark-mode');
+const darkToggle = document.getElementById('darkModeToggle');
+if (darkToggle) darkToggle.classList.add('on');
+}
+
+const soundPref = localStorage.getItem('resumeSound');
+if (soundPref) {
+this.soundEnabled = soundPref === 'on';
+const soundToggle = document.getElementById('soundToggle');
+if (soundToggle) soundToggle.classList.toggle('on', this.soundEnabled);
+}
+},
+
+setupEventListeners() {
+const headers = document.querySelectorAll('.h');
+headers.forEach(h => {
+h.addEventListener('click', (e) => {
+const section = e.currentTarget.closest('.section');
+const sectionId = section.id;
+const panel = section.querySelector('.panel');
+const isOpen = panel.classList.contains('show');
+
+if (!isOpen) {
+panel.classList.add('show');
+e.currentTarget.setAttribute('aria-expanded', 'true');
+this.markSectionOpened(sectionId);
+this.grantAchievement('section_' + sectionId);
+this.addXP(10, e.clientX, e.clientY);
+} else {
+panel.classList.remove('show');
+e.currentTarget.setAttribute('aria-expanded', 'false');
+}
+});
+});
+
+const subHeaders = document.querySelectorAll('.sub-h');
+subHeaders.forEach(sh => {
+sh.addEventListener('click', (e) => {
+const sub = e.currentTarget.closest('.sub');
+const subP = sub.querySelector('.sub-p');
+const isOpen = subP.classList.contains('show');
+
+if (!isOpen) {
+subP.classList.add('show');
+e.currentTarget.setAttribute('aria-expanded', 'true');
+
+const jobAttr = sub.getAttribute('data-job');
+if (jobAttr) {
+this.grantAchievement('job_' + jobAttr);
+this.addXP(5, e.clientX, e.clientY);
+this.checkBonusJobs();
+}
+
+const eduAttr = sub.getAttribute('data-edu');
+if (eduAttr) {
+this.grantAchievement('edu_' + eduAttr);
+this.addXP(5, e.clientX, e.clientY);
+this.checkBonusEdu();
+}
+} else {
+subP.classList.remove('show');
+e.currentTarget.setAttribute('aria-expanded', 'false');
+}
+});
+});
+
+const tabs = document.querySelectorAll('.tab');
+tabs.forEach(tab => {
+tab.addEventListener('click', (e) => {
+const target = e.currentTarget.getAttribute('data-target');
+const section = document.getElementById(target);
+if (section) {
+const h = section.querySelector('.h');
+if (h) {
+h.click();
+tab.classList.add('clicked');
+setTimeout(() => tab.classList.remove('clicked'), 600);
+section.scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+}
+});
+});
+
+const skillItems = document.querySelectorAll('.skill-item');
+skillItems.forEach((item, idx) => {
+const skillId = 'skill_' + idx;
+item.addEventListener('mouseenter', () => {
+if (!this.achievements.includes(skillId)) {
+this.achievements.push(skillId);
+this.addXP(1, item.getBoundingClientRect().left, item.getBoundingClientRect().top);
+this.updateUI();
+this.checkBonusSkills();
+}
+});
+});
+
+const certItems = document.querySelectorAll('#p-certs .list li');
+certItems.forEach((item, idx) => {
+const certId = 'cert_' + idx;
+item.addEventListener('mouseenter', () => {
+if (!this.achievements.includes(certId)) {
+this.achievements.push(certId);
+this.addXP(1, item.getBoundingClientRect().left, item.getBoundingClientRect().top);
+this.updateUI();
+this.checkBonusCerts();
+}
+});
+});
+
+const honorItems = document.querySelectorAll('#p-honors .list li');
+honorItems.forEach((item, idx) => {
+const honorId = 'honor_' + idx;
+item.addEventListener('mouseenter', () => {
+if (!this.achievements.includes(honorId)) {
+this.achievements.push(honorId);
+this.addXP(1, item.getBoundingClientRect().left, item.getBoundingClientRect().top);
+this.updateUI();
+this.checkBonusHonors();
+}
+});
+});
+
+const metricItems = document.querySelectorAll('.metric');
+metricItems.forEach((item, idx) => {
+const metricId = 'metric_' + idx;
+item.addEventListener('mouseenter', () => {
+if (!this.achievements.includes(metricId)) {
+this.achievements.push(metricId);
+this.addXP(2, item.getBoundingClientRect().left, item.getBoundingClientRect().top);
+this.updateUI();
+this.checkMetrics();
+}
+});
+});
+
+document.addEventListener('keydown', (e) => {
+const konamiCode = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+this.konamiSequence.push(e.key);
+if (this.konamiSequence.length > 10) this.konamiSequence.shift();
+if (this.konamiSequence.join(',') === konamiCode.join(',')) {
+this.grantAchievement('secret_konami');
+this.addXP(25, window.innerWidth / 2, window.innerHeight / 2);
+}
+});
+
+const nameEl = document.querySelector('.start-title');
+if (nameEl) {
+nameEl.addEventListener('click', () => {
+this.nameClickCount++;
+if (this.nameClickCount >= 5) {
+this.grantAchievement('secret_name');
+this.addXP(15, nameEl.getBoundingClientRect().left, nameEl.getBoundingClientRect().top);
+}
+});
+}
+},
+
+startTimers() {
+setTimeout(() => {
+if (!this.sectionCompletionShown) {
+this.grantAchievement('secret_patient');
+this.addXP(20, window.innerWidth / 2, window.innerHeight / 2);
+}
+}, 300000);
+},
+
+grantAchievement(id) {
+if (!this.achievements.includes(id)) {
+this.achievements.push(id);
+this.updateUI();
+this.renderAchievements();
+}
+},
+
+addXP(amount, x, y) {
+this.xp += amount;
+this.updateUI();
+this.showXPFloat(amount, x, y);
+this.checkMilestones();
+},
+
+showXPFloat(amount, x, y) {
+const el = document.createElement('div');
+el.className = 'xp-float';
+el.textContent = '+' + amount + ' XP';
+el.style.left = x + 'px';
+el.style.top = y + 'px';
+document.body.appendChild(el);
+setTimeout(() => el.remove(), 1500);
+},
+
+checkMilestones() {
+const pct = Math.floor((this.sectionsOpened.size / this.sectionIds.length) * 100);
+if (pct >= 25 && !this.achievements.includes('milestone_25')) {
+this.grantAchievement('milestone_25');
+}
+if (pct >= 50 && !this.achievements.includes('milestone_50')) {
+this.grantAchievement('milestone_50');
+}
+if (pct >= 75 && !this.achievements.includes('milestone_75')) {
+this.grantAchievement('milestone_75');
+}
+if (pct >= 100 && !this.achievements.includes('milestone_100')) {
+this.grantAchievement('milestone_100');
+}
+},
+
+checkBonusJobs() {
+const jobIds = ['job_handshake','job_sterling','job_elex','job_pathea','job_jiangxiaobai'];
+if (jobIds.every(id => this.achievements.includes(id))) {
+this.grantAchievement('bonus_all_jobs');
+this.addXP(15, window.innerWidth / 2, window.innerHeight / 2);
+}
+},
+
+checkBonusEdu() {
+const eduIds = ['edu_asu','edu_chongqing','edu_fairmont'];
+if (eduIds.every(id => this.achievements.includes(id))) {
+this.grantAchievement('bonus_all_edu');
+this.addXP(15, window.innerWidth / 2, window.innerHeight / 2);
+}
+},
+
+checkBonusSkills() {
+let count = 0;
+for (let i = 0; i < this.skillCount; i++) {
+if (this.achievements.includes('skill_' + i)) count++;
+}
+if (count >= this.skillCount) {
+this.grantAchievement('bonus_all_skills');
+this.addXP(15, window.innerWidth / 2, window.innerHeight / 2);
+}
+},
+
+checkBonusCerts() {
+let count = 0;
+for (let i = 0; i < this.certCount; i++) {
+if (this.achievements.includes('cert_' + i)) count++;
+}
+if (count >= this.certCount) {
+this.grantAchievement('bonus_all_certs');
+this.addXP(15, window.innerWidth / 2, window.innerHeight / 2);
+}
+},
+
+checkBonusHonors() {
+let count = 0;
+for (let i = 0; i < this.honorCount; i++) {
+if (this.achievements.includes('honor_' + i)) count++;
+}
+if (count >= this.honorCount) {
+this.grantAchievement('bonus_all_honors');
+this.addXP(15, window.innerWidth / 2, window.innerHeight / 2);
+}
+},
+
+checkMetrics() {
+let count = 0;
+for (let i = 0; i < this.metricCount; i++) {
+if (this.achievements.includes('metric_' + i)) count++;
+}
+if (count >= this.metricCount) {
+this.grantAchievement('secret_metrics');
+this.addXP(20, window.innerWidth / 2, window.innerHeight / 2);
+}
+},
+
+markSectionOpened(sectionId) {
+if (!sectionId || !this.sectionIds.includes(sectionId)) return;
+if (!this.sectionsOpened.has(sectionId)) {
+this.sectionsOpened.add(sectionId);
+this.updateUI();
+if (this.sectionsOpened.size === this.sectionIds.length) {
+this.onSectionsComplete();
+}
+}
+},
+
+onSectionsComplete() {
+if (this.sectionCompletionShown) return;
+this.sectionCompletionShown = true;
+if (!this.achievements.includes('completed_resume')) {
+this.achievements.push('completed_resume');
+}
+const finishBtn = document.getElementById('finishButton');
+if (finishBtn) {
+finishBtn.classList.add('show');
+}
+},
+
+showCompletionModal() {
+const modal = document.getElementById('completionModal');
+const elapsedSec = Math.floor((Date.now() - this.startTime) / 1000);
+const mins = Math.floor(elapsedSec / 60);
+const secs = elapsedSec % 60;
+
+document.getElementById('finalXP').textContent = this.xp + ' XP';
+document.getElementById('finalAchievements').textContent = this.achievements.length + ' / ' + this.totalAchievements;
+document.getElementById('finalTime').textContent = mins + 'm ' + secs + 's';
+document.getElementById('completionPercent').textContent = Math.floor((this.xp / this.maxXP) * 100) + '%';
+
+let rank = 'NOVICE';
+if (this.xp >= this.maxXP * 0.9) rank = 'LEGENDARY';
+else if (this.xp >= this.maxXP * 0.7) rank = 'EXPERT';
+else if (this.xp >= this.maxXP * 0.5) rank = 'ADVANCED';
+else if (this.xp >= this.maxXP * 0.3) rank = 'INTERMEDIATE';
+document.getElementById('finalRank').textContent = rank;
+
+modal.classList.add('show');
+
+const finishBtn = document.getElementById('finishButton');
+if (finishBtn) {
+finishBtn.classList.remove('show');
+}
+},
+
+updateUI() {
+const pct = Math.floor((this.sectionsOpened.size / this.sectionIds.length) * 100);
+const fill = document.getElementById('progressTopFill');
+const text = document.getElementById('progressTopPercent');
+const xpText = document.getElementById('progressTopXP');
+
+fill.style.width = pct + '%';
+text.textContent = pct + '%';
+xpText.textContent = 'Sections ' + this.sectionsOpened.size + ' / ' + this.sectionIds.length;
+
+if (pct >= 100) {
+fill.classList.add('complete');
+}
+
+const leftFill = document.getElementById('progressLeftFill');
+const leftPct = document.getElementById('progressLeftPercent');
+const xpPct = Math.floor((this.xp / this.maxXP) * 100);
+leftFill.style.height = Math.min(xpPct, 100) + '%';
+leftPct.textContent = this.xp + ' XP';
+
+const counter = document.getElementById('achievementCounter');
+counter.textContent = this.achievements.length + ' / ' + this.totalAchievements + ' Unlocked';
+},
+
+renderAchievements() {
+const list = document.getElementById('achievementList');
+list.innerHTML = '';
+
+this.achievementDefs.forEach(def => {
+if (def.icon === '✨') return;
+
+const unlocked = this.achievements.includes(def.id);
+const item = document.createElement('div');
+item.className = 'achievement-item ' + (unlocked ? 'unlocked' : 'locked');
+
+const icon = document.createElement('div');
+icon.className = 'achievement-icon';
+icon.textContent = def.icon;
+
+const info = document.createElement('div');
+info.className = 'achievement-info';
+
+const name = document.createElement('div');
+name.className = 'achievement-name';
+name.textContent = def.name;
+
+const hint = document.createElement('div');
+hint.className = 'achievement-hint';
+hint.textContent = unlocked ? '+' + def.xp + ' XP' : def.hint;
+
+info.appendChild(name);
+info.appendChild(hint);
+
+item.appendChild(icon);
+item.appendChild(info);
+list.appendChild(item);
+});
+},
+
+getLeaderboard() {
+try {
+return JSON.parse(localStorage.getItem(this.leaderboardKey) || '[]');
+} catch (err) {
+console.warn('Unable to parse leaderboard data', err);
+return [];
+}
+},
+
+saveLeaderboard(entries) {
+localStorage.setItem(this.leaderboardKey, JSON.stringify(entries.slice(0, 25)));
+},
+
+submitLeaderboardEntry(name) {
+if (this.lastSavedScoreId === this.currentRunId) {
+return {status: 'duplicate'};
+}
+
+const cleanName = (name || '').trim() || 'Anonymous';
+const entry = {
+runId: this.currentRunId,
+name: cleanName.slice(0, 40),
+score: this.xp,
+sections: this.sectionsOpened.size,
+timestamp: Date.now()
 };
 
-// Global functions
+const entries = this.getLeaderboard();
+entries.push(entry);
+entries.sort((a, b) => {
+if (b.score !== a.score) return b.score - a.score;
+if (b.sections !== a.sections) return b.sections - a.sections;
+return a.timestamp - b.timestamp;
+});
+this.saveLeaderboard(entries);
+this.lastSavedScoreId = entry.runId;
+return {status: 'saved', entry};
+},
+
+restartRun() {
+this.resetSession();
+this.renderAchievements();
+this.updateUI();
+}
+};
+
+function startGame() {
+document.getElementById('startScreen').classList.add('hidden');
+GAME.init();
+}
+
 function toggleAchievementPanel() {
-  document.getElementById('achievementPanel').classList.toggle('collapsed');
+document.getElementById('achievementPanel').classList.toggle('collapsed');
 }
 
 function toggleSettings() {
-  document.getElementById('settingsPanel').classList.toggle('show');
+document.getElementById('settingsPanel').classList.toggle('show');
 }
 
-function openSettingsPanel() { // TEXT NOTE: used by start screen button
-  const panel = document.getElementById('settingsPanel');
-  if (!panel.classList.contains('show')) {
-    panel.classList.add('show');
-  }
-  const leaderboardModal = document.getElementById('leaderboardModal');
-  if (leaderboardModal) {
-    leaderboardModal.classList.remove('show');
-  }
+function openSettingsPanel() {
+document.getElementById('settingsPanel').classList.add('show');
 }
 
 function toggleSound() {
-  GAME.soundEnabled = !GAME.soundEnabled;
-  const toggle = document.getElementById('soundToggle');
-  toggle.classList.toggle('on', GAME.soundEnabled);
-  localStorage.setItem('resumeSound', GAME.soundEnabled ? 'on' : 'off');
-  if (GAME.soundEnabled) {
-    GAME.ensureAudioContext();
-    if (GAME.audioCtx && GAME.audioCtx.state === 'suspended') {
-      GAME.audioCtx.resume();
-    }
-  }
+GAME.soundEnabled = !GAME.soundEnabled;
+localStorage.setItem('resumeSound', GAME.soundEnabled ? 'on' : 'off');
+document.getElementById('soundToggle').classList.toggle('on', GAME.soundEnabled);
 }
 
 function toggleDarkMode() {
-  document.body.classList.toggle('dark-mode');
-  const toggle = document.getElementById('darkModeToggle');
-  const isDark = document.body.classList.contains('dark-mode');
-  toggle.classList.toggle('on', isDark);
-  localStorage.setItem('resumeDarkMode', isDark ? 'true' : 'false');
-}
-
-function openLeaderboardModal() {
-  const modal = document.getElementById('leaderboardModal');
-  const settingsPanel = document.getElementById('settingsPanel');
-  if (settingsPanel) {
-    settingsPanel.classList.remove('show');
-  }
-  if (!modal.classList.contains('show')) {
-    renderLeaderboard();
-    modal.classList.add('show');
-  }
+document.body.classList.toggle('dark-mode');
+const isOn = document.body.classList.contains('dark-mode');
+localStorage.setItem('resumeDarkMode', isOn ? 'true' : 'false');
+document.getElementById('darkModeToggle').classList.toggle('on', isOn);
 }
 
 function toggleLeaderboard() {
-  const modal = document.getElementById('leaderboardModal');
-  if (modal.classList.contains('show')) {
-    modal.classList.remove('show');
-  } else {
-    renderLeaderboard();
-    modal.classList.add('show');
-  }
+const modal = document.getElementById('leaderboardModal');
+const isShown = modal.classList.contains('show');
+modal.classList.toggle('show');
+
+if (!isShown) {
+renderLeaderboard();
+}
+}
+
+function openLeaderboardModal() {
+document.getElementById('leaderboardModal').classList.add('show');
+renderLeaderboard();
 }
 
 function renderLeaderboard() {
-  const list = document.getElementById('leaderboardList');
-  if (!list) return;
-  const scores = GAME.getLeaderboard();
-  const sorted = [...scores].sort((a, b) => {
-    if (b.score !== a.score) return b.score - a.score;
-    if ((b.sections || 0) !== (a.sections || 0)) return (b.sections || 0) - (a.sections || 0);
-    return (a.timestamp || 0) - (b.timestamp || 0);
-  });
+const list = document.getElementById('leaderboardList');
+const entries = GAME.getLeaderboard();
 
-  list.innerHTML = '';
-
-  if (!sorted.length) {
-    const empty = document.createElement('li');
-    empty.style.textAlign = 'center';
-    empty.style.padding = '20px';
-    empty.style.color = '#888';
-    empty.textContent = 'No scores yet. Be the first!';
-    list.appendChild(empty);
-    return;
-  }
-
-  sorted.slice(0, 10).forEach((entry, idx) => {
-    const li = document.createElement('li');
-    li.className = 'leaderboard-item' + (entry.runId === GAME.lastSavedScoreId ? ' current' : '');
-
-    const rank = document.createElement('span');
-    rank.className = 'leaderboard-rank';
-    rank.textContent = '#' + (idx + 1);
-
-    const details = document.createElement('div');
-    details.className = 'leaderboard-details';
-
-    const name = document.createElement('span');
-    name.className = 'leaderboard-name';
-    name.textContent = entry.name || 'Anonymous';
-
-    const meta = document.createElement('span');
-    meta.className = 'leaderboard-meta';
-    const date = entry.timestamp ? new Date(entry.timestamp).toLocaleDateString() : '';
-    const metaParts = ['Sections ' + (entry.sections || 0) + ' / ' + GAME.sectionIds.length];
-    if (date) metaParts.push(date);
-    meta.textContent = metaParts.join(' | ');
-
-    details.appendChild(name);
-    details.appendChild(meta);
-
-    const score = document.createElement('span');
-    score.className = 'leaderboard-score';
-    score.textContent = entry.score + ' XP';
-
-    li.appendChild(rank);
-    li.appendChild(details);
-    li.appendChild(score);
-    list.appendChild(li);
-  });
+if (entries.length === 0) {
+list.innerHTML = '<li style="text-align:center;padding:20px;color:#9ca3af;">No scores yet. Be the first!</li>';
+return;
 }
 
-function removeMyLeaderboardScore() { // TEXT NOTE: status messages shown under leaderboard form
-  const feedback = document.getElementById('leaderboardFeedback');
-  if (!feedback) return;
-  const outcome = GAME.removeLeaderboardEntry();
-  if (outcome.status === 'removed') {
-    feedback.textContent = 'Your recent score has been removed.';
-    feedback.classList.remove('error');
-    feedback.classList.add('success');
-  } else {
-    feedback.textContent = 'No saved score to remove yet.';
-    feedback.classList.remove('success');
-    feedback.classList.add('error');
-  }
-  renderLeaderboard();
+list.innerHTML = '';
+entries.forEach((entry, idx) => {
+const li = document.createElement('li');
+li.className = 'leaderboard-item';
+if (entry.runId === GAME.currentRunId) {
+li.classList.add('current');
 }
 
-// TEXT NOTE: adjust leaderboard form responses below
+const rank = document.createElement('div');
+rank.className = 'leaderboard-rank';
+rank.textContent = '#' + (idx + 1);
+
+const name = document.createElement('div');
+name.className = 'leaderboard-name';
+name.textContent = entry.name;
+
+const score = document.createElement('div');
+score.className = 'leaderboard-score';
+score.textContent = entry.score + ' XP';
+
+li.appendChild(rank);
+li.appendChild(name);
+li.appendChild(score);
+list.appendChild(li);
+});
+}
+
 function submitLeaderboardScore() {
-  const input = document.getElementById('leaderboardNameInput');
-  const feedback = document.getElementById('leaderboardFeedback');
-  if (!input || !feedback) return;
+const input = document.getElementById('leaderboardNameInput');
+const feedback = document.getElementById('leaderboardFeedback');
+const name = input.value.trim();
 
-  const outcome = GAME.submitLeaderboardEntry(input.value);
-  if (outcome.status === 'duplicate') {
-    feedback.textContent = 'Score already saved for this run.';
-    feedback.classList.add('error');
-    feedback.classList.remove('success');
-    return;
-  }
+const result = GAME.submitLeaderboardEntry(name);
 
-  input.value = '';
-  feedback.textContent = 'Score saved! Open the leaderboard to see your rank.';
-  feedback.classList.remove('error');
-  feedback.classList.add('success');
-  renderLeaderboard();
+if (result.status === 'duplicate') {
+feedback.textContent = 'You already submitted this score!';
+feedback.className = 'leaderboard-feedback error';
+} else if (result.status === 'saved') {
+feedback.textContent = 'Score saved! Check the leaderboard.';
+feedback.className = 'leaderboard-feedback success';
+input.value = '';
+}
 }
 
-function playAgain() {
-  GAME.restartRun();
+function removeMyLeaderboardScore() {
+const feedback = document.getElementById('leaderboardFeedback');
+const entries = GAME.getLeaderboard();
+const filtered = entries.filter(e => e.runId !== GAME.currentRunId);
+
+if (filtered.length < entries.length) {
+GAME.saveLeaderboard(filtered);
+GAME.lastSavedScoreId = null;
+feedback.textContent = 'Your score has been removed.';
+feedback.className = 'leaderboard-feedback success';
+} else {
+feedback.textContent = 'No score found for this session.';
+feedback.className = 'leaderboard-feedback error';
+}
 }
 
-function closeCompletionModal() {
-  document.getElementById('completionModal').classList.remove('show');
-  GAME.hideCompletionDock();
-}
-
-function minimizeCompletionModal() { // TEXT NOTE: called by "Back to Resume" button
-  const modal = document.getElementById('completionModal');
-  if (modal) modal.classList.remove('show');
-  GAME.showCompletionDock();
+function minimizeCompletionModal() {
+document.getElementById('completionModal').classList.remove('show');
+document.getElementById('completionDock').classList.add('show');
 }
 
 function maximizeCompletionModal() {
-  GAME.showCompletionModal();
+document.getElementById('completionDock').classList.remove('show');
+document.getElementById('completionModal').classList.add('show');
 }
 
-// Initialize existing accordion code
-const tabs = [...document.querySelectorAll('.tab')];
-const sections = [...document.querySelectorAll('.section')];
-
-tabs.forEach(tab => {
-  tab.addEventListener('click', () => {
-    const targetId = tab.dataset.target;
-    const section = document.getElementById(targetId);
-    const header = section.querySelector('.h');
-    const panel = section.querySelector('.panel');
-    const caret = header.querySelector('.caret');
-
-    tab.classList.add('clicked');
-    setTimeout(() => tab.classList.remove('clicked'), 600);
-
-    const isOpen = panel.classList.contains('show');
-    if (!isOpen) {
-      panel.classList.add('show');
-      header.setAttribute('aria-expanded', 'true');
-      caret.textContent = '▾';
-      header.classList.add('centering');
-      setTimeout(() => header.classList.remove('centering'), 1800);
-      setTimeout(() => {
-        header.scrollIntoView({behavior: 'smooth', block: 'start'});
-      }, 100);
-      wireSubAccordions(section);
-      animateItems(section, true);
-    }
-  });
-});
-
-sections.forEach(section => {
-  const header = section.querySelector('.h');
-  const panel = section.querySelector('.panel');
-  const caret = header.querySelector('.caret');
-
-  header.addEventListener('click', () => {
-    const isOpen = panel.classList.contains('show');
-    if (isOpen) {
-      animateItems(section, false);
-      setTimeout(() => {
-        panel.classList.remove('show');
-        header.setAttribute('aria-expanded', 'false');
-        caret.textContent = '▸';
-      }, 500);
-    } else {
-      panel.classList.add('show');
-      header.setAttribute('aria-expanded', 'true');
-      caret.textContent = '▾';
-      header.classList.add('centering');
-      setTimeout(() => header.classList.remove('centering'), 1800);
-      wireSubAccordions(section);
-      animateItems(section, true);
-    }
-  });
-});
-
-function animateItems(section, reveal) {
-  const sectionId = section.id;
-  if (sectionId === 'skills') {
-    const items = section.querySelectorAll('.skill-item');
-    items.forEach((item, i) => {
-      item.classList.remove('reveal', 'hide');
-      setTimeout(() => {
-        item.classList.add(reveal ? 'reveal' : 'hide');
-      }, i * 80);
-    });
-  } else if (sectionId === 'certs' || sectionId === 'honors') {
-    const items = section.querySelectorAll('.list li');
-    items.forEach((item, i) => {
-      item.classList.remove('reveal', 'hide');
-      setTimeout(() => {
-        item.classList.add(reveal ? 'reveal' : 'hide');
-      }, i * 80);
-    });
-  }
+function showCompletionModal() {
+GAME.showCompletionModal();
 }
 
-function wireSubAccordions(scope) {
-  scope.querySelectorAll('.sub').forEach(box => {
-    const h = box.querySelector('.sub-h');
-    if (!h) return;
-    if (h.dataset.wired) return;
-
-    const caret = h.querySelector('.caret');
-    const p = box.querySelector('.sub-p');
-    const list = p.querySelectorAll('.list li, p');
-
-    h.dataset.wired = 'true';
-
-    h.addEventListener('click', () => {
-      const on = h.getAttribute('aria-expanded') === 'true';
-      if (on) {
-        list.forEach((item, i) => {
-          item.classList.remove('reveal');
-          item.classList.add('hide');
-        });
-        setTimeout(() => {
-          h.setAttribute('aria-expanded', 'false');
-          p.classList.remove('show');
-          caret.textContent = '▸';
-        }, 500);
-      } else {
-        h.setAttribute('aria-expanded', 'true');
-        p.classList.add('show');
-        caret.textContent = '▾';
-        list.forEach((item, i) => {
-          item.classList.remove('hide');
-          setTimeout(() => item.classList.add('reveal'), i * 100);
-        });
-      }
-    });
-  });
+function playAgain() {
+document.getElementById('completionModal').classList.remove('show');
+document.getElementById('completionDock').classList.remove('show');
+const finishBtn = document.getElementById('finishButton');
+if (finishBtn) {
+finishBtn.classList.remove('show');
+}
+GAME.restartRun();
+window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
-// Start game function
-function startGame() {
-  GAME.resetSession();
-  GAME.renderAchievements();
-  GAME.updateUI();
-  GAME.hideCompletionDock();
-  const startScreen = document.getElementById('startScreen');
-  if (startScreen) startScreen.classList.add('hidden');
-  const completionModal = document.getElementById('completionModal');
-  if (completionModal) completionModal.classList.remove('show');
-  const leaderboardModal = document.getElementById('leaderboardModal');
-  if (leaderboardModal) {
-    leaderboardModal.classList.remove('show');
-  }
-  const settingsPanel = document.getElementById('settingsPanel');
-  if (settingsPanel) {
-    settingsPanel.classList.remove('show');
-  }
-  const nameInput = document.getElementById('leaderboardNameInput');
-  if (nameInput) nameInput.value = '';
-  const feedback = document.getElementById('leaderboardFeedback');
-  if (feedback) {
-    feedback.textContent = '';
-    feedback.classList.remove('success', 'error');
-  }
-  if (GAME.soundEnabled) {
-    GAME.ensureAudioContext();
-    if (GAME.audioCtx && GAME.audioCtx.state === 'suspended') {
-      GAME.audioCtx.resume();
-    }
-  }
-}
-
-// Initialize game system
 document.addEventListener('DOMContentLoaded', () => {
-  GAME.init();
+const startScreen = document.getElementById('startScreen');
+if (startScreen && !startScreen.classList.contains('hidden')) {
+}
 });
 </script>
+
 </body>
 </html>
