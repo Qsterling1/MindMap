@@ -378,54 +378,112 @@ transform:translate(var(--tx),var(--ty)) scale(0);
 .start-screen{
 position:fixed;
 inset:0;
-background:#07080f;
+background:#000;
 z-index:10001;
 display:flex;
 align-items:center;
 justify-content:center;
-animation:fadeIn .5s ease;
 overflow:hidden;
-}
-
-.start-screen::before{
-content:"";
-position:absolute;
-inset:28px;
-border-radius:32px;
-border:3px solid transparent;
-background:linear-gradient(120deg,var(--neon-blue),var(--neon-purple),var(--neon-pink)) border-box;
-background-size:300% 300%;
-animation:neonCycle 8s ease infinite;
--webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
--webkit-mask-composite:xor;
-mask-composite:exclude;
-pointer-events:none;
+perspective:800px;
 }
 
 .start-screen.hidden{
 display:none;
 }
 
+.starfield{
+position:absolute;
+inset:0;
+overflow:hidden;
+}
+
+.star{
+position:absolute;
+background:#fff;
+border-radius:50%;
+animation:starMove linear infinite;
+}
+
+@keyframes starMove{
+from{
+transform:translateZ(0) translateX(0);
+opacity:0;
+}
+10%{
+opacity:1;
+}
+90%{
+opacity:1;
+}
+to{
+transform:translateZ(1500px) translateX(calc(var(--x-drift) * 300px));
+opacity:0;
+}
+}
+
+.intro-container{
+position:relative;
+z-index:2;
+width:100%;
+height:100%;
+display:flex;
+align-items:center;
+justify-content:center;
+perspective:1000px;
+}
+
+.name-3d{
+position:absolute;
+font-size:80px;
+font-weight:900;
+color:var(--gold);
+text-transform:uppercase;
+letter-spacing:8px;
+text-shadow:0 0 40px rgba(212,175,55,.8), 0 0 80px rgba(212,175,55,.6);
+transform-style:preserve-3d;
+animation:starWarsIntro 4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+opacity:0;
+}
+
+@keyframes starWarsIntro{
+0%{
+transform:translateZ(-1500px) translateY(800px) rotateX(25deg);
+opacity:0;
+}
+20%{
+opacity:1;
+}
+100%{
+transform:translateZ(0) translateY(0) rotateX(0);
+opacity:1;
+}
+}
+
 .start-content{
 position:relative;
 text-align:center;
 padding:48px 56px;
-background:rgba(7,10,20,.9);
+background:rgba(7,10,20,.95);
 border-radius:24px;
 display:flex;
 flex-direction:column;
 align-items:center;
 gap:24px;
-box-shadow:0 30px 60px rgba(0,0,0,.45);
+box-shadow:0 30px 60px rgba(0,0,0,.7);
+opacity:0;
+animation:contentFadeIn .8s ease 4.2s forwards;
+border:2px solid rgba(212,175,55,.3);
 }
 
-.start-title{
-font-size:52px;
-font-weight:800;
-color:var(--gold);
-text-shadow:0 0 30px rgba(212,175,55,.7);
-letter-spacing:2px;
-animation:goldPulse 2s ease infinite;
+@keyframes contentFadeIn{
+from{
+opacity:0;
+transform:scale(.9);
+}
+to{
+opacity:1;
+transform:scale(1);
+}
 }
 
 .start-subtitle{
@@ -1162,6 +1220,23 @@ body.dark-mode .sub:hover{
 background:#333;
 }
 
+body.dark-mode .sub .company-name,
+body.dark-mode .sub .position-name{
+color:#e5e7eb;
+}
+
+body.dark-mode .meta{
+color:#9ca3af;
+}
+
+body.dark-mode .list li{
+color:#e5e7eb;
+}
+
+body.dark-mode .skill-item{
+color:#e5e7eb;
+}
+
 body.dark-mode .progress-top{
 background:#2a2a2a;
 }
@@ -1733,6 +1808,11 @@ button, .tab, .cta-btn{
 min-height:44px;
 padding:12px 16px;
 }
+
+.name-3d{
+font-size:48px;
+letter-spacing:4px;
+}
 }
 
 @media (max-width: 480px) {
@@ -1801,11 +1881,6 @@ bottom:12px;
 
 .start-content{padding:24px 16px}
 
-.start-title{
-font-size:28px;
-line-height:1.2;
-}
-
 .start-subtitle{font-size:14px}
 
 .play-button{
@@ -1853,6 +1928,11 @@ bottom:12px;
 padding:10px 20px;
 font-size:12px;
 }
+
+.name-3d{
+font-size:32px;
+letter-spacing:2px;
+}
 }
 
 @media (max-height: 600px) and (orientation: landscape) {
@@ -1879,8 +1959,10 @@ top:90px;
 <body>
 
 <div class="start-screen" id="startScreen">
-<div class="start-content">
-<div class="start-title">QUENTIN STERLING</div>
+<div class="starfield" id="starfield"></div>
+<div class="intro-container">
+<div class="name-3d" id="name3d">QUENTIN STERLING</div>
+<div class="start-content" id="startContent">
 <div class="start-subtitle">Interactive Resume Experience</div>
 <button class="play-button" onclick="startGame()">PLAY NOW</button>
 <div class="start-actions">
@@ -1888,6 +1970,7 @@ top:90px;
 <button type="button" class="start-secondary-btn" onclick="openLeaderboardModal()">Leaderboard</button>
 </div>
 <div class="start-encouragement"></div>
+</div>
 </div>
 </div>
 
@@ -1925,7 +2008,7 @@ top:90px;
 <div class="settings-panel" id="settingsPanel">
 <div class="setting-item">
 <span class="setting-label">Sound</span>
-<div class="toggle-switch" id="soundToggle" onclick="toggleSound()">
+<div class="toggle-switch on" id="soundToggle" onclick="toggleSound()">
 <div class="toggle-slider"></div>
 </div>
 </div>
@@ -2304,6 +2387,62 @@ publishing, and user acquisition with a strong focus on results, cross-cultural 
 </div>
 
 <script>
+const AUDIO_CTX = new (window.AudioContext || window.webkitAudioContext)();
+
+function playBeep(freq = 800, duration = 0.1) {
+if (!GAME.soundEnabled) return;
+try {
+const osc = AUDIO_CTX.createOscillator();
+const gain = AUDIO_CTX.createGain();
+osc.connect(gain);
+gain.connect(AUDIO_CTX.destination);
+osc.frequency.value = freq;
+gain.gain.setValueAtTime(0.15, AUDIO_CTX.currentTime);
+gain.gain.exponentialRampToValueAtTime(0.01, AUDIO_CTX.currentTime + duration);
+osc.start(AUDIO_CTX.currentTime);
+osc.stop(AUDIO_CTX.currentTime + duration);
+} catch(e) {}
+}
+
+function playApplause() {
+if (!GAME.soundEnabled) return;
+try {
+const duration = 1.5;
+const bufferSize = AUDIO_CTX.sampleRate * duration;
+const buffer = AUDIO_CTX.createBuffer(2, bufferSize, AUDIO_CTX.sampleRate);
+const L = buffer.getChannelData(0);
+const R = buffer.getChannelData(1);
+for (let i = 0; i < bufferSize; i++) {
+L[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.4));
+R[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.4));
+}
+const src = AUDIO_CTX.createBufferSource();
+const gain = AUDIO_CTX.createGain();
+src.buffer = buffer;
+src.connect(gain);
+gain.connect(AUDIO_CTX.destination);
+gain.gain.value = 0.2;
+src.start();
+} catch(e) {}
+}
+
+function createStarfield() {
+const starfield = document.getElementById('starfield');
+for (let i = 0; i < 100; i++) {
+const star = document.createElement('div');
+star.className = 'star';
+const size = Math.random() * 2 + 1;
+star.style.width = size + 'px';
+star.style.height = size + 'px';
+star.style.left = Math.random() * 100 + '%';
+star.style.top = Math.random() * 100 + '%';
+star.style.setProperty('--x-drift', (Math.random() - 0.5) * 2);
+star.style.animationDuration = (Math.random() * 2 + 1) + 's';
+star.style.animationDelay = Math.random() * 2 + 's';
+starfield.appendChild(star);
+}
+}
+
 const GAME = {
 xp: 0,
 maxXP: 550,
@@ -2321,8 +2460,7 @@ currentRunId: null,
 lastSavedScoreId: null,
 leaderboardKey: 'resumeLeaderboard_v2',
 startTime: Date.now(),
-soundEnabled: false,
-audioCtx: null,
+soundEnabled: true,
 konamiSequence: [],
 nameClickCount: 0,
 
@@ -2403,10 +2541,10 @@ if (darkToggle) darkToggle.classList.add('on');
 }
 
 const soundPref = localStorage.getItem('resumeSound');
-if (soundPref) {
-this.soundEnabled = soundPref === 'on';
+if (soundPref === 'off') {
+this.soundEnabled = false;
 const soundToggle = document.getElementById('soundToggle');
-if (soundToggle) soundToggle.classList.toggle('on', this.soundEnabled);
+if (soundToggle) soundToggle.classList.remove('on');
 }
 },
 
@@ -2425,6 +2563,7 @@ e.currentTarget.setAttribute('aria-expanded', 'true');
 this.markSectionOpened(sectionId);
 this.grantAchievement('section_' + sectionId);
 this.addXP(10, e.clientX, e.clientY);
+playBeep(800, 0.08);
 } else {
 panel.classList.remove('show');
 e.currentTarget.setAttribute('aria-expanded', 'false');
@@ -2448,6 +2587,7 @@ if (jobAttr) {
 this.grantAchievement('job_' + jobAttr);
 this.addXP(5, e.clientX, e.clientY);
 this.checkBonusJobs();
+playBeep(1000, 0.06);
 }
 
 const eduAttr = sub.getAttribute('data-edu');
@@ -2455,6 +2595,7 @@ if (eduAttr) {
 this.grantAchievement('edu_' + eduAttr);
 this.addXP(5, e.clientX, e.clientY);
 this.checkBonusEdu();
+playBeep(1000, 0.06);
 }
 } else {
 subP.classList.remove('show');
@@ -2539,10 +2680,11 @@ if (this.konamiSequence.length > 10) this.konamiSequence.shift();
 if (this.konamiSequence.join(',') === konamiCode.join(',')) {
 this.grantAchievement('secret_konami');
 this.addXP(25, window.innerWidth / 2, window.innerHeight / 2);
+playBeep(1200, 0.3);
 }
 });
 
-const nameEl = document.querySelector('.start-title');
+const nameEl = document.querySelector('.name-3d');
 if (nameEl) {
 nameEl.addEventListener('click', () => {
 this.nameClickCount++;
@@ -2685,6 +2827,7 @@ const finishBtn = document.getElementById('finishButton');
 if (finishBtn) {
 finishBtn.classList.add('show');
 }
+playApplause();
 },
 
 showCompletionModal() {
@@ -2711,6 +2854,7 @@ const finishBtn = document.getElementById('finishButton');
 if (finishBtn) {
 finishBtn.classList.remove('show');
 }
+playApplause();
 },
 
 updateUI() {
@@ -2821,6 +2965,7 @@ this.updateUI();
 function startGame() {
 document.getElementById('startScreen').classList.add('hidden');
 GAME.init();
+playBeep(1200, 0.2);
 }
 
 function toggleAchievementPanel() {
@@ -2839,6 +2984,7 @@ function toggleSound() {
 GAME.soundEnabled = !GAME.soundEnabled;
 localStorage.setItem('resumeSound', GAME.soundEnabled ? 'on' : 'off');
 document.getElementById('soundToggle').classList.toggle('on', GAME.soundEnabled);
+if (GAME.soundEnabled) playBeep(600, 0.1);
 }
 
 function toggleDarkMode() {
@@ -2916,22 +3062,6 @@ input.value = '';
 }
 }
 
-function removeMyLeaderboardScore() {
-const feedback = document.getElementById('leaderboardFeedback');
-const entries = GAME.getLeaderboard();
-const filtered = entries.filter(e => e.runId !== GAME.currentRunId);
-
-if (filtered.length < entries.length) {
-GAME.saveLeaderboard(filtered);
-GAME.lastSavedScoreId = null;
-feedback.textContent = 'Your score has been removed.';
-feedback.className = 'leaderboard-feedback success';
-} else {
-feedback.textContent = 'No score found for this session.';
-feedback.className = 'leaderboard-feedback error';
-}
-}
-
 function minimizeCompletionModal() {
 document.getElementById('completionModal').classList.remove('show');
 document.getElementById('completionDock').classList.add('show');
@@ -2956,6 +3086,8 @@ finishBtn.classList.remove('show');
 GAME.restartRun();
 window.scrollTo({top: 0, behavior: 'smooth'});
 }
+
+createStarfield();
 
 document.addEventListener('DOMContentLoaded', () => {
 const startScreen = document.getElementById('startScreen');
