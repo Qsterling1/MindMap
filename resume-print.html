@@ -12,17 +12,17 @@
     font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     font-size: 10.5pt; line-height: 1.38;
   }
-  .sheet { max-width: 7.5in; margin: 0 auto; padding: 0.4in 0.1in; }
+  .sheet { max-width: 7.5in; margin: 0 auto; padding: 0; }
   h1 { font-size: 21pt; margin: 0; letter-spacing: .2px; }
   .role { font-size: 11pt; color: #333; margin: 3px 0 4px; }
   .contact { font-size: 9.5pt; color: #333; }
   .contact a { color: #111; text-decoration: none; }
-  .summary { margin: 10px 0 0; }
-  .hl { margin: 8px 0 0; font-size: 10pt; }
+  .summary { margin: 9px 0 0; }
+  .hl { margin: 7px 0 0; font-size: 10pt; }
   .hl b { font-weight: 700; }
   h2 {
     font-size: 10.5pt; text-transform: uppercase; letter-spacing: .6px;
-    border-bottom: 1px solid #999; padding-bottom: 2px; margin: 16px 0 7px;
+    border-bottom: 1px solid #999; padding-bottom: 2px; margin: 14px 0 7px;
   }
   .job { margin-bottom: 9px; }
   .job .line1 { display: flex; justify-content: space-between; }
@@ -35,6 +35,7 @@
   .row { margin: 2px 0; }
   .row b { font-weight: 700; }
   .two { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 30px; }
+  .page2 { break-before: page; }
   @media screen { body { padding: 24px; } .sheet { box-shadow: 0 0 0 1px #ddd; padding: 0.5in; } }
 </style>
 </head>
@@ -44,7 +45,7 @@
   <header>
     <h1>Quentin Sterling</h1>
     <div class="role">Product &amp; Game Producer | AI Trainer | Building in Unity</div>
-    <div class="contact">Los Angeles, CA &nbsp;|&nbsp; <a href="mailto:Sterling_Q@outlook.com">Sterling_Q@outlook.com</a> &nbsp;|&nbsp; <a href="https://linkedin.com/in/qsterling1">linkedin.com/in/qsterling1</a> &nbsp;|&nbsp; thesterlingsgroup.com</div>
+    <div class="contact">Los Angeles, CA &nbsp;|&nbsp; <a href="mailto:Sterling_Q@outlook.com">Sterling_Q@outlook.com</a> &nbsp;|&nbsp; <a href="https://www.linkedin.com/in/qsterling1">linkedin.com/in/qsterling1</a> &nbsp;|&nbsp; thesterlingsgroup.com</div>
   </header>
 
   <p class="summary">Producer and builder who has shipped consumer products to tens of millions of users, from games to digital tools, now focused on AI automation, with a track record of leading products from concept to launch.</p>
@@ -93,31 +94,43 @@
     </ul>
   </div>
 
-  <h2>Skills</h2>
-  <div class="row"><b>Production:</b> Product roadmaps, production coordination, cross-functional team leadership, Agile / Scrum, sprint planning, live operations, go-to-market, publishing, vendor management, analytics.</div>
-  <div class="row"><b>Game Dev:</b> Unity, game production, multi-platform publishing (Steam, PlayStation, Xbox, Nintendo Switch, Epic, mobile), storefront and launch strategy, community management.</div>
-  <div class="row"><b>AI &amp; Automation:</b> AI automation, agent harness setup, RAG, API and MCP integration, pipeline management, persistent memory systems (Obsidian / Markdown), LLM evaluation, prompt engineering.</div>
-  <div class="row"><b>Tools:</b> Photoshop, Illustrator, InDesign, Adobe XD, Premiere; ComfyUI, Automatic1111, WanGP, Claude Code, Codex, Antigravity.</div>
-
-  <h2>Education</h2>
-  <div class="two">
-    <div class="row"><b>B.S. Software Engineering</b>, Western Governors University (in progress)</div>
-    <div class="row"><b>MBA, International Business</b>, Chongqing University</div>
-    <div class="row"><b>B.A. Communication</b>, Fairmont State University</div>
-    <div class="row"><b>B.S. Psychology</b>, Fairmont State University</div>
+  <div class="job">
+    <div class="line1"><div class="t">7th Life Studios <span class="r">/ Production and publishing studio</span></div><div class="when">Los Angeles, CA</div></div>
+    <ul>
+      <li>Fly and Shadow: original endless runner in development (PC, Steam).</li>
+      <li>AI Trainer: turn-based bot battle that teaches AI and computing concepts (playable web demo).</li>
+      <li>What Is Baijiu?: published guide to Chinese baijiu with 50 original cocktail recipes.</li>
+      <li>You're the Problem, Bro: published nonfiction book.</li>
+    </ul>
   </div>
 
-  <h2>Certifications</h2>
-  <div class="two">
-    <div class="row">Google AI Professional Certificate, Google (2026)</div>
-    <div class="row">Introduction to Software Engineering, IBM (2025)</div>
-    <div class="row">Introduction to HTML, CSS &amp; JavaScript, IBM (2025)</div>
-    <div class="row">Game Design: Art and Concepts Specialization, CalArts (2023)</div>
-    <div class="row">Atlassian Agile Project Management (2025)</div>
-  </div>
+  <div class="page2">
+    <h2>Skills</h2>
+    <div class="row"><b>Production:</b> Product roadmaps, production coordination, cross-functional team leadership, Agile / Scrum, sprint planning, live operations, go-to-market, publishing, vendor management, analytics.</div>
+    <div class="row"><b>Game Dev:</b> Unity, game production, multi-platform publishing (Steam, PlayStation, Xbox, Nintendo Switch, Epic, mobile), storefront and launch strategy, community management.</div>
+    <div class="row"><b>AI &amp; Automation:</b> AI automation, agent harnesses (CrewAI, MCP), RAG (ChromaDB), local LLM inferencing (Ollama, LM Studio, Open WebUI), API integration (Gemini, OpenAI, Anthropic), pipeline management, persistent memory (Obsidian / Markdown), LLM evaluation, prompt engineering.</div>
+    <div class="row"><b>Tools:</b> Photoshop, Illustrator, InDesign, Adobe XD, Premiere; ComfyUI, Automatic1111, WanGP, Claude Code, Codex, Antigravity.</div>
 
-  <h2>Honors</h2>
-  <div class="row">US Citizen Warden, U.S. Consulate Chengdu (2018 to present) &nbsp;|&nbsp; Man of the Year, Urban Music Festival, Southwest China (2018) &nbsp;|&nbsp; Dean's List, Arizona State University (Fall 2024)</div>
+    <h2>Education</h2>
+    <div class="two">
+      <div class="row"><b>B.S. Software Engineering</b>, Western Governors University (in progress)</div>
+      <div class="row"><b>MBA, International Business</b>, Chongqing University</div>
+      <div class="row"><b>B.A. Communication</b>, Fairmont State University</div>
+      <div class="row"><b>B.S. Psychology</b>, Fairmont State University</div>
+    </div>
+
+    <h2>Certifications</h2>
+    <div class="two">
+      <div class="row">Google AI Professional Certificate, Google (2026)</div>
+      <div class="row">Introduction to Software Engineering, IBM (2025)</div>
+      <div class="row">Introduction to HTML, CSS &amp; JavaScript, IBM (2025)</div>
+      <div class="row">Game Design: Art and Concepts Specialization, CalArts (2023)</div>
+      <div class="row">Atlassian Agile Project Management (2025)</div>
+    </div>
+
+    <h2>Honors</h2>
+    <div class="row">US Citizen Warden, U.S. Consulate Chengdu (2018 to present) &nbsp;|&nbsp; Man of the Year, Urban Music Festival, Southwest China (2018) &nbsp;|&nbsp; Dean's List, Arizona State University (Fall 2024)</div>
+  </div>
 
 </div>
 </body>
