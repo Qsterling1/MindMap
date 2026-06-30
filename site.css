@@ -43,6 +43,11 @@ a:hover{text-decoration:underline;}
   font-size:16px;line-height:1;padding:6px 8px;border-radius:6px;
 }
 .icon-btn:hover{color:var(--ink);background:var(--card);}
+.listen{
+  background:none;border:1px solid var(--hair);cursor:pointer;color:var(--muted);
+  font:inherit;font-size:14px;line-height:1;padding:7px 13px;border-radius:8px;
+}
+.listen:hover{color:var(--ink);border-color:var(--accent);}
 
 .page{max-width:1120px;margin:0 auto;padding:46px 36px 84px;}
 
