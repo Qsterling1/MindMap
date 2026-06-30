@@ -22,9 +22,9 @@
   .hl b { font-weight: 700; }
   h2 {
     font-size: 10.5pt; text-transform: uppercase; letter-spacing: .6px;
-    border-bottom: 1px solid #999; padding-bottom: 2px; margin: 14px 0 7px;
+    border-bottom: 1px solid #999; padding-bottom: 2px; margin: 14px 0 8px;
   }
-  .job { margin-bottom: 9px; }
+  .job { margin-bottom: 15px; }
   .job .line1 { display: flex; justify-content: space-between; }
   .job .t { font-weight: 700; }
   .job .t .r { font-weight: 400; color: #333; }
@@ -32,9 +32,13 @@
   .job .ship { font-style: italic; margin: 1px 0; }
   ul { margin: 3px 0 0; padding-left: 17px; }
   li { margin: 1px 0; }
-  .row { margin: 2px 0; }
+  .skillcat { margin-bottom: 9px; }
+  .sk-label { font-weight: 700; margin-bottom: 3px; }
+  .sk-cols { column-width: 2.2in; column-gap: 24px; }
+  .sk-cols div { break-inside: avoid; margin: 1.5px 0; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 30px; }
+  .row { margin: 1px 0; }
   .row b { font-weight: 700; }
-  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 30px; }
   .page2 { break-before: page; }
   @media screen { body { padding: 24px; } .sheet { box-shadow: 0 0 0 1px #ddd; padding: 0.5in; } }
 </style>
@@ -99,6 +103,8 @@
     <ul>
       <li>Fly and Shadow: original endless runner in development (PC, Steam).</li>
       <li>AI Trainer: turn-based bot battle that teaches AI and computing concepts (playable web demo).</li>
+      <li>Faceless YouTube channel automation: an AI-driven pipeline producing a music channel.</li>
+      <li>Low-content assets and books published on e-commerce platforms such as Amazon.</li>
       <li>What Is Baijiu?: published guide to Chinese baijiu with 50 original cocktail recipes.</li>
       <li>You're the Problem, Bro: published nonfiction book.</li>
     </ul>
@@ -106,10 +112,66 @@
 
   <div class="page2">
     <h2>Skills</h2>
-    <div class="row"><b>Production:</b> Product roadmaps, production coordination, cross-functional team leadership, Agile / Scrum, sprint planning, live operations, go-to-market, publishing, vendor management, analytics.</div>
-    <div class="row"><b>Game Dev:</b> Unity, game production, multi-platform publishing (Steam, PlayStation, Xbox, Nintendo Switch, Epic, mobile), storefront and launch strategy, community management.</div>
-    <div class="row"><b>AI &amp; Automation:</b> AI automation, agent harnesses (CrewAI, MCP), RAG (ChromaDB), local LLM inferencing (Ollama, LM Studio, Open WebUI), API integration (Gemini, OpenAI, Anthropic), pipeline management, persistent memory (Obsidian / Markdown), LLM evaluation, prompt engineering.</div>
-    <div class="row"><b>Tools:</b> Photoshop, Illustrator, InDesign, Adobe XD, Premiere; ComfyUI, Automatic1111, WanGP, Claude Code, Codex, Antigravity.</div>
+
+    <div class="skillcat">
+      <div class="sk-label">Production</div>
+      <div class="sk-cols">
+        <div>Product roadmaps</div>
+        <div>Production coordination</div>
+        <div>Cross-functional team leadership</div>
+        <div>Agile / Scrum</div>
+        <div>Sprint planning</div>
+        <div>Live operations</div>
+        <div>Go-to-market</div>
+        <div>Publishing</div>
+        <div>Vendor management</div>
+        <div>Analytics</div>
+      </div>
+    </div>
+
+    <div class="skillcat">
+      <div class="sk-label">Game Development</div>
+      <div class="sk-cols">
+        <div>Unity</div>
+        <div>Game production</div>
+        <div>Multi-platform publishing</div>
+        <div>Steam, PlayStation, Xbox, Switch, Epic</div>
+        <div>Storefront and launch strategy</div>
+        <div>Community management</div>
+      </div>
+    </div>
+
+    <div class="skillcat">
+      <div class="sk-label">AI &amp; Automation</div>
+      <div class="sk-cols">
+        <div>AI automation</div>
+        <div>Agent harnesses (Open Claw, Hermes, Crew)</div>
+        <div>RAG (ChromaDB)</div>
+        <div>Local LLM inferencing (Ollama, LM Studio, Open WebUI)</div>
+        <div>API integration (Gemini, OpenAI, Anthropic)</div>
+        <div>Pipeline management</div>
+        <div>Persistent memory (Obsidian / Markdown)</div>
+        <div>LLM evaluation</div>
+        <div>Prompt engineering</div>
+      </div>
+    </div>
+
+    <div class="skillcat">
+      <div class="sk-label">Tools</div>
+      <div class="sk-cols">
+        <div>Photoshop</div>
+        <div>Illustrator</div>
+        <div>InDesign</div>
+        <div>Adobe XD</div>
+        <div>Premiere</div>
+        <div>ComfyUI</div>
+        <div>Automatic1111</div>
+        <div>WanGP</div>
+        <div>Claude Code</div>
+        <div>Codex</div>
+        <div>Antigravity</div>
+      </div>
+    </div>
 
     <h2>Education</h2>
     <div class="two">
@@ -121,15 +183,26 @@
 
     <h2>Certifications</h2>
     <div class="two">
-      <div class="row">Google AI Professional Certificate, Google (2026)</div>
+      <div class="row">Google AI Professional, Google (2026)</div>
       <div class="row">Introduction to Software Engineering, IBM (2025)</div>
       <div class="row">Introduction to HTML, CSS &amp; JavaScript, IBM (2025)</div>
       <div class="row">Game Design: Art and Concepts Specialization, CalArts (2023)</div>
+      <div class="row">Foundations of User Experience (UX) Design, Google (2023)</div>
+      <div class="row">Fundamentals of Graphic Design, CalArts (2023)</div>
       <div class="row">Atlassian Agile Project Management (2025)</div>
+      <div class="row">Project Management (Business 311), Study.com (2026)</div>
     </div>
 
     <h2>Honors</h2>
-    <div class="row">US Citizen Warden, U.S. Consulate Chengdu (2018 to present) &nbsp;|&nbsp; Man of the Year, Urban Music Festival, Southwest China (2018) &nbsp;|&nbsp; Dean's List, Arizona State University (Fall 2024)</div>
+    <div class="two">
+      <div class="row">US Citizen Warden, U.S. Consulate Chengdu (2018 to present)</div>
+      <div class="row">Man of the Year, Urban Music Festival, Southwest China (2018)</div>
+      <div class="row">Jiang Xiao Bai Top Employee (2019)</div>
+      <div class="row">Single-Day Steam Sales Record, Pathea Games</div>
+      <div class="row">Black Heritage Council Award, Marion, Ohio</div>
+      <div class="row">William White Athletic Scholarship</div>
+      <div class="row">Dean's List, Arizona State University (Fall 2024)</div>
+    </div>
   </div>
 
 </div>

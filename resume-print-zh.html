@@ -10,28 +10,32 @@
   body {
     margin: 0; color: #111; background: #fff;
     font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 10.5pt; line-height: 1.5;
+    font-size: 10pt; line-height: 1.42;
   }
   .sheet { max-width: 7.5in; margin: 0 auto; padding: 0; }
-  h1 { font-size: 21pt; margin: 0; }
+  h1 { font-size: 20pt; margin: 0; }
   .role { font-size: 11pt; color: #333; margin: 3px 0 4px; }
-  .contact { font-size: 9.5pt; color: #333; }
+  .contact { font-size: 9pt; color: #333; }
   .contact a { color: #111; text-decoration: none; }
-  .summary { margin: 9px 0 0; }
-  .hl { margin: 7px 0 0; font-size: 10pt; }
+  .summary { margin: 7px 0 0; }
+  .hl { margin: 6px 0 0; font-size: 9.5pt; }
   .hl b { font-weight: 700; }
-  h2 { font-size: 11pt; border-bottom: 1px solid #999; padding-bottom: 2px; margin: 14px 0 7px; font-weight: 700; }
-  .job { margin-bottom: 9px; }
+  h2 { font-size: 11pt; border-bottom: 1px solid #999; padding-bottom: 2px; margin: 12px 0 6px; font-weight: 700; }
+  .job { margin-bottom: 7px; }
   .job .line1 { display: flex; justify-content: space-between; }
   .job .t { font-weight: 700; }
   .job .t .r { font-weight: 400; color: #333; }
-  .job .when { color: #333; white-space: nowrap; font-size: 9.5pt; }
+  .job .when { color: #333; white-space: nowrap; font-size: 9pt; }
   .job .ship { margin: 1px 0; color: #333; }
-  ul { margin: 3px 0 0; padding-left: 18px; }
-  li { margin: 1px 0; }
-  .row { margin: 2px 0; }
+  ul { margin: 2px 0 0; padding-left: 18px; }
+  li { margin: 0.5px 0; }
+  .skillcat { margin-bottom: 7px; }
+  .sk-label { font-weight: 700; margin-bottom: 2px; }
+  .sk-cols { column-width: 2.2in; column-gap: 24px; }
+  .sk-cols div { break-inside: avoid; margin: 1px 0; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 3px 30px; }
+  .row { margin: 1px 0; }
   .row b { font-weight: 700; }
-  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 30px; }
   .page2 { break-before: page; }
   @media screen { body { padding: 24px; } .sheet { box-shadow: 0 0 0 1px #ddd; padding: 0.5in; } }
 </style>
@@ -41,21 +45,21 @@
 
   <header>
     <h1>Quentin Sterling</h1>
-    <div class="role">产品与游戏制作人 | AI 训练师 | Unity 开发</div>
+    <div class="role">高级产品与游戏制作人 | 团队负责人 | AI 训练师</div>
     <div class="contact">美国洛杉矶 &nbsp;|&nbsp; <a href="mailto:Sterling_Q@outlook.com">Sterling_Q@outlook.com</a> &nbsp;|&nbsp; <a href="https://www.linkedin.com/in/qsterling1">linkedin.com/in/qsterling1</a> &nbsp;|&nbsp; thesterlingsgroup.com</div>
   </header>
 
-  <p class="summary">制作人与开发者，曾推出面向全球数千万用户的消费级产品，涵盖游戏与数字工具，现专注于 AI 自动化，具备从概念到上线的全流程产品领导经验。</p>
+  <p class="summary">资深产品与游戏制作人、团队负责人，擅长从零到一主导项目并推动至上线与发行。曾带领跨职能团队推出面向全球数千万用户的产品，对海外市场有深入理解，现专注于 AI 自动化。</p>
 
-  <p class="hl"><b>1000万+</b> 游戏销量 &nbsp;|&nbsp; <b>3000万</b> 移动端下载 &nbsp;|&nbsp; <b>53.4万美元</b> Kickstarter 众筹 &nbsp;|&nbsp; <b>10亿+</b> 社交媒体浏览量</p>
+  <p class="hl"><b>1000万+</b> 游戏销量 &nbsp;|&nbsp; <b>3000万</b> 移动端下载 &nbsp;|&nbsp; <b>53.4万美元</b> 众筹 &nbsp;|&nbsp; <b>10亿+</b> 社交媒体浏览量</p>
 
   <h2>工作经历</h2>
 
   <div class="job">
     <div class="line1"><div class="t">Handshake AI <span class="r">/ AI 训练师，设计专家</span></div><div class="when">洛杉矶 · 2025 至今</div></div>
     <ul>
-      <li>开发并评估特定领域的提示词，评测大语言模型（LLM）的表现。</li>
-      <li>分析 LLM 输出在专业领域中的准确性、清晰度与深度。</li>
+      <li>开发并评估特定领域的提示词，评测大语言模型的表现。</li>
+      <li>分析大语言模型输出在专业领域中的准确性、清晰度与深度。</li>
       <li>开展独立研究，支持提示词开发与评测工作。</li>
     </ul>
   </div>
@@ -64,54 +68,111 @@
     <div class="line1"><div class="t">Sterling Q <span class="r">/ 首席顾问</span></div><div class="when">洛杉矶 · 2013 至今</div></div>
     <ul>
       <li>为企业客户评估 AI 产品并进行提示词工程（保密协议下）。</li>
-      <li>以路线图与执行框架，指导产品团队从概念走向上线。</li>
-      <li>带领由设计师、文案与工程师组成的跨学科团队。</li>
+      <li>以路线图与执行框架，带领产品团队从概念走向上线。</li>
+      <li>领导由设计师、文案与工程师组成的跨学科团队。</li>
     </ul>
   </div>
 
   <div class="job">
-    <div class="line1"><div class="t">智明星通（Elex Technology） <span class="r">/ 品牌创意经理，产品与发行</span></div><div class="when">北京 · 2020–2022</div></div>
-    <div class="ship">发行作品：《行尸走肉：幸存者》（iOS、Android），3000万下载。</div>
+    <div class="line1"><div class="t">智明星通 <span class="r">/ 品牌创意经理，产品与发行</span></div><div class="when">北京 · 2020–2022</div></div>
+    <div class="ship">发行作品：《行尸走肉：幸存者》（手游，iOS、安卓），3000万下载。</div>
     <ul>
       <li>上线前六个月内推动 100 万次下载。</li>
       <li>在各平台建立并运营超过 100 万用户的社区。</li>
       <li>搭建广告投放管线并监督用户获取活动，达到 1 万日活跃用户。</li>
-      <li>参与《列王的纷争》（全球超 1 亿玩家）的用户研究、UX 反馈与商店页面优化。</li>
+      <li>参与《列王的纷争》（全球超 1 亿玩家）的用户研究、体验反馈与商店页面优化。</li>
     </ul>
   </div>
 
   <div class="job">
-    <div class="line1"><div class="t">重庆帕斯亚科技（Pathea Games） <span class="r">/ 高级品牌经理，游戏发行与平台策略</span></div><div class="when">重庆 · 2018–2020</div></div>
-    <div class="ship">发行作品：《波西亚时光》《沙石镇时光》《永进》（PS、Xbox、PC、Switch）。</div>
+    <div class="line1"><div class="t">重庆帕斯亚科技 <span class="r">/ 高级品牌经理，游戏发行与平台策略</span></div><div class="when">重庆 · 2018–2020</div></div>
+    <div class="ship">发行作品：《波西亚时光》《沙石镇时光》《永进》（多平台：主机、PC）。</div>
     <ul>
       <li>推动《波西亚时光》从 65 万增长至超过 200 万 Steam 销量，全平台累计超过 1000 万。</li>
-      <li>设计并主导《沙石镇时光》Kickstarter 众筹：24 小时内达成 10 万美元目标，最终筹得 53.4 万美元。</li>
-      <li>担任与国际发行商 Team17 的主要联络人，管理路线图与跨团队优先级。</li>
-      <li>在任天堂、Xbox、PlayStation、Epic Games Store 与 Humble Bundle 等平台达成合作。</li>
+      <li>设计并主导《沙石镇时光》众筹项目：24 小时内达成 10 万美元目标，最终筹得 53.4 万美元。</li>
+      <li>担任与国际发行商 Team17 的主要联络人，管理项目路线图与跨团队优先级。</li>
+      <li>在任天堂、微软、索尼及多家主机与 PC 平台达成发行合作。</li>
     </ul>
   </div>
 
   <div class="job">
     <div class="line1"><div class="t">7th Life Studios <span class="r">/ 制作与发行工作室</span></div><div class="when">洛杉矶</div></div>
     <ul>
-      <li>Fly and Shadow：原创无尽跑酷游戏，开发中（PC、Steam）。</li>
-      <li>AI Trainer：回合制机器人对战，寓教于乐讲解 AI 与计算概念（网页可玩 Demo）。</li>
-      <li>《What Is Baijiu?》：已出版，介绍中国白酒并含 50 款原创鸡尾酒配方。</li>
+      <li>《Fly and Shadow》：原创无尽跑酷游戏，开发中（PC，Steam 上线）。</li>
+      <li>《AI Trainer》：回合制机器人对战，寓教于乐讲解人工智能与计算概念（网页可玩 Demo）。</li>
+      <li>无人出镜音乐频道自动化：以人工智能驱动的内容生产管线。</li>
+      <li>在亚马逊等电商平台发行低内容素材与图书。</li>
+      <li>《白酒释义》：已出版，介绍中国白酒并含 50 款原创鸡尾酒配方。</li>
       <li>《You're the Problem, Bro》：已出版的非虚构书籍。</li>
     </ul>
   </div>
 
   <div class="page2">
     <h2>技能</h2>
-    <div class="row"><b>制作：</b>产品路线图、制作协调、跨职能团队领导、敏捷 / Scrum、冲刺规划、运营、市场进入、发行、供应商管理、数据分析。</div>
-    <div class="row"><b>游戏开发：</b>Unity、游戏制作、多平台发行（Steam、PlayStation、Xbox、Nintendo Switch、Epic、移动端）、商店与上线策略、社区管理。</div>
-    <div class="row"><b>AI 与自动化：</b>AI 自动化、智能体框架（CrewAI、MCP）、RAG（ChromaDB）、本地大模型推理（Ollama、LM Studio、Open WebUI）、API 集成（Gemini、OpenAI、Anthropic）、管线管理、持久化记忆（Obsidian / Markdown）、LLM 评测、提示词工程。</div>
-    <div class="row"><b>工具：</b>Photoshop、Illustrator、InDesign、Adobe XD、Premiere；ComfyUI、Automatic1111、WanGP、Claude Code、Codex、Antigravity。</div>
+
+    <div class="skillcat">
+      <div class="sk-label">制作</div>
+      <div class="sk-cols">
+        <div>产品路线图</div>
+        <div>制作协调</div>
+        <div>跨职能团队领导</div>
+        <div>敏捷开发 / Scrum</div>
+        <div>冲刺规划</div>
+        <div>线上运营</div>
+        <div>市场进入策略</div>
+        <div>发行管理</div>
+        <div>供应商管理</div>
+        <div>数据分析</div>
+      </div>
+    </div>
+
+    <div class="skillcat">
+      <div class="sk-label">游戏开发</div>
+      <div class="sk-cols">
+        <div>Unity 引擎</div>
+        <div>游戏制作</div>
+        <div>多平台发行（主机、PC、移动端）</div>
+        <div>商店与上线策略</div>
+        <div>社区管理</div>
+      </div>
+    </div>
+
+    <div class="skillcat">
+      <div class="sk-label">人工智能与自动化</div>
+      <div class="sk-cols">
+        <div>AI 自动化</div>
+        <div>智能体框架（Open Claw、Hermes、Crew）</div>
+        <div>检索增强生成 RAG（ChromaDB）</div>
+        <div>本地大模型推理（Ollama、LM Studio、Open WebUI）</div>
+        <div>接口集成（Gemini、OpenAI、Anthropic）</div>
+        <div>管线管理</div>
+        <div>持久化记忆（Obsidian / Markdown）</div>
+        <div>大语言模型评测</div>
+        <div>提示词工程</div>
+      </div>
+    </div>
+
+    <div class="skillcat">
+      <div class="sk-label">工具</div>
+      <div class="sk-cols">
+        <div>Photoshop</div>
+        <div>Illustrator</div>
+        <div>InDesign</div>
+        <div>Adobe XD</div>
+        <div>Premiere</div>
+        <div>ComfyUI</div>
+        <div>Automatic1111</div>
+        <div>WanGP</div>
+        <div>Claude Code</div>
+        <div>Codex</div>
+        <div>Antigravity</div>
+      </div>
+    </div>
 
     <h2>教育背景</h2>
     <div class="two">
       <div class="row"><b>软件工程 理学学士</b>，西部州长大学（在读）</div>
-      <div class="row"><b>国际商务 工商管理硕士（MBA）</b>，重庆大学</div>
+      <div class="row"><b>国际商务 工商管理硕士</b>，重庆大学</div>
       <div class="row"><b>传播学 文学学士</b>，费尔蒙特州立大学</div>
       <div class="row"><b>心理学 理学学士</b>，费尔蒙特州立大学</div>
     </div>
@@ -122,11 +183,22 @@
       <div class="row">软件工程导论，IBM（2025）</div>
       <div class="row">HTML、CSS 与 JavaScript 导论，IBM（2025）</div>
       <div class="row">游戏设计：艺术与概念 专项课程，加州艺术学院（2023）</div>
-      <div class="row">Atlassian 敏捷项目管理（2025）</div>
+      <div class="row">用户体验设计基础，Google（2023）</div>
+      <div class="row">平面设计基础，加州艺术学院（2023）</div>
+      <div class="row">敏捷项目管理 专业证书，Atlassian（2025）</div>
+      <div class="row">项目管理（商业 311），Study.com（2026）</div>
     </div>
 
     <h2>荣誉</h2>
-    <div class="row">美国驻成都总领事馆 公民联络员（Citizen Warden）（2018 至今） &nbsp;|&nbsp; 年度人物，城市音乐节（Urban Music Festival），中国西南（2018） &nbsp;|&nbsp; 院长嘉许名单（Dean's List），亚利桑那州立大学（2024 秋季）</div>
+    <div class="two">
+      <div class="row">美国驻成都总领事馆 公民联络员（2018 至今）</div>
+      <div class="row">年度人物，城市音乐节，中国西南（2018）</div>
+      <div class="row">江小白 优秀员工（2019）</div>
+      <div class="row">帕斯亚 单日 Steam 销量纪录</div>
+      <div class="row">黑人传统委员会 奖项，俄亥俄州马里恩</div>
+      <div class="row">威廉·怀特 体育奖学金</div>
+      <div class="row">院长嘉许名单，亚利桑那州立大学（2024 秋季）</div>
+    </div>
   </div>
 
 </div>

@@ -12,6 +12,9 @@
   .rhead h1{font-size:32px;line-height:1.05;margin:0;}
   .rhead .role{color:var(--muted);font-size:17px;margin:8px 0 10px;}
   .rhead .contact{font-size:14px;color:var(--muted);}
+  .dl-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
+  .dl{display:inline-block;border:1px solid var(--accent);color:var(--accent);border-radius:8px;padding:8px 15px;font-size:14px;font-weight:600;}
+  .dl:hover{background:var(--accent);color:#fff;text-decoration:none;}
   .label{font-size:13px;font-weight:700;text-transform:uppercase;margin:0 0 12px;padding-bottom:6px;border-bottom:1px solid var(--hair);}
   section{margin-bottom:28px;}
   .hl{display:flex;flex-wrap:wrap;gap:14px 40px;margin:0;}
@@ -32,6 +35,7 @@
   @media (max-width:640px){ .twocol{grid-template-columns:1fr;gap:24px;} }
   @media print{
     .site-header{display:none;}
+    .dl-row{display:none;}
     body{background:#fff;color:#000;font-size:11pt;}
     .page{max-width:100%;padding:0;}
     a{color:#000;}
@@ -59,6 +63,10 @@
       <h1>Quentin Sterling</h1>
       <p class="role">Product &amp; Game Producer · AI Trainer · Building in Unity</p>
       <p class="contact">Los Angeles, CA &nbsp;·&nbsp; <a href="https://www.linkedin.com/in/qsterling1">linkedin.com/in/qsterling1</a></p>
+      <div class="dl-row">
+        <a class="dl" href="Quentin-Sterling-Resume.pdf" download>Download resume (PDF)</a>
+        <a class="dl" href="Quentin-Sterling-Resume-Chinese.pdf" download>下载简历 (中文 PDF)</a>
+      </div>
     </div>
 
     <section>
